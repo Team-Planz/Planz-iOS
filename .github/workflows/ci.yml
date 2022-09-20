@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Check out project
+      uses: actions/checkout@v3
+    - name: Show current version of Xcode
+      run: xcodebuild -version
+    - name: Build
+      run: xcodebuild -project Planz.xcodeproj -scheme Planz -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
