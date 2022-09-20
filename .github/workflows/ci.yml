@@ -14,4 +14,4 @@ jobs:
     - name: Show current version of Xcode
       run: xcodebuild -version
     - name: Build
-      run: xcodebuild -project Planz.xcodeproj -scheme Planz -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest'
+      run: xcodebuild -project Planz.xcodeproj -scheme Planz -destination 'platform=iOS Simulator,name=iPhone 8,OS=latest'
