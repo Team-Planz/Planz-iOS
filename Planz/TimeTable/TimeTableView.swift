@@ -163,9 +163,9 @@ struct TimeTableView: View {
                                         .frame(width: C.scheduleColumnWidth)
                                         .background(R.color.background)
                                         .overlay(
-                                            Rectangle()
-                                                .frame(width: 1)
-                                                .foregroundColor(R.color.line),
+                                            Line(axis: .vertical)
+                                                .stroke(R.color.line)
+                                                .frame(width: C.lineWidth),
                                             alignment: .trailing
                                         )
                                 ) {
@@ -177,16 +177,15 @@ struct TimeTableView: View {
                                                 .foregroundColor(timeTable.cells[day]?[row] == .selected ? R.color.main : R.color.background)
                                                 .clipShape(Rectangle())
                                                 .overlay(
-                                                    Rectangle()
-                                                        .frame(width: C.lineWidth)
-                                                        .foregroundColor(R.color.line),
+                                                    Line(axis: .vertical)
+                                                        .stroke(R.color.line)
+                                                        .frame(width: C.lineWidth),
                                                     alignment: .trailing
                                                 )
                                                 .overlay(
-                                                    Rectangle()
-                                                        .frame(height: C.lineWidth)
-                                                        .foregroundColor(R.color.line)
-                                                    ,
+                                                    Line(axis: .horizontal)
+                                                        .stroke(R.color.line, style: row % 2 == 0 ? StrokeStyle(dash: [2]) : .init())
+                                                        .frame(height: C.lineWidth),
                                                     alignment: .bottom
                                                 )
                                                 .id(id)

@@ -15,6 +15,7 @@
 		6F4759B528D9D0CF005CC91B /* PlanzUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4759B428D9D0CF005CC91B /* PlanzUITests.swift */; };
 		6F4759B728D9D0CF005CC91B /* PlanzUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4759B628D9D0CF005CC91B /* PlanzUITestsLaunchTests.swift */; };
 		6F4759C628D9D146005CC91B /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4759C528D9D146005CC91B /* AppView.swift */; };
+		6F4CF87928E965830056D5E7 /* Line.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4CF87828E965830056D5E7 /* Line.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 		6F4759B428D9D0CF005CC91B /* PlanzUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanzUITests.swift; sourceTree = "<group>"; };
 		6F4759B628D9D0CF005CC91B /* PlanzUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanzUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		6F4759C528D9D146005CC91B /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
+		6F4CF87828E965830056D5E7 /* Line.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,7 +100,7 @@
 			children = (
 				6F47599928D9D0CE005CC91B /* PlanzApp.swift */,
 				6F4759C528D9D146005CC91B /* AppView.swift */,
-				6F1DFE8128E4591100AC0D24 /* TimeTableView.swift */,
+				6F4CF87728E9656D0056D5E7 /* TimeTable */,
 				6F47599D28D9D0CF005CC91B /* Assets.xcassets */,
 				6F47599F28D9D0CF005CC91B /* Preview Content */,
 			);
@@ -128,6 +130,15 @@
 				6F4759B628D9D0CF005CC91B /* PlanzUITestsLaunchTests.swift */,
 			);
 			path = PlanzUITests;
+			sourceTree = "<group>";
+		};
+		6F4CF87728E9656D0056D5E7 /* TimeTable */ = {
+			isa = PBXGroup;
+			children = (
+				6F1DFE8128E4591100AC0D24 /* TimeTableView.swift */,
+				6F4CF87828E965830056D5E7 /* Line.swift */,
+			);
+			path = TimeTable;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -262,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6F4759C628D9D146005CC91B /* AppView.swift in Sources */,
+				6F4CF87928E965830056D5E7 /* Line.swift in Sources */,
 				6F1DFE8228E4591100AC0D24 /* TimeTableView.swift in Sources */,
 				6F47599A28D9D0CE005CC91B /* PlanzApp.swift in Sources */,
 			);
