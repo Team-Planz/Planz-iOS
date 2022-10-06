@@ -14,7 +14,6 @@
 		6F4759B528D9D0CF005CC91B /* PlanzUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4759B428D9D0CF005CC91B /* PlanzUITests.swift */; };
 		6F4759B728D9D0CF005CC91B /* PlanzUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4759B628D9D0CF005CC91B /* PlanzUITestsLaunchTests.swift */; };
 		6F4759C628D9D146005CC91B /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4759C528D9D146005CC91B /* AppView.swift */; };
-		6F81F3D028EE78550005BAAA /* AppPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 6F81F3CF28EE78550005BAAA /* AppPackage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,7 +44,6 @@
 		6F4759B428D9D0CF005CC91B /* PlanzUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanzUITests.swift; sourceTree = "<group>"; };
 		6F4759B628D9D0CF005CC91B /* PlanzUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanzUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		6F4759C528D9D146005CC91B /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
-		6F81F3CD28EE77C60005BAAA /* AppPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AppPackage; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +51,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F81F3D028EE78550005BAAA /* AppPackage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,12 +74,10 @@
 		6F47598D28D9D0CE005CC91B = {
 			isa = PBXGroup;
 			children = (
-				6F81F3CD28EE77C60005BAAA /* AppPackage */,
 				6F47599828D9D0CE005CC91B /* Planz */,
 				6F4759A928D9D0CF005CC91B /* PlanzTests */,
 				6F4759B328D9D0CF005CC91B /* PlanzUITests */,
 				6F47599728D9D0CE005CC91B /* Products */,
-				6F81F3CE28EE78550005BAAA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -132,13 +127,6 @@
 			path = PlanzUITests;
 			sourceTree = "<group>";
 		};
-		6F81F3CE28EE78550005BAAA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -155,9 +143,6 @@
 			dependencies = (
 			);
 			name = Planz;
-			packageProductDependencies = (
-				6F81F3CF28EE78550005BAAA /* AppPackage */,
-			);
 			productName = Planz;
 			productReference = 6F47599628D9D0CE005CC91B /* Planz.app */;
 			productType = "com.apple.product-type.application";
@@ -597,13 +582,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		6F81F3CF28EE78550005BAAA /* AppPackage */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AppPackage;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6F47598E28D9D0CE005CC91B /* Project object */;
 }
