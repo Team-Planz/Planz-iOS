@@ -9,7 +9,11 @@ let package = Package(
     products: [
         .library(
             name: "AppPackage",
-            targets: ["AppPackage", "TimeTableFeature"]
+            targets: [
+                "AppPackage",
+                "TimeTableFeature",
+                "Calendar"
+            ]
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"])
     ],
@@ -35,6 +39,10 @@ let package = Package(
         ),
         .target(
             name: "DesignSystem"
+            ),
+        .target(
+            name: "Calendar",
+            dependencies: []
         )
     ]
 )
