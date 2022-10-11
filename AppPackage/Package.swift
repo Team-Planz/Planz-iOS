@@ -9,7 +9,11 @@ let package = Package(
     products: [
         .library(
             name: "AppPackage",
-            targets: ["AppPackage"]),
+            targets: [
+                "AppPackage",
+                "Calendar"
+            ]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.40.2"),
@@ -23,6 +27,11 @@ let package = Package(
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect"),
                 .product(name: "Then", package: "Then")
-            ])
+            ]
+        ),
+        .target(
+            name: "Calendar",
+            dependencies: []
+        )
     ]
 )
