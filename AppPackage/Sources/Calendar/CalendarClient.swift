@@ -37,7 +37,7 @@ public struct CalendarClient {
         return (
             countOfDaysInMonth: countOfDaysInMonth,
             startDayOfMonth: startOfMonth,
-            startDayWeekday: _weekDay(date)
+            startDayWeekday: _weekDay(startOfMonth)
         )
     }
     
@@ -79,37 +79,6 @@ public struct CalendarClient {
                 )
             }
     }
-    
-    private func createMonth(
-        for date: Date,
-        selectedDate: Date,
-        isWithinDisplayedMonth: Date
-    ) throws -> [Day] {
-        let metaData = try createMetaData(for: date)
-        let endIndex = metaData.countOfDaysInMonth + metaData.startDayWeekday
-        
-        var month = try (1..<endIndex)
-            .map { number in
-                let isWithinDisplayedMonth = number >= metaData.startDayWeekday
-                
-                let offset = isWithinDisplayedMonth ?
-                number - metaData.startDayWeekday :
-                -(metaData.startDayWeekday - number)
-                
-                return try createDay(
-                    offset: offset,
-                    for: metaData.startDayOfMonth,
-                    selectedDate: selectedDate,
-                    isWithinDisplayedMonth: isWithinDisplayedMonth
-                )
-            }
-        month += try createNextMonth(
-            for: metaData.startDayOfMonth,
-            selectedDate: selectedDate
-        )
-        
-        return month
-    }
 }
 
 extension CalendarClient {
@@ -144,22 +113,34 @@ public extension CalendarClient {
         }
     }
     
-    func month(
+    func createMonth(
         for date: Date,
-        selectedDate: Date,
-        isWithinDisplayedMonth: Date
-    ) throws -> [[Day]] {
-        let items = try createMonth(
-            for: date,
-            selectedDate: selectedDate,
-            isWithinDisplayedMonth: isWithinDisplayedMonth
+        selectedDate: Date
+    ) throws -> [Day] {
+        let metaData = try createMetaData(for: date)
+        let endIndex = metaData.countOfDaysInMonth + metaData.startDayWeekday
+        
+        var month = try (1..<endIndex)
+            .map { number in
+                let isWithinDisplayedMonth = number >= metaData.startDayWeekday
+                
+                let offset = isWithinDisplayedMonth ?
+                number - metaData.startDayWeekday :
+                -(metaData.startDayWeekday - number)
+                
+                return try createDay(
+                    offset: offset,
+                    for: metaData.startDayOfMonth,
+                    selectedDate: selectedDate,
+                    isWithinDisplayedMonth: isWithinDisplayedMonth
+                )
+            }
+        month += try createNextMonth(
+            for: metaData.startDayOfMonth,
+            selectedDate: selectedDate
         )
         
-        return items.reduce(into: []) { partialResult, day in
-            partialResult.isEmpty || partialResult.last!.count == .week ?
-            partialResult.append([day]) :
-            partialResult[partialResult.count - 1].append(day)
-        }
+        return month
     }
 }
 
