@@ -122,17 +122,6 @@ public struct TimeTableView: View {
                                 height: C.headerHeight
                             )
                             .background(R.color.white200)
-                            .overlay(
-                                LinearGradient(
-                                    colors: [R.color.white200.opacity(0.1), R.color.white200],
-                                    startPoint: .trailing,
-                                    endPoint: .leading
-                                )
-                                .frame(
-                                    width: C.timelineWidth,
-                                    height: C.headerHeight
-                                ), alignment: .topLeading
-                            )
                         
                         Divider()
                             .frame(height: C.lineWidth)
@@ -149,6 +138,9 @@ public struct TimeTableView: View {
                             .overlay(R.color.gray200)
                     }
                 }
+                .overlay(
+                    gradient, alignment: .topLeading
+                )
             }
         }
     }
@@ -262,6 +254,18 @@ public struct TimeTableView: View {
                 }
             }
         }
+    }
+    
+    var gradient: some View {
+        LinearGradient(
+            colors: [R.color.white200.opacity(0.1), R.color.white200],
+            startPoint: .trailing,
+            endPoint: .leading
+        )
+        .frame(
+            width: C.timelineWidth,
+            height: C.headerHeight
+        )
     }
 }
 
