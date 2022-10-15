@@ -213,7 +213,7 @@ public struct TimeTableView: View {
             let rows = viewStore.timeRanges.count
             let columns = viewStore.days.count
             let gridItems = Array(
-                repeating: GridItem(.fixed(proxy.size.height / CGFloat(rows)), spacing: 0, alignment: .leading),
+                repeating: GridItem(.flexible(), spacing: 0, alignment: .leading),
                 count: rows
             )
             LazyHGrid(
@@ -224,26 +224,25 @@ public struct TimeTableView: View {
                 Section(
                     header: timeline
                 ) {
-                    ForEach(0..<rows, id: \.self) { row in
-                        ForEach(0..<columns, id: \.self) { column in
+                    ForEach(0..<columns, id: \.self) { column in
+                        ForEach(0..<rows, id: \.self) { row in
                             Rectangle()
-                                .frame(width: (proxy.size.width - C.timelineWidth) / CGFloat(viewStore.days.count))
+                                .frame(width: (proxy.size.width - C.timelineWidth) / CGFloat(columns))
                                 .foregroundColor(viewStore.timeCells[column][row] == .selected
                                                  ? R.color.purple900 : R.color.white200)
                                 .clipShape(Rectangle())
                                 .overlay(
-                                    HStack {
-                                        Divider()
-                                            .frame(width: C.lineWidth)
-                                            .overlay(R.color.timeCellBorder)
-                                    }, alignment: .trailing
+                                    VerticalLine()
+                                        .stroke(R.color.timeCellBorder)
+                                        .frame(width: C.lineWidth),
+                                    alignment: .trailing
                                 )
                                 .overlay(
-                                    VStack {
-                                        Divider()
-                                            .frame(height: C.lineWidth)
-                                            .overlay(R.color.timeCellBorder)
-                                    }, alignment: .bottom
+                                    HorizontalLine()
+                                        .stroke(R.color.timeCellBorder,
+                                                style: row % 2 == 0 ? .init(dash: [2]) : .init())
+                                        .frame(height: C.lineWidth),
+                                    alignment: .bottom
                                 )
                                 .id("\(row)\(column)")
                                 .onTapGesture {
