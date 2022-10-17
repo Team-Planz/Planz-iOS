@@ -108,16 +108,18 @@ extension View {
     @ViewBuilder func alert(
       _ store: Store<PLAlertState?, PLAlertAction>
     ) -> some View {
-        IfLetStore(
-            store,
-            then: { store in
-                ZStack {
+        ZStack {
+            self
+            
+            IfLetStore(
+                store,
+                then: { store in
                     Color.black.opacity(0.75).ignoresSafeArea()
                     
                     PLAlert(store: store)
                 }
-            }
-        )
+            )
+        }
     }
 }
 
@@ -136,12 +138,13 @@ fileprivate struct R {
     }
 }
 
-//struct TestState: Equatable {
-//    var alert: PLAlertState?
-//}
-//
+struct TestState: Equatable {
+    var alert: PLAlertState?
+}
+
 //enum TestAction {
 //    case onAppear
+//    case showAlertTapped
 //    case alert(PLAlertAction)
 //}
 //
@@ -155,13 +158,14 @@ fileprivate struct R {
 //    }
 //
 //    var body: some View {
-//        Rectangle()
+//        Button(action: {
+//            viewStore.send(.showAlertTapped)
+//        }, label: {
+//            Text("Show Alert")
+//        })
 //            .alert(
 //                store.scope(state: \.alert, action: TestAction.alert)
 //            )
-//            .onAppear {
-//                viewStore.send(.onAppear)
-//            }
 //    }
 //}
 //
@@ -172,6 +176,16 @@ fileprivate struct R {
 //> { state, action, _ in
 //    switch action {
 //    case .onAppear:
+//        state.alert = .init(
+//            title: "알림",
+//            description: "작업한 내용이 저장되지 않고 홈화면으로 이동합니다. 진행하시겠습니까?",
+//            buttons: [
+//                .cancel(action: .cancel, title: "취소"),
+//                .default(action: .confirm, title: "확인")
+//            ]
+//        )
+//        return .none
+//    case .showAlertTapped:
 //        state.alert = .init(
 //            title: "알림",
 //            description: "작업한 내용이 저장되지 않고 홈화면으로 이동합니다. 진행하시겠습니까?",
