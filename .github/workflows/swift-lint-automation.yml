@@ -1,0 +1,32 @@
+name: SwiftLint
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/swiftlint.yml'
+      - '.swiftlint.yml'
+      - '**/*.swift'
+
+jobs:
+  SwiftLint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Lint (fix)
+        uses: norio-nomura/action-swiftlint@3.2.1
+        with:
+          args: --fix
+      - name: Lint (check)
+        uses: norio-nomura/action-swiftlint@3.2.1
+      - name: Check for changes
+        run: |
+          echo "GIT_DIFF_STAT=$(git diff --stat | wc -l | tr -d ' ')" >> $GITHUB_ENV
+      - name: Commit and push fixes
+        if: ${{ env.GIT_DIFF_STAT != '0' }}
+        run: |
+          git config --global user.email "escapeanaemia@gmail.com"
+          git config --global user.name "escapeanaemia"
+          git commit -a -m "Automatically reformatted for Swift-lint"
+          git push
