@@ -9,7 +9,7 @@
 import SwiftUI
 import ComposableArchitecture
 
-public struct PromiseBottomButton: View {
+public struct MakePromiseBottomButton: View {
     var store:  Store<MakePromiseState, MakePromiseAction>
     public var body: some View {
         WithViewStore(self.store) { viewStore in

@@ -1,5 +1,5 @@
 //
-//  ThemeSelectionView.swift
+//  SelectThemeView.swift
 //  Planz
 //
 //  Created by 한상준 on 2022/10/08.
@@ -7,38 +7,54 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
-public struct ThemeSelectionView: View {
+public struct SelectThemeView: View {
+    var store: Store<SelectThemeState, SelectThemeAction>
     let listItemEdgePadding = EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20)
     public var body: some View {
-        return VStack(){
-            Spacer()
-            ListItemView(promiseType: .constant(.meal))
-                .padding(listItemEdgePadding)
-            ListItemView(promiseType: .constant(.meeting))
-                .padding(listItemEdgePadding)
-            ListItemView(promiseType: .constant(.travel))
-                .padding(listItemEdgePadding)
-            ListItemView(promiseType: .constant(.etc))
-                .padding(listItemEdgePadding)
-            Spacer()
-        }
-        .background(Color.white)
+            VStack(){
+                Spacer()
+                SelectThemeItemView(promiseType: .meal, store: store)
+                    .padding(listItemEdgePadding)
+                SelectThemeItemView(promiseType: .meeting, store: store)
+                    .padding(listItemEdgePadding)
+                SelectThemeItemView(promiseType: .travel, store: store)
+                    .padding(listItemEdgePadding)
+                SelectThemeItemView(promiseType: .etc, store: store)
+                    .padding(listItemEdgePadding)
+                Spacer()
+            }
+            .background(Color.white)
     }
 }
 
-public struct ListItemView: View {
-    @Binding var promiseType: PromiseType
+public struct SelectThemeItemView: View {
+    var promiseType: PromiseType
+    var store: Store<SelectThemeState, SelectThemeAction>
+    let itemCornerRadius: CGFloat = 16
+    let mainColor = Color(hex:"6671F6")
+    let gray100 = Color(hex: "F3F5F8")
+    let gray500 = Color(hex:"9CA3AD")
+    let checkMarkCircle = "checkmark.circle"
+    
     public var body: some View {
-        HStack{
-            Text(promiseType.rawValue)
-                .foregroundColor(Color(hex:"9CA3AD"))
-            Spacer()
-            Image(systemName: "checkmark.circle")
-                .foregroundColor(Color(hex:"9CA3AD"))
+        WithViewStore(self.store) { viewStore in
+            HStack{
+                Text(promiseType.withEmoji)
+                    .foregroundColor(viewStore.selectedType == promiseType ? mainColor : gray500)
+                Spacer()
+                Image(systemName: checkMarkCircle)
+                    .foregroundColor(gray500)
+            }
+            .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20))
+            .background(viewStore.selectedType == promiseType ? mainColor.opacity(0.15) : gray100)
+            .cornerRadius(itemCornerRadius)
+            .overlay(RoundedRectangle(cornerRadius: itemCornerRadius).stroke(mainColor, lineWidth: viewStore.selectedType == promiseType ? 0.7 : 0))
+            .onTapGesture {
+                    viewStore.send(.promiseTypeListItemTapped(promiseType))
+            }
         }
-        .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20))
-        .background(Color(hex: "F3F5F8")).clipShape(RoundedRectangle(cornerRadius:16))
     }
 }
 
