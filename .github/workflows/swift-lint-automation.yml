@@ -26,7 +26,7 @@ jobs:
       - name: Commit and push fixes
         if: ${{ env.GIT_DIFF_STAT != '0' }}
         run: |
-          git config --global user.email "escapeanaemia@gmail.com"
-          git config --global user.name "escapeanaemia"
+          git config --global user.email "planz.growth@gmail.com"
+          git config --global user.name "PlanzEngineering"
           git commit -a -m "Automatically reformatted for Swift-lint"
           git push
