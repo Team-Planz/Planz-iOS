@@ -7,21 +7,14 @@
 //
 
 import SwiftUI
-import Then
-import ComposableArchitecture
 
 struct AppView: View {
-    let store: Store<MakePromiseState, MakePromiseAction> = Store(initialState: MakePromiseState(), reducer: makePromiseReducer, environment: MakePromiseEnvironment())
-    
-    @State private var tabSelection = 1
-    @State private var promiseStep: MakePromiseStep = .selectTheme
     var body: some View {
-        VStack {
-            TopInformationView()
-            PromiseContentView(store: store)
-            Spacer()
-            MakePromiseBottomButton(store: store)
-            Spacer(minLength: 12)
-        }
+        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+    }
+}
+struct AppView_Previews: PreviewProvider {
+    static var previews: some View {
+        AppView()
     }
 }
