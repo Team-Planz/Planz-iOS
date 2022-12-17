@@ -9,10 +9,11 @@
 /* Begin PBXBuildFile section */
 		493FBE2228F1646200EFA491 /* MakePromiseBottomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493FBE2128F1646200EFA491 /* MakePromiseBottomButton.swift */; };
 		493FBE2428F164ED00EFA491 /* Color+Ex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493FBE2328F164ED00EFA491 /* Color+Ex.swift */; };
-		493FBE2628F1656100EFA491 /* ThemeSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493FBE2528F1656100EFA491 /* ThemeSelectionView.swift */; };
+		493FBE2628F1656100EFA491 /* SelectThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493FBE2528F1656100EFA491 /* SelectThemeView.swift */; };
 		493FBE2828F165A700EFA491 /* TopInformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493FBE2728F165A700EFA491 /* TopInformationView.swift */; };
 		4973588C2949CFE700C53BD7 /* MakePromiseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4973588B2949CFE700C53BD7 /* MakePromiseStore.swift */; };
 		4973588E2949D05400C53BD7 /* SelectThemeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4973588D2949D05400C53BD7 /* SelectThemeStore.swift */; };
+		49A97AE1294DB862002FC2C1 /* MakePromiseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A97AE0294DB862002FC2C1 /* MakePromiseView.swift */; };
 		6F47599A28D9D0CE005CC91B /* PlanzApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F47599928D9D0CE005CC91B /* PlanzApp.swift */; };
 		6F47599E28D9D0CF005CC91B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F47599D28D9D0CF005CC91B /* Assets.xcassets */; };
 		6F4759A128D9D0CF005CC91B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F4759A028D9D0CF005CC91B /* Preview Assets.xcassets */; };
@@ -43,10 +44,11 @@
 /* Begin PBXFileReference section */
 		493FBE2128F1646200EFA491 /* MakePromiseBottomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakePromiseBottomButton.swift; sourceTree = "<group>"; };
 		493FBE2328F164ED00EFA491 /* Color+Ex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ex.swift"; sourceTree = "<group>"; };
-		493FBE2528F1656100EFA491 /* ThemeSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeSelectionView.swift; sourceTree = "<group>"; };
+		493FBE2528F1656100EFA491 /* SelectThemeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThemeView.swift; sourceTree = "<group>"; };
 		493FBE2728F165A700EFA491 /* TopInformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopInformationView.swift; sourceTree = "<group>"; };
 		4973588B2949CFE700C53BD7 /* MakePromiseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakePromiseStore.swift; sourceTree = "<group>"; };
 		4973588D2949D05400C53BD7 /* SelectThemeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThemeStore.swift; sourceTree = "<group>"; };
+		49A97AE0294DB862002FC2C1 /* MakePromiseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakePromiseView.swift; sourceTree = "<group>"; };
 		6F47599628D9D0CE005CC91B /* Planz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F47599928D9D0CE005CC91B /* PlanzApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanzApp.swift; sourceTree = "<group>"; };
 		6F47599D28D9D0CF005CC91B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -91,8 +93,6 @@
 			children = (
 				4973588A2949CFC200C53BD7 /* MakePromise */,
 				493FBE2328F164ED00EFA491 /* Color+Ex.swift */,
-				493FBE2528F1656100EFA491 /* ThemeSelectionView.swift */,
-				493FBE2728F165A700EFA491 /* TopInformationView.swift */,
 			);
 			path = Promise;
 			sourceTree = "<group>";
@@ -100,11 +100,22 @@
 		4973588A2949CFC200C53BD7 /* MakePromise */ = {
 			isa = PBXGroup;
 			children = (
+				49A97ADF294DB7CD002FC2C1 /* SubViews */,
 				4973588B2949CFE700C53BD7 /* MakePromiseStore.swift */,
+				49A97AE0294DB862002FC2C1 /* MakePromiseView.swift */,
+			);
+			path = MakePromise;
+			sourceTree = "<group>";
+		};
+		49A97ADF294DB7CD002FC2C1 /* SubViews */ = {
+			isa = PBXGroup;
+			children = (
+				493FBE2528F1656100EFA491 /* SelectThemeView.swift */,
+				493FBE2728F165A700EFA491 /* TopInformationView.swift */,
 				4973588D2949D05400C53BD7 /* SelectThemeStore.swift */,
 				493FBE2128F1646200EFA491 /* MakePromiseBottomButton.swift */,
 			);
-			path = MakePromise;
+			path = SubViews;
 			sourceTree = "<group>";
 		};
 		6F47598D28D9D0CE005CC91B = {
@@ -308,13 +319,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				4973588E2949D05400C53BD7 /* SelectThemeStore.swift in Sources */,
-				493FBE2628F1656100EFA491 /* ThemeSelectionView.swift in Sources */,
+				493FBE2628F1656100EFA491 /* SelectThemeView.swift in Sources */,
 				493FBE2428F164ED00EFA491 /* Color+Ex.swift in Sources */,
 				6F4759C628D9D146005CC91B /* AppView.swift in Sources */,
 				4973588C2949CFE700C53BD7 /* MakePromiseStore.swift in Sources */,
 				6F47599A28D9D0CE005CC91B /* PlanzApp.swift in Sources */,
 				493FBE2228F1646200EFA491 /* MakePromiseBottomButton.swift in Sources */,
 				493FBE2828F165A700EFA491 /* TopInformationView.swift in Sources */,
+				49A97AE1294DB862002FC2C1 /* MakePromiseView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

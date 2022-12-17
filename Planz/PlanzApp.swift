@@ -12,7 +12,7 @@ import SwiftUI
 struct PlanzApp: App {
     var body: some Scene {
         WindowGroup {
-            AppView()
+            MakePromiseView()
         }
     }
 }
