@@ -21,13 +21,12 @@ enum MakePromiseStep: Int, Comparable {
 public struct MakePromiseState: Equatable {
     var shouldShowBackButton = false
     var currentStep: MakePromiseStep = .selectTheme
-//    var selectedTheme: PromiseType? = nil
     var selectThemeState: SelectThemeState = SelectThemeState()
+    var setNameAndPlaceState: SetNameAndPlaceState = SetNameAndPlaceState()
     
     func isPossibleToNextContents() -> Bool {
         switch currentStep {
         case .selectTheme:
-            
             return selectThemeState.selectedType != nil
         case .error:
             return false
@@ -42,6 +41,7 @@ public enum MakePromiseAction: Equatable {
     case backButtonTapped
     
     case selectTheme(SelectThemeAction)
+    case setNameAndPlace(SetNameAndPlaceAction)
 }
 
 public struct MakePromiseEnvironment {
@@ -53,11 +53,16 @@ typealias Step = MakePromiseStep
 
 public let makePromiseReducer = Reducer<MakePromiseState, MakePromiseAction, MakePromiseEnvironment>.combine(
     makePromiseSelectThemeReducer
-//        .optional()
         .pullback(
             state: \.selectThemeState,
             action: /MakePromiseAction.selectTheme,
             environment: { _ in SelectThemeEnvironment() }
+        ),
+    makePromiseSetNameAndPlaceReducer
+        .pullback(
+            state: \.setNameAndPlaceState,
+            action: /MakePromiseAction.setNameAndPlace,
+            environment: { _ in SetNameAndPlaceEnvironment() }
         ),
     Reducer { state, action, enviroment in
         switch action {
@@ -75,6 +80,10 @@ public let makePromiseReducer = Reducer<MakePromiseState, MakePromiseAction, Mak
             state.shouldShowBackButton = state.currentStep > initialStep
             return .none
         case let .selectTheme(.promiseTypeListItemTapped(promiseType)):
+            return .none
+        case let .setNameAndPlace(.filledPromiseName(name)):
+            return .none
+        case let .setNameAndPlace(.filledPromisePlace(place)):
             return .none
         }
     }

@@ -33,26 +33,4 @@ extension Color {
                     opacity: Double(a) / 255
                 )
     }
-    
-    static var gray900: Color {
-        Color(hex: "020202")
-    }
-    var gray800: Color {
-        Color(hex: "2D3038")
-    }
-    var gray700: Color {
-        Color(hex: "6A707A")
-    }
-    var gray500: Color {
-        Color(hex: "9CA3AD")
-    }
-    var gray300: Color {
-        Color(hex: "CDD2D9")
-    }
-    var gray200: Color {
-        Color(hex: "E8EAED")
-    }
-    var gray100: Color {
-        Color(hex: "F3F5F8")
-    }
 }

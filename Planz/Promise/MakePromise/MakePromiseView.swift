@@ -17,7 +17,7 @@ struct MakePromiseView: View {
     @State private var promiseStep: MakePromiseStep = .selectTheme
     var body: some View {
         VStack {
-            TopInformationView()
+            TopInformationView(store: store)
             PromiseContentView(store: store)
             Spacer()
             MakePromiseBottomButton(store: store)
@@ -35,7 +35,7 @@ struct PromiseContentView: View {
                 case .selectTheme:
                     SelectThemeView(store: self.store.scope(state: \.selectThemeState, action: { .selectTheme($0)}))
                 case .fillNAndPlace:
-                    NameAndPlaceInputView()
+                    NameAndPlaceView()
                 case .error:
                     Spacer()
                 }

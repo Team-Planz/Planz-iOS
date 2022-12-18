@@ -7,23 +7,36 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
+
 public struct TopInformationView: View {
+    var store: Store<MakePromiseState, MakePromiseAction>
+    let xmark = "xmark"
     public var body: some View {
-        VStack {
-            HStack {
-                Spacer().frame(width: 20)
-                Text("1/5")
-                Spacer()
-                Text("버튼")
-                Spacer().frame(width: 20)
+        WithViewStore(self.store) { viewStore in
+            VStack(spacing: 4) {
+                HStack {
+                    Spacer().frame(width: 20)
+                    HStack {
+                        Text("\(viewStore.currentStep.rawValue)")
+                            .foregroundColor(Color(hex: "3E414B"))
+                        Text("/ 5").foregroundColor(Gray._300.scale)
+                    }
+                    
+                    Spacer()
+                    Button(action: { print("@@@ button tapped") }) {
+                        Image(systemName:xmark)
+                    }
+                    Spacer().frame(width: 20)
+                }
+                HStack() {
+                    Spacer().frame(width: 20)
+                    Text("약속 테마를 선택해 주세요!")
+                        .bold()
+                    Spacer()
+                }
+                
             }
-            Text("약속 테마를 선택해 주세요!")
-                .bold()
         }
-    }
-}
-struct AppView_Previews2: PreviewProvider {
-    static var previews: some View {
-        TopInformationView()
     }
 }
