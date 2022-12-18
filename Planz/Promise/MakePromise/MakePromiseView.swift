@@ -27,14 +27,13 @@ struct MakePromiseView: View {
 }
 struct PromiseContentView: View {
     var store: Store<MakePromiseState, MakePromiseAction>
-    let selectThemeStore: Store<SelectThemeState, SelectThemeAction> = Store(initialState: SelectThemeState(), reducer: makePromiseSelectThemeReducer, environment: SelectThemeEnvironment())
     
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             HStack {
                 switch viewStore.currentStep {
                 case .selectTheme:
-                    SelectThemeView(store: selectThemeStore)
+                    SelectThemeView(store: self.store.scope(state: \.selectThemeState, action: { .selectTheme($0)}))
                 case .fillNAndPlace:
                     NameAndPlaceInputView()
                 case .error:
