@@ -13,17 +13,17 @@ public struct TimeTableState: Equatable {
     public struct Day: Hashable, Equatable, Identifiable {
         public let id: Int
         let date: Date
-        
+
         init(date: Date) {
             self.id = date.hashValue
             self.date = date
         }
     }
-    
+
     public enum TimeCell {
         case selected
         case deselected
-        
+
         mutating func toggle() {
             switch self {
             case .deselected:
@@ -33,13 +33,13 @@ public struct TimeTableState: Equatable {
             }
         }
     }
-    
+
     public struct TimeRange: Equatable, Hashable {
         let startTime: TimeInterval
         let endTime: TimeInterval
         let isStartTimeVisible: Bool
     }
-    
+
     let days: [Day]
     let startTime: TimeInterval
     let endTime: TimeInterval
@@ -47,7 +47,7 @@ public struct TimeTableState: Equatable {
     let timeMarkerInterval: TimeInterval
     let timeRanges: [TimeRange]
     var timeCells: [[TimeCell]]
-    
+
     init(
         days: [Day],
         startTime: TimeInterval,
@@ -100,42 +100,42 @@ public let timeTableReducer = Reducer<
 public struct TimeTableView: View {
     let store: Store<TimeTableState, TimeTableAction>
     @ObservedObject var viewStore: ViewStore<TimeTableState, TimeTableAction>
-    
+
     public init(store: Store<TimeTableState, TimeTableAction>) {
         self.store = store
         self.viewStore = ViewStore(store)
     }
-    
+
     public var body: some View {
         GeometryReader { proxy in
-            let dayCellWidth: CGFloat = viewStore.days.count <= C.visibleDaysCount
+            let dayCellWidth: CGFloat = viewStore.days.count <= LayoutConstant.visibleDaysCount
             ? proxy.size.width / CGFloat(viewStore.days.count)
-            : max((proxy.size.width - C.trailingSpace), 0) / CGFloat(C.visibleDaysCount)
-            
+            : max((proxy.size.width - LayoutConstant.trailingSpace), 0) / CGFloat(LayoutConstant.visibleDaysCount)
+
             ScrollView(.vertical, showsIndicators: false) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyVStack(spacing: 0) {
                         weekView
-                            .padding(.leading, C.timelineWidth)
+                            .padding(.leading, LayoutConstant.timelineWidth)
                             .frame(
                                 width: dayCellWidth * CGFloat(viewStore.days.count),
-                                height: C.headerHeight
+                                height: LayoutConstant.headerHeight
                             )
-                            .background(R.color.white200)
-                        
+                            .background(Resource.PlanzColor.white200)
+
                         Divider()
-                            .frame(height: C.lineWidth)
-                            .overlay(R.color.gray200)
-                       
+                            .frame(height: LayoutConstant.lineWidth)
+                            .overlay(Resource.PlanzColor.gray200)
+
                         grid
                             .frame(
                                 width: dayCellWidth * CGFloat(viewStore.days.count),
-                                height: C.timeCellHeight * CGFloat(viewStore.timeRanges.count)
+                                height: LayoutConstant.timeCellHeight * CGFloat(viewStore.timeRanges.count)
                             )
-                        
+
                         Divider()
-                            .frame(height: C.lineWidth)
-                            .overlay(R.color.gray200)
+                            .frame(height: LayoutConstant.lineWidth)
+                            .overlay(Resource.PlanzColor.gray200)
                     }
                 }
                 .overlay(
@@ -144,41 +144,41 @@ public struct TimeTableView: View {
             }
         }
     }
-    
+
     var weekView: some View {
         GeometryReader { proxy in
             LazyHStack(spacing: 0) {
                 ForEach(viewStore.days) { day in
                     VStack(alignment: .center) {
-                        Text(day.formatted(with: .d))
+                        Text(day.formatted(with: .dayOnly))
                             .font(.system(size: 12))
-                            .foregroundColor(R.color.gray800)
-                        
-                        Text(day.formatted(with: .mmdd))
+                            .foregroundColor(Resource.PlanzColor.gray800)
+
+                        Text(day.formatted(with: .monthAndDay))
                             .font(.system(size: 14))
-                            .foregroundColor(R.color.purple900)
+                            .foregroundColor(Resource.PlanzColor.purple900)
                     }
                     .frame(
                         width: proxy.size.width / CGFloat(viewStore.days.count),
                         height: proxy.size.height
                     )
                     .background(
-                        RoundedRectangle(cornerRadius: C.dayCellCornerRadius)
-                            .stroke(R.color.dayCellBorder)
+                        RoundedRectangle(cornerRadius: LayoutConstant.dayCellCornerRadius)
+                            .stroke(Resource.PlanzColor.dayCellBorder)
                             .background(
-                                RoundedRectangle(cornerRadius: C.dayCellCornerRadius)
-                                    .fill(R.color.dayCellBackground)
+                                RoundedRectangle(cornerRadius: LayoutConstant.dayCellCornerRadius)
+                                    .fill(Resource.PlanzColor.dayCellBackground)
                             )
                             .frame(
-                                width: C.dayCellSize.width,
-                                height: C.dayCellSize.height
+                                width: LayoutConstant.dayCellSize.width,
+                                height: LayoutConstant.dayCellSize.height
                             )
                     )
                 }
             }
         }
     }
-    
+
     var timeline: some View {
         LazyVStack(spacing: 0) {
             ForEach(0..<viewStore.timeRanges.count, id: \.self) {
@@ -187,27 +187,27 @@ public struct TimeTableView: View {
                     if timeRange.isStartTimeVisible {
                         Text(timeRange.startTime.formatted(with: .hhmm))
                             .font(.system(size: 12))
-                            .foregroundColor(R.color.gray900)
+                            .foregroundColor(Resource.PlanzColor.gray900)
                             .minimumScaleFactor(0.5)
                     } else {
                         Spacer()
                     }
                 }
-                .frame(height: C.timeCellHeight, alignment: .top)
+                .frame(height: LayoutConstant.timeCellHeight, alignment: .top)
             }
         }
-        .frame(width: C.timelineWidth)
-        .background(R.color.white200)
+        .frame(width: LayoutConstant.timelineWidth)
+        .background(Resource.PlanzColor.white200)
         .overlay(
             HStack {
                 Divider()
-                    .frame(width: C.lineWidth)
-                    .overlay(R.color.gray200)
+                    .frame(width: LayoutConstant.lineWidth)
+                    .overlay(Resource.PlanzColor.gray200)
             },
             alignment: .trailing
         )
     }
-    
+
     var grid: some View {
         GeometryReader { proxy in
             let rows = viewStore.timeRanges.count
@@ -227,21 +227,21 @@ public struct TimeTableView: View {
                     ForEach(0..<columns, id: \.self) { column in
                         ForEach(0..<rows, id: \.self) { row in
                             Rectangle()
-                                .frame(width: (proxy.size.width - C.timelineWidth) / CGFloat(columns))
+                                .frame(width: (proxy.size.width - LayoutConstant.timelineWidth) / CGFloat(columns))
                                 .foregroundColor(viewStore.timeCells[column][row] == .selected
-                                                 ? R.color.purple900 : R.color.white200)
+                                                 ? Resource.PlanzColor.purple900 : Resource.PlanzColor.white200)
                                 .clipShape(Rectangle())
                                 .overlay(
                                     VerticalLine()
-                                        .stroke(R.color.timeCellBorder)
-                                        .frame(width: C.lineWidth),
+                                        .stroke(Resource.PlanzColor.timeCellBorder)
+                                        .frame(width: LayoutConstant.lineWidth),
                                     alignment: .trailing
                                 )
                                 .overlay(
                                     HorizontalLine()
-                                        .stroke(R.color.timeCellBorder,
+                                        .stroke(Resource.PlanzColor.timeCellBorder,
                                                 style: row % 2 == 0 ? .init(dash: [2]) : .init())
-                                        .frame(height: C.lineWidth),
+                                        .frame(height: LayoutConstant.lineWidth),
                                     alignment: .bottom
                                 )
                                 .id("\(row)\(column)")
@@ -254,21 +254,21 @@ public struct TimeTableView: View {
             }
         }
     }
-    
+
     var gradient: some View {
         LinearGradient(
-            colors: [R.color.white200.opacity(0.1), R.color.white200],
+            colors: [Resource.PlanzColor.white200.opacity(0.1), Resource.PlanzColor.white200],
             startPoint: .trailing,
             endPoint: .leading
         )
         .frame(
-            width: C.timelineWidth,
-            height: C.headerHeight
+            width: LayoutConstant.timelineWidth,
+            height: LayoutConstant.headerHeight
         )
     }
 }
 
-fileprivate struct C {
+private struct LayoutConstant {
     static let headerHeight: CGFloat = 84
     static let lineWidth: CGFloat = 1
     static let timelineWidth: CGFloat = 62
@@ -279,8 +279,8 @@ fileprivate struct C {
     static let timeCellHeight: CGFloat = 40
 }
 
-fileprivate struct R {
-    struct color {
+private struct Resource {
+    struct PlanzColor {
         static let gray200: Color = .init(red: 205/255, green: 210/255, blue: 217/255)
         static let gray500: Color = .init(red: 156/255, green: 163/255, blue: 173/255)
         static let gray800: Color = .init(red: 2/255, green: 2/255, blue: 2/255)

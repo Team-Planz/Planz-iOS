@@ -15,14 +15,14 @@ extension TimeTableState.Day {
 }
 
 extension DateFormatter {
-    static var d: DateFormatter {
+    static var dayOnly: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEEEE"
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter
     }
-    
-    static var mmdd: DateFormatter = {
+
+    static var monthAndDay: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM/dd"
         formatter.locale = Locale(identifier: "ko_KR")
