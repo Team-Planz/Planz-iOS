@@ -9,10 +9,10 @@ let package = Package(
     products: [
         .library(
             name: "AppPackage",
-            targets: ["AppPackage", "TimeTableFeature"]),
+            targets: ["AppPackage", "TimeTableFeature"])
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.40.2"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.47.2"),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0")
     ],
