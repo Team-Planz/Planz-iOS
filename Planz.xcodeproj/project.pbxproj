@@ -17,6 +17,7 @@
 		49A97AE3294F0F50002FC2C1 /* SetNameAndPlaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A97AE2294F0F50002FC2C1 /* SetNameAndPlaceView.swift */; };
 		49A97AE5294F1022002FC2C1 /* SetNameAndPlaceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A97AE4294F1022002FC2C1 /* SetNameAndPlaceStore.swift */; };
 		49A97AE7294F2870002FC2C1 /* PlanzColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A97AE6294F2870002FC2C1 /* PlanzColor.swift */; };
+		49A97AE9294F2F84002FC2C1 /* MakePromiseErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A97AE8294F2F84002FC2C1 /* MakePromiseErrorView.swift */; };
 		6F47599A28D9D0CE005CC91B /* PlanzApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F47599928D9D0CE005CC91B /* PlanzApp.swift */; };
 		6F47599E28D9D0CF005CC91B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F47599D28D9D0CF005CC91B /* Assets.xcassets */; };
 		6F4759A128D9D0CF005CC91B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F4759A028D9D0CF005CC91B /* Preview Assets.xcassets */; };
@@ -55,6 +56,7 @@
 		49A97AE2294F0F50002FC2C1 /* SetNameAndPlaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetNameAndPlaceView.swift; sourceTree = "<group>"; };
 		49A97AE4294F1022002FC2C1 /* SetNameAndPlaceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetNameAndPlaceStore.swift; sourceTree = "<group>"; };
 		49A97AE6294F2870002FC2C1 /* PlanzColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanzColor.swift; sourceTree = "<group>"; };
+		49A97AE8294F2F84002FC2C1 /* MakePromiseErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakePromiseErrorView.swift; sourceTree = "<group>"; };
 		6F47599628D9D0CE005CC91B /* Planz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F47599928D9D0CE005CC91B /* PlanzApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanzApp.swift; sourceTree = "<group>"; };
 		6F47599D28D9D0CF005CC91B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 				493FBE2128F1646200EFA491 /* MakePromiseBottomButton.swift */,
 				49A97AE2294F0F50002FC2C1 /* SetNameAndPlaceView.swift */,
 				49A97AE4294F1022002FC2C1 /* SetNameAndPlaceStore.swift */,
+				49A97AE8294F2F84002FC2C1 /* MakePromiseErrorView.swift */,
 			);
 			path = SubViews;
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 				493FBE2228F1646200EFA491 /* MakePromiseBottomButton.swift in Sources */,
 				49A97AE5294F1022002FC2C1 /* SetNameAndPlaceStore.swift in Sources */,
 				493FBE2828F165A700EFA491 /* TopInformationView.swift in Sources */,
+				49A97AE9294F2F84002FC2C1 /* MakePromiseErrorView.swift in Sources */,
 				49A97AE1294DB862002FC2C1 /* MakePromiseView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

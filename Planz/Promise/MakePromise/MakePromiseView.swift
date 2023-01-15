@@ -30,13 +30,14 @@ struct PromiseContentView: View {
     
     public var body: some View {
         WithViewStore(self.store) { viewStore in
-            HStack {
+            VStack {
                 switch viewStore.currentStep {
                 case .selectTheme:
                     SelectThemeView(store: self.store.scope(state: \.selectThemeState, action: { .selectTheme($0)}))
                 case .fillNAndPlace:
                     NameAndPlaceView()
                 case .error:
+                    MakePromiseErrorView()
                     Spacer()
                 }
             }
