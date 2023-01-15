@@ -21,7 +21,7 @@ extension DateFormatter {
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter
     }
-    
+
     static var monthAndDay: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM/dd"

@@ -13,17 +13,17 @@ public struct TimeTableState: Equatable {
     public struct Day: Hashable, Equatable, Identifiable {
         public let id: Int
         let date: Date
-        
+
         init(date: Date) {
             self.id = date.hashValue
             self.date = date
         }
     }
-    
+
     public enum TimeCell {
         case selected
         case deselected
-        
+
         mutating func toggle() {
             switch self {
             case .deselected:
@@ -33,13 +33,13 @@ public struct TimeTableState: Equatable {
             }
         }
     }
-    
+
     public struct TimeRange: Equatable, Hashable {
         let startTime: TimeInterval
         let endTime: TimeInterval
         let isStartTimeVisible: Bool
     }
-    
+
     let days: [Day]
     let startTime: TimeInterval
     let endTime: TimeInterval
@@ -47,7 +47,7 @@ public struct TimeTableState: Equatable {
     let timeMarkerInterval: TimeInterval
     let timeRanges: [TimeRange]
     var timeCells: [[TimeCell]]
-    
+
     init(
         days: [Day],
         startTime: TimeInterval,
@@ -100,18 +100,18 @@ public let timeTableReducer = Reducer<
 public struct TimeTableView: View {
     let store: Store<TimeTableState, TimeTableAction>
     @ObservedObject var viewStore: ViewStore<TimeTableState, TimeTableAction>
-    
+
     public init(store: Store<TimeTableState, TimeTableAction>) {
         self.store = store
         self.viewStore = ViewStore(store)
     }
-    
+
     public var body: some View {
         GeometryReader { proxy in
             let dayCellWidth: CGFloat = viewStore.days.count <= LayoutConstant.visibleDaysCount
             ? proxy.size.width / CGFloat(viewStore.days.count)
             : max((proxy.size.width - LayoutConstant.trailingSpace), 0) / CGFloat(LayoutConstant.visibleDaysCount)
-            
+
             ScrollView(.vertical, showsIndicators: false) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyVStack(spacing: 0) {
@@ -122,17 +122,17 @@ public struct TimeTableView: View {
                                 height: LayoutConstant.headerHeight
                             )
                             .background(Resource.PlanzColor.white200)
-                        
+
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
                             .overlay(Resource.PlanzColor.gray200)
-                       
+
                         grid
                             .frame(
                                 width: dayCellWidth * CGFloat(viewStore.days.count),
                                 height: LayoutConstant.timeCellHeight * CGFloat(viewStore.timeRanges.count)
                             )
-                        
+
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
                             .overlay(Resource.PlanzColor.gray200)
@@ -144,7 +144,7 @@ public struct TimeTableView: View {
             }
         }
     }
-    
+
     var weekView: some View {
         GeometryReader { proxy in
             LazyHStack(spacing: 0) {
@@ -153,7 +153,7 @@ public struct TimeTableView: View {
                         Text(day.formatted(with: .dayOnly))
                             .font(.system(size: 12))
                             .foregroundColor(Resource.PlanzColor.gray800)
-                        
+
                         Text(day.formatted(with: .monthAndDay))
                             .font(.system(size: 14))
                             .foregroundColor(Resource.PlanzColor.purple900)
@@ -178,7 +178,7 @@ public struct TimeTableView: View {
             }
         }
     }
-    
+
     var timeline: some View {
         LazyVStack(spacing: 0) {
             ForEach(0..<viewStore.timeRanges.count, id: \.self) {
@@ -207,7 +207,7 @@ public struct TimeTableView: View {
             alignment: .trailing
         )
     }
-    
+
     var grid: some View {
         GeometryReader { proxy in
             let rows = viewStore.timeRanges.count
@@ -254,7 +254,7 @@ public struct TimeTableView: View {
             }
         }
     }
-    
+
     var gradient: some View {
         LinearGradient(
             colors: [Resource.PlanzColor.white200.opacity(0.1), Resource.PlanzColor.white200],
@@ -268,7 +268,7 @@ public struct TimeTableView: View {
     }
 }
 
-fileprivate struct LayoutConstant {
+private struct LayoutConstant {
     static let headerHeight: CGFloat = 84
     static let lineWidth: CGFloat = 1
     static let timelineWidth: CGFloat = 62
@@ -279,7 +279,7 @@ fileprivate struct LayoutConstant {
     static let timeCellHeight: CGFloat = 40
 }
 
-fileprivate struct Resource {
+private struct Resource {
     struct PlanzColor {
         static let gray200: Color = .init(red: 205/255, green: 210/255, blue: 217/255)
         static let gray500: Color = .init(red: 156/255, green: 163/255, blue: 173/255)

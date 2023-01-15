@@ -9,7 +9,7 @@ let package = Package(
     products: [
         .library(
             name: "AppPackage",
-            targets: ["AppPackage", "TimeTableFeature"]),
+            targets: ["AppPackage", "TimeTableFeature"])
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.47.2"),
