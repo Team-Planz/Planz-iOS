@@ -14,7 +14,7 @@ let package = Package(
                 "TimeTableFeature",
                 "Calendar"
             ]
-        ),
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.47.2"),
