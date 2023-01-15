@@ -1,7 +1,7 @@
 import Foundation
 
 public struct CalendarClient {
-    
+
     private let _startDayOfMonth: (Date) -> Date?
     private let _endDayOfMonth: (Date) -> Date?
     private let _countOfDaysInMonth: (Date) -> Int?
@@ -9,7 +9,7 @@ public struct CalendarClient {
     private let _weekDay: (Date) -> Int
     private let _date: (Int, Date) -> Date?
     private let _isSelectedDate: (Date, Date) -> Bool
-    
+
     init(
         startDayOfMonth: @escaping (Date) -> Date?,
         endDayOfMonth: @escaping (Date) -> Date?,
@@ -27,20 +27,20 @@ public struct CalendarClient {
         self._date = date
         self._isSelectedDate = isSelectedDate
     }
-    
+
     private func createMetaData(for date: Date) throws -> MetaData {
         guard
             let countOfDaysInMonth = _countOfDaysInMonth(date),
             let startOfMonth = _startDayOfMonth(date)
         else { throw InterError.unexpected }
-        
+
         return (
             countOfDaysInMonth: countOfDaysInMonth,
             startDayOfMonth: startOfMonth,
             startDayWeekday: _weekDay(startOfMonth)
         )
     }
-    
+
     private func createDay(
         offset: Int,
         for baseDate: Date,
@@ -50,7 +50,7 @@ public struct CalendarClient {
         guard
             let date = _date(offset, baseDate)
         else { throw InterError.unexpected }
-        
+
         return Day(
             date: date,
             number: _numberOfDay(date),
@@ -58,7 +58,7 @@ public struct CalendarClient {
             isWithinDisplayedMonth: isWithinDisplayedMonth
         )
     }
-    
+
     private func createNextMonth(
         for date: Date,
         selectedDate: Date
@@ -68,7 +68,7 @@ public struct CalendarClient {
         else { throw InterError.unexpected }
         let extraDays = .week - _weekDay(lastDayInMonth)
         guard extraDays > .zero else { return [] }
-        
+
         return try (1...extraDays)
             .map { offset in
                 try createDay(
@@ -87,7 +87,7 @@ extension CalendarClient {
         startDayOfMonth: Date,
         startDayWeekday: Int
     )
-    
+
     enum InterError: Error {
         case unexpected
     }
@@ -112,22 +112,22 @@ public extension CalendarClient {
             calendar.isDate(lhs, equalTo: selectedDate, toGranularity: .day)
         }
     }
-    
+
     func createMonth(
         for date: Date,
         selectedDate: Date
     ) throws -> [Day] {
         let metaData = try createMetaData(for: date)
         let endIndex = metaData.countOfDaysInMonth + metaData.startDayWeekday
-        
+
         var month = try (1..<endIndex)
             .map { number in
                 let isWithinDisplayedMonth = number >= metaData.startDayWeekday
-                
+
                 let offset = isWithinDisplayedMonth ?
                 number - metaData.startDayWeekday :
                 -(metaData.startDayWeekday - number)
-                
+
                 return try createDay(
                     offset: offset,
                     for: metaData.startDayOfMonth,
@@ -139,7 +139,7 @@ public extension CalendarClient {
             for: metaData.startDayOfMonth,
             selectedDate: selectedDate
         )
-        
+
         return month
     }
 }
