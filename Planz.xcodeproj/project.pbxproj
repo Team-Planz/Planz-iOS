@@ -10,6 +10,7 @@
 		49D91E12297999AC00A5C2BA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 49D91E11297999AC00A5C2BA /* .swiftlint.yml */; };
 		49D91E1529799F9D00A5C2BA /* runLint.sh in Resources */ = {isa = PBXBuildFile; fileRef = 49D91E1429799F9D00A5C2BA /* runLint.sh */; };
 		49F41A7D2984C519008A3AFA /* runSwiftformat.sh in Resources */ = {isa = PBXBuildFile; fileRef = 49F41A7C2984C519008A3AFA /* runSwiftformat.sh */; };
+		6F1AB69B294D90B50053B4BD /* TimePromiseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1AB69A294D90B50053B4BD /* TimePromiseView.swift */; };
 		6F47599A28D9D0CE005CC91B /* PlanzApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F47599928D9D0CE005CC91B /* PlanzApp.swift */; };
 		6F47599E28D9D0CF005CC91B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F47599D28D9D0CF005CC91B /* Assets.xcassets */; };
 		6F4759A128D9D0CF005CC91B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F4759A028D9D0CF005CC91B /* Preview Assets.xcassets */; };
@@ -41,6 +42,7 @@
 		49D91E11297999AC00A5C2BA /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		49D91E1429799F9D00A5C2BA /* runLint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = runLint.sh; sourceTree = "<group>"; };
 		49F41A7C2984C519008A3AFA /* runSwiftformat.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = runSwiftformat.sh; sourceTree = "<group>"; };
+		6F1AB69A294D90B50053B4BD /* TimePromiseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePromiseView.swift; sourceTree = "<group>"; };
 		6F47599628D9D0CE005CC91B /* Planz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F47599928D9D0CE005CC91B /* PlanzApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanzApp.swift; sourceTree = "<group>"; };
 		6F47599D28D9D0CF005CC91B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 			children = (
 				6F47599928D9D0CE005CC91B /* PlanzApp.swift */,
 				6F4759C528D9D146005CC91B /* AppView.swift */,
+				6F1AB69A294D90B50053B4BD /* TimePromiseView.swift */,
 				6F47599D28D9D0CF005CC91B /* Assets.xcassets */,
 				6F47599F28D9D0CF005CC91B /* Preview Content */,
 			);
@@ -328,6 +331,7 @@
 			files = (
 				6F4759C628D9D146005CC91B /* AppView.swift in Sources */,
 				6F47599A28D9D0CE005CC91B /* PlanzApp.swift in Sources */,
+				6F1AB69B294D90B50053B4BD /* TimePromiseView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
