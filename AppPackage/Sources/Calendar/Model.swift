@@ -9,8 +9,6 @@ public struct Day: Identifiable, Hashable {
     // isToday 같은 경우 현재 상수로 선언했지만, 추후에 앱이 켜졌을때 비교를 하는 코드를 작성하도록 하겠습니다.
     let isFaded: Bool
     let isToday: Bool
-
-    var flag: Bool = false
 }
 
 public struct MonthState: Identifiable, Hashable {
