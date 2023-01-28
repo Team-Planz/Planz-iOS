@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		49D91E12297999AC00A5C2BA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 49D91E11297999AC00A5C2BA /* .swiftlint.yml */; };
 		49D91E1529799F9D00A5C2BA /* runLint.sh in Resources */ = {isa = PBXBuildFile; fileRef = 49D91E1429799F9D00A5C2BA /* runLint.sh */; };
+		49F41A7D2984C519008A3AFA /* runSwiftformat.sh in Resources */ = {isa = PBXBuildFile; fileRef = 49F41A7C2984C519008A3AFA /* runSwiftformat.sh */; };
 		6F47599A28D9D0CE005CC91B /* PlanzApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F47599928D9D0CE005CC91B /* PlanzApp.swift */; };
 		6F47599E28D9D0CF005CC91B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F47599D28D9D0CF005CC91B /* Assets.xcassets */; };
 		6F4759A128D9D0CF005CC91B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F4759A028D9D0CF005CC91B /* Preview Assets.xcassets */; };
@@ -39,6 +40,7 @@
 /* Begin PBXFileReference section */
 		49D91E11297999AC00A5C2BA /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		49D91E1429799F9D00A5C2BA /* runLint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = runLint.sh; sourceTree = "<group>"; };
+		49F41A7C2984C519008A3AFA /* runSwiftformat.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = runSwiftformat.sh; sourceTree = "<group>"; };
 		6F47599628D9D0CE005CC91B /* Planz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F47599928D9D0CE005CC91B /* PlanzApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanzApp.swift; sourceTree = "<group>"; };
 		6F47599D28D9D0CF005CC91B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 		6F47598D28D9D0CE005CC91B = {
 			isa = PBXGroup;
 			children = (
+				49F41A7C2984C519008A3AFA /* runSwiftformat.sh */,
 				49D91E1429799F9D00A5C2BA /* runLint.sh */,
 				49D91E11297999AC00A5C2BA /* .swiftlint.yml */,
 				6F81F3CD28EE77C60005BAAA /* AppPackage */,
@@ -152,7 +155,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6F4759BA28D9D0CF005CC91B /* Build configuration list for PBXNativeTarget "Planz" */;
 			buildPhases = (
-				49D91E102979991000A5C2BA /* Swift Lint */,
+				49F41A7B2984C491008A3AFA /* Run Swiftformat */,
+				49D91E102979991000A5C2BA /* Run Swift Lint */,
 				6F47599228D9D0CE005CC91B /* Sources */,
 				6F47599328D9D0CE005CC91B /* Frameworks */,
 				6F47599428D9D0CE005CC91B /* Resources */,
@@ -255,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				49D91E12297999AC00A5C2BA /* .swiftlint.yml in Resources */,
+				49F41A7D2984C519008A3AFA /* runSwiftformat.sh in Resources */,
 				6F4759A128D9D0CF005CC91B /* Preview Assets.xcassets in Resources */,
 				6F47599E28D9D0CF005CC91B /* Assets.xcassets in Resources */,
 				49D91E1529799F9D00A5C2BA /* runLint.sh in Resources */,
@@ -278,7 +283,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		49D91E102979991000A5C2BA /* Swift Lint */ = {
+		49D91E102979991000A5C2BA /* Run Swift Lint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -287,7 +292,7 @@
 			);
 			inputPaths = (
 			);
-			name = "Swift Lint";
+			name = "Run Swift Lint";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -295,6 +300,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "sh runLint.sh\n";
+		};
+		49F41A7B2984C491008A3AFA /* Run Swiftformat */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Swiftformat";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nsh runSwiftformat.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

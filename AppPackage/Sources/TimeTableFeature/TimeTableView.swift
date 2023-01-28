@@ -15,7 +15,7 @@ public struct TimeTableState: Equatable {
         let date: Date
 
         init(date: Date) {
-            self.id = date.hashValue
+            id = date.hashValue
             self.date = date
         }
     }
@@ -60,7 +60,7 @@ public struct TimeTableState: Equatable {
         self.endTime = endTime
         self.timeInterval = timeInterval
         self.timeMarkerInterval = timeMarkerInterval
-        self.timeRanges = stride(
+        timeRanges = stride(
             from: startTime,
             to: endTime,
             by: timeInterval
@@ -72,7 +72,7 @@ public struct TimeTableState: Equatable {
                 isStartTimeVisible: $0.truncatingRemainder(dividingBy: timeMarkerInterval) == 0
             )
         }
-        self.timeCells = .init(
+        timeCells = .init(
             repeating: .init(repeating: .deselected, count: timeRanges.count),
             count: days.count
         )
@@ -90,8 +90,8 @@ public let timeTableReducer = Reducer<
 > { state, action, _ in
     switch action {
     case let .timeCellTapped(row, column):
-        guard 0 <= row && row < state.timeRanges.count else { return .none }
-        guard 0 <= column && column < state.days.count else { return .none }
+        guard row >= 0, row < state.timeRanges.count else { return .none }
+        guard column >= 0, column < state.days.count else { return .none }
         state.timeCells[column][row].toggle()
         return .none
     }
@@ -103,14 +103,14 @@ public struct TimeTableView: View {
 
     public init(store: Store<TimeTableState, TimeTableAction>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        viewStore = ViewStore(store)
     }
 
     public var body: some View {
         GeometryReader { proxy in
             let dayCellWidth: CGFloat = viewStore.days.count <= LayoutConstant.visibleDaysCount
-            ? proxy.size.width / CGFloat(viewStore.days.count)
-            : max((proxy.size.width - LayoutConstant.trailingSpace), 0) / CGFloat(LayoutConstant.visibleDaysCount)
+                ? proxy.size.width / CGFloat(viewStore.days.count)
+                : max(proxy.size.width - LayoutConstant.trailingSpace, 0) / CGFloat(LayoutConstant.visibleDaysCount)
 
             ScrollView(.vertical, showsIndicators: false) {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -181,7 +181,7 @@ public struct TimeTableView: View {
 
     var timeline: some View {
         LazyVStack(spacing: 0) {
-            ForEach(0..<viewStore.timeRanges.count, id: \.self) {
+            ForEach(0 ..< viewStore.timeRanges.count, id: \.self) {
                 let timeRange = viewStore.timeRanges[$0]
                 Group {
                     if timeRange.isStartTimeVisible {
@@ -224,12 +224,12 @@ public struct TimeTableView: View {
                 Section(
                     header: timeline
                 ) {
-                    ForEach(0..<columns, id: \.self) { column in
-                        ForEach(0..<rows, id: \.self) { row in
+                    ForEach(0 ..< columns, id: \.self) { column in
+                        ForEach(0 ..< rows, id: \.self) { row in
                             Rectangle()
                                 .frame(width: (proxy.size.width - LayoutConstant.timelineWidth) / CGFloat(columns))
                                 .foregroundColor(viewStore.timeCells[column][row] == .selected
-                                                 ? Resource.PlanzColor.purple900 : Resource.PlanzColor.white200)
+                                    ? Resource.PlanzColor.purple900 : Resource.PlanzColor.white200)
                                 .clipShape(Rectangle())
                                 .overlay(
                                     VerticalLine()
@@ -268,7 +268,7 @@ public struct TimeTableView: View {
     }
 }
 
-private struct LayoutConstant {
+private enum LayoutConstant {
     static let headerHeight: CGFloat = 84
     static let lineWidth: CGFloat = 1
     static let timelineWidth: CGFloat = 62
@@ -279,18 +279,18 @@ private struct LayoutConstant {
     static let timeCellHeight: CGFloat = 40
 }
 
-private struct Resource {
-    struct PlanzColor {
-        static let gray200: Color = .init(red: 205/255, green: 210/255, blue: 217/255)
-        static let gray500: Color = .init(red: 156/255, green: 163/255, blue: 173/255)
-        static let gray800: Color = .init(red: 2/255, green: 2/255, blue: 2/255)
-        static let gray900: Color = .init(red: 91/255, green: 104/255, blue: 122/255)
-        static let white200: Color = .init(red: 251/255, green: 251/255, blue: 251/255)
-        static let purple100: Color = .init(red: 251/255, green: 251/255, blue: 251/255)
-        static let purple900: Color = .init(red: 102/255, green: 113/255, blue: 246/255)
-        static let dayCellBackground: Color = .init(red: 232/255, green: 234/255, blue: 254/255)
-        static let dayCellBorder: Color = .init(red: 206/255, green: 210/255, blue: 252/255)
-        static let timeCellBorder: Color = .init(red: 232/255, green: 234/255, blue: 237/255)
+private enum Resource {
+    enum PlanzColor {
+        static let gray200: Color = .init(red: 205 / 255, green: 210 / 255, blue: 217 / 255)
+        static let gray500: Color = .init(red: 156 / 255, green: 163 / 255, blue: 173 / 255)
+        static let gray800: Color = .init(red: 2 / 255, green: 2 / 255, blue: 2 / 255)
+        static let gray900: Color = .init(red: 91 / 255, green: 104 / 255, blue: 122 / 255)
+        static let white200: Color = .init(red: 251 / 255, green: 251 / 255, blue: 251 / 255)
+        static let purple100: Color = .init(red: 251 / 255, green: 251 / 255, blue: 251 / 255)
+        static let purple900: Color = .init(red: 102 / 255, green: 113 / 255, blue: 246 / 255)
+        static let dayCellBackground: Color = .init(red: 232 / 255, green: 234 / 255, blue: 254 / 255)
+        static let dayCellBorder: Color = .init(red: 206 / 255, green: 210 / 255, blue: 252 / 255)
+        static let timeCellBorder: Color = .init(red: 232 / 255, green: 234 / 255, blue: 237 / 255)
     }
 }
 

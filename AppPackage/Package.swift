@@ -9,7 +9,8 @@ let package = Package(
     products: [
         .library(
             name: "AppPackage",
-            targets: ["AppPackage", "TimeTableFeature"])
+            targets: ["AppPackage", "TimeTableFeature"]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.47.2"),
@@ -23,11 +24,13 @@ let package = Package(
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect"),
                 .product(name: "Then", package: "Then")
-            ]),
+            ]
+        ),
         .target(
             name: "TimeTableFeature",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ])
+            ]
+        )
     ]
 )
