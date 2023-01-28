@@ -32,8 +32,8 @@ extension DateFormatter {
 
 extension Array where Element == TimeTableState.Day {
     static var weekend: Self {
-        return (0..<7).map { index -> Element in
-            return .init(date: .init(timeIntervalSinceNow: .day * TimeInterval(index)))
+        return (0 ..< 7).map { index -> Element in
+            .init(date: .init(timeIntervalSinceNow: .day * TimeInterval(index)))
         }
     }
 }

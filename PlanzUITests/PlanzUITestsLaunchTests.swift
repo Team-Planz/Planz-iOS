@@ -9,7 +9,6 @@
 import XCTest
 
 final class PlanzUITestsLaunchTests: XCTestCase {
-
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }
