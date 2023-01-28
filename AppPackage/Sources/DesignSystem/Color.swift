@@ -30,6 +30,9 @@ public extension PlanzDesignSystem {
         case whiteBackgroundColor2
         case whiteBackgroundColor3
 
+        case subColor1
+        case subColor2
+
         public var scale: Color {
             switch self {
             case .purple900:
@@ -66,6 +69,10 @@ public extension PlanzDesignSystem {
                 return Color(hex: "FBFBFB")
             case .whiteBackgroundColor3:
                 return Color(hex: "FFFFFF")
+            case .subColor1:
+                return Color(hex: "FEDB78")
+            case .subColor2:
+                return Color(hex: "FF7F77")
             }
         }
     }
