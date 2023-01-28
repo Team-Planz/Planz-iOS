@@ -90,8 +90,6 @@ public enum PLANZ {
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
-import SwiftUI
-
 public extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
