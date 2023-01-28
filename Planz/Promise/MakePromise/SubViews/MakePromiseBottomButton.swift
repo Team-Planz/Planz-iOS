@@ -6,8 +6,8 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 public struct MakePromiseBottomButton: View {
     var store: Store<MakePromiseState, MakePromiseAction>
@@ -15,8 +15,8 @@ public struct MakePromiseBottomButton: View {
         WithViewStore(self.store) { viewStore in
             HStack {
                 Spacer(minLength: 12)
-                
-                HStack(spacing:12){
+
+                HStack(spacing: 12) {
                     if viewStore.shouldShowBackButton {
                         PromiseBackButton(store: store)
                     }
@@ -28,16 +28,15 @@ public struct MakePromiseBottomButton: View {
                 Spacer(minLength: 12)
             }
         }
-        
     }
 }
 
 public struct PromiseNextButton: View {
-    var store:  Store<MakePromiseState, MakePromiseAction>
-    
+    var store: Store<MakePromiseState, MakePromiseAction>
+
     public var body: some View {
         WithViewStore(self.store) { viewStore in
-            HStack(){
+            HStack {
                 Spacer()
                 Text("다음")
                     .foregroundColor(Color.white)
@@ -45,13 +44,13 @@ public struct PromiseNextButton: View {
             }
             .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0))
             .background(viewStore.selectThemeState.selectedType != nil ? Purple._900.scale : Gray._300.scale)
-            .clipShape(RoundedRectangle(cornerRadius:16))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
 }
 
 public struct PromiseBackButton: View {
-    var store:  Store<MakePromiseState, MakePromiseAction>
+    var store: Store<MakePromiseState, MakePromiseAction>
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             Button {
@@ -63,7 +62,7 @@ public struct PromiseBackButton: View {
             .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0))
             .frame(width: 51)
             .background(Gray._200.scale)
-            .clipShape(RoundedRectangle(cornerRadius:16))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
 }

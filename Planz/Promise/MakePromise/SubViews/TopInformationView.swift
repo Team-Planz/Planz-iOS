@@ -6,8 +6,8 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 public struct TopInformationView: View {
     var store: Store<MakePromiseState, MakePromiseAction>
@@ -22,20 +22,19 @@ public struct TopInformationView: View {
                             .foregroundColor(Color(hex: "3E414B"))
                         Text("/ 5").foregroundColor(Gray._300.scale)
                     }
-                    
+
                     Spacer()
                     Button(action: { print("@@@ button tapped") }) {
-                        Image(systemName:xmark)
+                        Image(systemName: xmark)
                     }
                     Spacer().frame(width: 20)
                 }
-                HStack() {
+                HStack {
                     Spacer().frame(width: 20)
                     Text("약속 테마를 선택해 주세요!")
                         .bold()
                     Spacer()
                 }
-                
             }
         }
     }

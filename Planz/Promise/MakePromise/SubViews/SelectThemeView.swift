@@ -6,26 +6,26 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 public struct SelectThemeView: View {
     var store: Store<SelectThemeState, SelectThemeAction>
     let listItemEdgePadding = EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20)
     public var body: some View {
-            VStack(){
-                Spacer()
-                SelectThemeItemView(promiseType: .meal, store: store)
-                    .padding(listItemEdgePadding)
-                SelectThemeItemView(promiseType: .meeting, store: store)
-                    .padding(listItemEdgePadding)
-                SelectThemeItemView(promiseType: .travel, store: store)
-                    .padding(listItemEdgePadding)
-                SelectThemeItemView(promiseType: .etc, store: store)
-                    .padding(listItemEdgePadding)
-                Spacer()
-            }
-            .background(Color.white)
+        VStack {
+            Spacer()
+            SelectThemeItemView(promiseType: .meal, store: store)
+                .padding(listItemEdgePadding)
+            SelectThemeItemView(promiseType: .meeting, store: store)
+                .padding(listItemEdgePadding)
+            SelectThemeItemView(promiseType: .travel, store: store)
+                .padding(listItemEdgePadding)
+            SelectThemeItemView(promiseType: .etc, store: store)
+                .padding(listItemEdgePadding)
+            Spacer()
+        }
+        .background(Color.white)
     }
 }
 
@@ -35,10 +35,10 @@ public struct SelectThemeItemView: View {
     let itemCornerRadius: CGFloat = 16
     let checkMarkCircle = "checkmark.circle"
     let checkmarkCircleFill = "checkmark.circle.fill"
-    
+
     public var body: some View {
         WithViewStore(self.store) { viewStore in
-            HStack{
+            HStack {
                 Text(promiseType.withEmoji)
                     .foregroundColor(viewStore.selectedType == promiseType ? Purple._900.scale : Gray._500.scale)
                 Spacer()
@@ -50,9 +50,8 @@ public struct SelectThemeItemView: View {
             .cornerRadius(itemCornerRadius)
             .overlay(RoundedRectangle(cornerRadius: itemCornerRadius).stroke(Purple._900.scale, lineWidth: viewStore.selectedType == promiseType ? 0.7 : 0))
             .onTapGesture {
-                    viewStore.send(.promiseTypeListItemTapped(promiseType))
+                viewStore.send(.promiseTypeListItemTapped(promiseType))
             }
         }
     }
 }
-

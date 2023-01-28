@@ -6,27 +6,28 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 typealias NameAndPlaceView = SetNameAndPlaceView
 
 public struct SetNameAndPlaceView: View {
     public var body: some View {
-        return VStack() {
+        return VStack {
             Spacer()
             TextFieldWithTitleView(titleText: "약속명(선택)", placeHolderText: "YUMMY")
-            TextFieldWithTitleView(titleText: "장소(선택)",placeHolderText: "강남, 온라인 등")
+            TextFieldWithTitleView(titleText: "장소(선택)", placeHolderText: "강남, 온라인 등")
             Spacer()
         }
     }
 }
+
 public struct TextFieldWithTitleView: View {
     var titleText: String
-    
+
     @State var textFieldText = ""
     var placeHolderText: String
-    
+
     public var body: some View {
         HStack {
             Spacer(minLength: 20)
@@ -42,7 +43,6 @@ public struct TextFieldWithTitleView: View {
                     Spacer()
                     Text("4/10")
                 }
-                
             }
             Spacer(minLength: 20)
         }

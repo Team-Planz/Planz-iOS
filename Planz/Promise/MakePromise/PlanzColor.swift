@@ -10,22 +10,24 @@ import Foundation
 import SwiftUI
 
 // MARK: - Planz TEMPORARY design system Implements
+
 protocol ColorScale {
     var scale: Color { get }
 }
+
 typealias Purple = PLANZ.COLOR.Purple
 typealias Gray = PLANZ.COLOR.Gray
 typealias CoolGray = PLANZ.COLOR.CoolGray
 
 enum PLANZ {
-    enum COLOR  {
+    enum COLOR {
         enum Purple: ColorScale {
             case _900
             case _700
             case _500
             case _300
             case _200
-            
+
             var scale: Color {
                 switch self {
                 case ._900:
@@ -41,6 +43,7 @@ enum PLANZ {
                 }
             }
         }
+
         enum Gray: ColorScale {
             case _900
             case _800
@@ -69,6 +72,7 @@ enum PLANZ {
                 }
             }
         }
+
         enum CoolGray: ColorScale {
             case _500
             case _300
@@ -80,14 +84,13 @@ enum PLANZ {
                     return Color(hex: "8F9BB#")
                 }
             }
-            
-            
         }
+
         enum White: ColorScale {
             case backgroundColor1
             case backgroundColor2
             case backgroundColor3
-            
+
             var scale: Color {
                 switch self {
                 case .backgroundColor1:
@@ -101,8 +104,3 @@ enum PLANZ {
         }
     }
 }
-
-
-
-
-

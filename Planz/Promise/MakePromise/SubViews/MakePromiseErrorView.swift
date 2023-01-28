@@ -6,13 +6,12 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
 public struct MakePromiseErrorView: View {
     public var body: some View {
         VStack {
-            
             Image("Illustration1")
             Spacer().frame(height: 12)
             Text("문제가 발생했습니다.\n다시 시도해주세요.")
@@ -29,7 +28,7 @@ public struct RetryButton: View {
             print("Button clicked")
         }
         .foregroundColor(Purple._900.scale)
-        .frame(width:96, height: 34)
+        .frame(width: 96, height: 34)
         .cornerRadius(cornerRadius)
         .overlay(
             RoundedRectangle(cornerRadius: cornerRadius)

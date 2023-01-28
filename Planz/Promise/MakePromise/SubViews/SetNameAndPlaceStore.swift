@@ -6,8 +6,8 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 public struct SetNameAndPlaceState: Equatable {
     var promiseName: String?
@@ -19,17 +19,15 @@ public enum SetNameAndPlaceAction: Equatable {
     case filledPromisePlace(String)
 }
 
-public struct SetNameAndPlaceEnvironment {
-    
-}
+public struct SetNameAndPlaceEnvironment {}
 
-public let  makePromiseSetNameAndPlaceReducer = Reducer<SetNameAndPlaceState, SetNameAndPlaceAction, SetNameAndPlaceEnvironment> { state, action, environment in
+public let makePromiseSetNameAndPlaceReducer = Reducer<SetNameAndPlaceState, SetNameAndPlaceAction, SetNameAndPlaceEnvironment> { state, action, _ in
     switch action {
     case let .filledPromiseName(name):
         state.promiseName = name
     case let .filledPromisePlace(place):
         state.promisePlace = place
     }
-    
+
     return .none
 }
