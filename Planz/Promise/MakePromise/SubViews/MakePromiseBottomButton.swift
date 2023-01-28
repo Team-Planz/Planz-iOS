@@ -43,7 +43,11 @@ public struct PromiseNextButton: View {
                 Spacer()
             }
             .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0))
-            .background(viewStore.selectThemeState.selectedType != nil ? Purple._900.scale : Gray._300.scale)
+            .background(
+                viewStore.selectThemeState.selectedType != nil ?
+                    PDSColor.purple900.scale :
+                    PDSColor.gray300.scale
+            )
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
@@ -57,11 +61,11 @@ public struct PromiseBackButton: View {
                 viewStore.send(.backButtonTapped)
             } label: {
                 Image(systemName: "chevron.backward")
-                    .foregroundColor(Gray._500.scale)
+                    .foregroundColor(PDSColor.gray500.scale)
             }
             .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0))
             .frame(width: 51)
-            .background(Gray._200.scale)
+            .background(PDSColor.gray200.scale)
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }

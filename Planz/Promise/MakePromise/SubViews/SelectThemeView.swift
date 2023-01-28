@@ -40,15 +40,37 @@ public struct SelectThemeItemView: View {
         WithViewStore(self.store) { viewStore in
             HStack {
                 Text(promiseType.withEmoji)
-                    .foregroundColor(viewStore.selectedType == promiseType ? Purple._900.scale : Gray._500.scale)
+                    .foregroundColor(
+                        viewStore.selectedType == promiseType ?
+                            PDSColor.purple900.scale :
+                            PDSColor.gray500.scale
+                    )
                 Spacer()
-                Image(systemName: viewStore.selectedType == promiseType ? checkmarkCircleFill : checkMarkCircle)
-                    .foregroundColor(viewStore.selectedType == promiseType ? Purple._900.scale : Gray._500.scale)
+                Image(systemName:
+                    viewStore.selectedType == promiseType ?
+                        checkmarkCircleFill :
+                        checkMarkCircle
+                )
+                .foregroundColor(
+                    viewStore.selectedType == promiseType ?
+                        PDSColor.purple900.scale :
+                        PDSColor.gray500.scale
+                )
             }
             .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20))
-            .background(viewStore.selectedType == promiseType ? Purple._900.scale.opacity(0.15) : Gray._100.scale)
+            .background(
+                viewStore.selectedType == promiseType ?
+                PDSColor.purple900.scale.opacity(0.15) :
+                PDSColor.gray100.scale
+            )
             .cornerRadius(itemCornerRadius)
-            .overlay(RoundedRectangle(cornerRadius: itemCornerRadius).stroke(Purple._900.scale, lineWidth: viewStore.selectedType == promiseType ? 0.7 : 0))
+            .overlay(
+                RoundedRectangle(cornerRadius: itemCornerRadius)
+                    .stroke(
+                        PDSColor.purple900.scale,
+                        lineWidth: viewStore.selectedType == promiseType ? 0.7 : 0
+                    )
+            )
             .onTapGesture {
                 viewStore.send(.promiseTypeListItemTapped(promiseType))
             }

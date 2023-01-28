@@ -15,91 +15,68 @@ protocol ColorScale {
     var scale: Color { get }
 }
 
-typealias Purple = PLANZ.COLOR.Purple
-typealias Gray = PLANZ.COLOR.Gray
-typealias CoolGray = PLANZ.COLOR.CoolGray
+// Planz-Design-System Color
+typealias PDSColor = PLANZ.COLOR
 
 enum PLANZ {
     enum COLOR {
-        enum Purple: ColorScale {
-            case _900
-            case _700
-            case _500
-            case _300
-            case _200
+        case purple900
+        case purple700
+        case purple500
+        case purple300
+        case purple200
 
-            var scale: Color {
-                switch self {
-                case ._900:
-                    return Color(hex: "6671F6")
-                case ._700:
-                    return Color(hex: "858DF8")
-                case ._500:
-                    return Color(hex: "B2B8FA")
-                case ._300:
-                    return Color(hex: "E0E3FD")
-                case ._200:
-                    return Color(hex: "E8EAFE")
-                }
-            }
-        }
+        case gray900
+        case gray800
+        case gray700
+        case gray500
+        case gray300
+        case gray200
+        case gray100
 
-        enum Gray: ColorScale {
-            case _900
-            case _800
-            case _700
-            case _500
-            case _300
-            case _200
-            case _100
+        case coolGray500
+        case coolGray300
 
-            var scale: Color {
-                switch self {
-                case ._900:
-                    return Color(hex: "020202")
-                case ._800:
-                    return Color(hex: "2D3038")
-                case ._700:
-                    return Color(hex: "61707A")
-                case ._500:
-                    return Color(hex: "9CA3AD")
-                case ._300:
-                    return Color(hex: "CDD2D9")
-                case ._200:
-                    return Color(hex: "E8EAED")
-                case ._100:
-                    return Color(hex: "F3F5F8")
-                }
-            }
-        }
+        case whiteBackgroundColor1
+        case whiteBackgroundColor2
+        case whiteBackgroundColor3
 
-        enum CoolGray: ColorScale {
-            case _500
-            case _300
-            var scale: Color {
-                switch self {
-                case ._500:
-                    return Color(hex: "5B687A")
-                case ._300:
-                    return Color(hex: "8F9BB#")
-                }
-            }
-        }
-
-        enum White: ColorScale {
-            case backgroundColor1
-            case backgroundColor2
-            case backgroundColor3
-
-            var scale: Color {
-                switch self {
-                case .backgroundColor1:
-                    return Color(hex: "F7F7F8")
-                case .backgroundColor2:
-                    return Color(hex: "FBFBFB")
-                case .backgroundColor3:
-                    return Color(hex: "FFFFFF")
-                }
+        var scale: Color {
+            switch self {
+            case .purple900:
+                return Color(hex: "6671F6")
+            case .purple700:
+                return Color(hex: "858DF8")
+            case .purple500:
+                return Color(hex: "B2B8FA")
+            case .purple300:
+                return Color(hex: "E0E3FD")
+            case .purple200:
+                return Color(hex: "E8EAFE")
+            case .gray900:
+                return Color(hex: "020202")
+            case .gray800:
+                return Color(hex: "2D3038")
+            case .gray700:
+                return Color(hex: "61707A")
+            case .gray500:
+                return Color(hex: "9CA3AD")
+            case .gray300:
+                return Color(hex: "CDD2D9")
+            case .gray200:
+                return Color(hex: "E8EAED")
+            case .gray100:
+                return Color(hex: "F3F5F8")
+            case .coolGray500:
+                return Color(hex: "5B687A")
+            case .coolGray300:
+                return Color(hex: "8F9BB#")
+            case .whiteBackgroundColor1:
+                return Color(hex: "F7F7F8")
+            case .whiteBackgroundColor2:
+                return Color(hex: "FBFBFB")
+            case .whiteBackgroundColor3:
+                return Color(hex: "FFFFFF")
             }
         }
     }
