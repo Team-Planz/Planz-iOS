@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 
 public struct SelectThemeView: View {
@@ -60,8 +61,8 @@ public struct SelectThemeItemView: View {
             .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20))
             .background(
                 viewStore.selectedType == promiseType ?
-                PDSColor.purple900.scale.opacity(0.15) :
-                PDSColor.gray100.scale
+                    PDSColor.purple900.scale.opacity(0.15) :
+                    PDSColor.gray100.scale
             )
             .cornerRadius(itemCornerRadius)
             .overlay(

@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 
 public struct MakePromiseBottomButton: View {

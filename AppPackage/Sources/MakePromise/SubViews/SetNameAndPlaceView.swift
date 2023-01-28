@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 
 typealias NameAndPlaceView = SetNameAndPlaceView

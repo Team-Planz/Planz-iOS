@@ -9,8 +9,9 @@ let package = Package(
     products: [
         .library(
             name: "AppPackage",
-            targets: ["AppPackage", "TimeTableFeature"]
-        )
+            targets: ["AppPackage", "TimeTableFeature", "MakePromise", "DesignSystem"]
+        ),
+        .library(name: "DesignSystem", targets: ["DesignSystem"])
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.47.2"),
@@ -31,6 +32,16 @@ let package = Package(
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
+        ),
+        .target(
+            name: "MakePromise",
+            dependencies: [
+                "DesignSystem",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ]
+        ),
+        .target(
+            name: "DesignSystem"
         )
     ]
 )
