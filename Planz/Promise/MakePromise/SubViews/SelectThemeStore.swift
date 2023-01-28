@@ -27,7 +27,7 @@ public enum PromiseType: String, CaseIterable, Equatable {
 }
 
 public struct SelectThemeState: Equatable {
-    var selectedType: PromiseType? = nil
+    var selectedType: PromiseType?
 }
 
 public enum SelectThemeAction: Equatable {
