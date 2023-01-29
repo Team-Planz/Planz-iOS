@@ -38,7 +38,8 @@ let package = Package(
         .target(
             name: "Calendar",
             dependencies: [
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Introspect", package: "SwiftUI-Introspect")
             ]
         )
     ]
