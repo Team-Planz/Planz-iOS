@@ -40,6 +40,9 @@ let package = Package(
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
+            ],
+            resources: [
+                .process("Resources")
             ]
         )
     ]
