@@ -324,7 +324,6 @@ extension Color {
             opacity: Double(alpha) / 255
         )
     }
-    
     static let scarlet1: Color = .init(hex: "FF7F77")
     static let cggraycg2: Color = .init(hex: "5B687A")
     static let grayg3: Color = .init(hex: "E8EAED")
