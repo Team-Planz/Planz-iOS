@@ -46,6 +46,7 @@ public struct CalendarView: View {
         let contentBackgroundCornerRadius: CGFloat
     }
     
+    @Namespace var coordinateSpace
     let style: Style
     let layoutConstraint: LayoutConstraint
     let store: StoreOf<CalendarCore>
@@ -184,10 +185,26 @@ public struct CalendarView: View {
                             }
                         }
                         .frame(height: layoutConstraint.scrollViewHeight)
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .preference(
+                                        key: ScrollViewOffset.self,
+                                        value: -proxy.frame(in: .named(coordinateSpace)).minX
+                                    )
+                            }
+                        }
                     }
                     .introspectScrollView { $0.isPagingEnabled = true }
                     .onReceive(viewStore.publisher.selectedMonth) { id in
                         scrollViewProxy.scrollTo(id)
+                    }
+                    .coordinateSpace(name: coordinateSpace)
+                    .onPreferenceChange(ScrollViewOffset.self) { offset in
+                        let horizontalPadding = (layoutConstraint.contentHorizontalPadding) * 2
+                        let scrollViewWidth = geometryProxy.size.width - horizontalPadding
+                        let index = (offset / scrollViewWidth).rounded(.down)
+                        viewStore.send(.scrollViewOffsetChanged(Int(index)))
                     }
                 }
             }
@@ -199,7 +216,7 @@ public struct CalendarView: View {
                     .cornerRadius(layoutConstraint.contentBackgroundCornerRadius)
             }
         }
-        .onAppear { viewStore.send(.onAppear) }
+        .onAppear { viewStore.send(.task) }
     }
 }
 
@@ -272,6 +289,17 @@ private extension Color {
         return  calendar.component(.weekday, from: date) == 1
         ? .scarlet1
         : .cggraycg2
+    }
+}
+
+private struct ScrollViewOffset: PreferenceKey {
+    static var defaultValue: CGFloat = .zero
+    
+    static func reduce(
+        value: inout CGFloat,
+        nextValue: () -> CGFloat
+    ) {
+        value += nextValue()
     }
 }
 

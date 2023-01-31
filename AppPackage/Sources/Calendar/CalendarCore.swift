@@ -3,36 +3,60 @@ import Foundation
 
 public struct CalendarCore: ReducerProtocol {
     public struct State: Equatable {
-        var monthStateList: IdentifiedArrayOf<MonthState> = []
-        var selectedMonth: Date = .currentMonth
+        public var monthStateList: IdentifiedArrayOf<MonthState> = []
+        public var selectedMonth: Date = .currentMonth
         
-        public init() {
-            
-        }
+        public init() { }
     }
     
     public enum Action: Equatable {
-        case onAppear
+        case task
+        case scrollViewOffsetChanged(Int)
+        case pageIndexChaged(Int)
     }
     
     @Dependency(\.calendarClient) var calendarClient
+    @Dependency(\.mainQueue) var mainQueue
     
-    public init() {
-        
-    }
+    public init() { }
     
     public func reduce(
         into state: inout State,
         action: Action
     ) -> EffectTask<Action> {
+        struct UpdateScrollViewOffset: Hashable { }
         switch action {
-        case .onAppear:
+        case .task:
             do {
-                let monthStateList = try calendarClient.createMonthStateList(-3...3, .now)
+                let monthStateList = try calendarClient.createMonthStateList(-6...6, .now)
                 state.monthStateList.append(contentsOf: monthStateList)
             } catch {
                 
             }
+            return .none
+
+        case let .scrollViewOffsetChanged(index):
+            return .task { .pageIndexChaged(index) }
+            .debounce(
+                id: UpdateScrollViewOffset.self,
+                for: .seconds(0.2),
+                scheduler: mainQueue
+            )
+            
+        case let .pageIndexChaged(index):
+            state.selectedMonth = state.monthStateList[index].id
+            do {
+                if index == .zero {
+                    let item = try calendarClient.createMonthStateList(-6 ... -1, state.selectedMonth)
+                    state.monthStateList.insert(contentsOf: item, at: .zero)
+                } else if index == state.monthStateList.count - 1 {
+                    let item = try calendarClient.createMonthStateList(1 ... 6, state.selectedMonth)
+                    state.monthStateList.append(contentsOf: item)
+                }
+            } catch {
+                
+            }
+            
             return .none
         }
     }
