@@ -70,7 +70,7 @@ public struct CalendarView: View {
                         VStack(spacing: .zero) {
                             HStack(spacing: .zero) {
                                 Text(viewStore.selectedMonth.yearMonthString)
-                                    .foregroundColor(Color(hex: "020202"))
+                                    .foregroundColor(.grayg8)
                                     .font(.system(size: 18))
                                     .padding(.trailing, 11)
                                 
@@ -128,7 +128,7 @@ public struct CalendarView: View {
                         
                         Text(viewStore.selectedMonth.yearMonthString)
                             .font(.system(size: 18))
-                            .foregroundColor(Color(hex: "020202"))
+                            .foregroundColor(.grayg8)
                             .padding(.trailing, 16)
                         
                         Button(action: { }) {
@@ -226,10 +226,10 @@ private enum WeekDay: CaseIterable, CustomStringConvertible {
     var color: Color {
         switch self {
         case .sunday:
-            return Color(hex: "FF7F77")
+            return Color.scarlet1
             
         default:
-            return Color(hex: "5B687A")
+            return Color.cggraycg2
         }
     }
     
@@ -268,10 +268,10 @@ private extension Image {
 
 private extension Color {
     static func dayColor(date: Date, isFaded: Bool) -> Self {
-        guard !isFaded else { return Color(hex: "E8EAED") }
+        guard !isFaded else { return .grayg3 }
         return  calendar.component(.weekday, from: date) == 1
-        ? Color(hex: "FF7F77")
-        : Color(hex: "020202")
+        ? .scarlet1
+        : .cggraycg2
     }
 }
 
@@ -324,4 +324,9 @@ extension Color {
             opacity: Double(alpha) / 255
         )
     }
+    
+    static let scarlet1: Color = .init(hex: "FF7F77")
+    static let cggraycg2: Color = .init(hex: "5B687A")
+    static let grayg3: Color = .init(hex: "E8EAED")
+    static let grayg8: Color = .init(hex: "020202")
 }
