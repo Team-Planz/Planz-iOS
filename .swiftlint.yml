@@ -8,3 +8,6 @@ disabled_rules: # Default Rules에서 비활성화할 규칙
     
     # 강제 언래핑은 피해야합니다. https://realm.github.io/SwiftLint/force_unwrapping.html
     - force_unwrapping
+    
+    # 다중 클로저 구문을 사용할 때 후행 클로저 구문은 사용할 수 없습니다. https://realm.github.io/SwiftLint/trailing_closure.html
+    - multiple_closures_with_trailing_closure
