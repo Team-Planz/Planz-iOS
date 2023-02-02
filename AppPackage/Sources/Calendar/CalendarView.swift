@@ -75,7 +75,7 @@ public struct CalendarView: View {
                                     .font(.system(size: 18))
                                     .padding(.trailing, 11)
                                 
-                                Button(action: { }) {
+                                Button(action: { viewStore.send(.leftSideButtonTapped) }) {
                                     Image.left
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -86,7 +86,7 @@ public struct CalendarView: View {
                                 }
                                 .padding(.trailing, 6)
                                 
-                                Button(action: { }) {
+                                Button(action: { viewStore.send(.rightSideButtonTapped) }) {
                                     Image.right
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -116,7 +116,7 @@ public struct CalendarView: View {
                         }
                         
                     case .promise:
-                        Button(action: { }) {
+                        Button(action: { viewStore.send(.leftSideButtonTapped) }) {
                             Image.left
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
@@ -132,7 +132,7 @@ public struct CalendarView: View {
                             .foregroundColor(.grayg8)
                             .padding(.trailing, 16)
                         
-                        Button(action: { }) {
+                        Button(action: { viewStore.send(.rightSideButtonTapped) }) {
                             Image.right
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)

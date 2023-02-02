@@ -13,6 +13,8 @@ public struct CalendarCore: ReducerProtocol {
         case task
         case scrollViewOffsetChanged(Int)
         case pageIndexChaged(Int)
+        case leftSideButtonTapped
+        case rightSideButtonTapped
     }
     
     @Dependency(\.calendarClient) var calendarClient
@@ -28,7 +30,7 @@ public struct CalendarCore: ReducerProtocol {
         switch action {
         case .task:
             do {
-                let monthStateList = try calendarClient.createMonthStateList(-6...6, .now)
+                let monthStateList = try calendarClient.createMonthStateList(.default, .now)
                 state.monthStateList.append(contentsOf: monthStateList)
             } catch {
                 
@@ -47,15 +49,31 @@ public struct CalendarCore: ReducerProtocol {
             state.selectedMonth = state.monthStateList[index].id
             do {
                 if index == .zero {
-                    let item = try calendarClient.createMonthStateList(-6 ... -1, state.selectedMonth)
+                    let item = try calendarClient.createMonthStateList(.lower, state.selectedMonth)
                     state.monthStateList.insert(contentsOf: item, at: .zero)
                 } else if index == state.monthStateList.count - 1 {
-                    let item = try calendarClient.createMonthStateList(1 ... 6, state.selectedMonth)
+                    let item = try calendarClient.createMonthStateList(.upper, state.selectedMonth)
                     state.monthStateList.append(contentsOf: item)
                 }
             } catch {
                 
             }
+            
+            return .none
+            
+        case .leftSideButtonTapped:
+            guard
+                let previousMonth = calendar.date(byAdding: .month, value: -1, to: state.selectedMonth)
+            else { return .none }
+            state.selectedMonth = previousMonth
+            
+            return .none
+            
+        case .rightSideButtonTapped:
+            guard
+                let nextMonth = calendar.date(byAdding: .month, value: -1, to: state.selectedMonth)
+            else { return .none }
+            state.selectedMonth = nextMonth
             
             return .none
         }
