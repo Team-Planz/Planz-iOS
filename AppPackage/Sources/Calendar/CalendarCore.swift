@@ -38,7 +38,7 @@ public struct CalendarCore: ReducerProtocol {
             return .none
 
         case let .scrollViewOffsetChanged(index):
-            return .task { .pageIndexChanged(index) }
+            return .send(.pageIndexChanged(index))
             .debounce(
                 id: UpdateScrollViewOffsetID.self,
                 for: .seconds(0.2),
