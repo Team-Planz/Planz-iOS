@@ -12,7 +12,7 @@ public struct CalendarCore: ReducerProtocol {
     public enum Action: Equatable {
         case task
         case scrollViewOffsetChanged(Int)
-        case pageIndexChaged(Int)
+        case pageIndexChanged(Int)
         case leftSideButtonTapped
         case rightSideButtonTapped
     }
@@ -26,7 +26,7 @@ public struct CalendarCore: ReducerProtocol {
         into state: inout State,
         action: Action
     ) -> EffectTask<Action> {
-        struct UpdateScrollViewOffset: Hashable { }
+        struct UpdateScrollViewOffsetID: Hashable { }
         switch action {
         case .task:
             do {
@@ -38,14 +38,14 @@ public struct CalendarCore: ReducerProtocol {
             return .none
 
         case let .scrollViewOffsetChanged(index):
-            return .task { .pageIndexChaged(index) }
+            return .task { .pageIndexChanged(index) }
             .debounce(
-                id: UpdateScrollViewOffset.self,
+                id: UpdateScrollViewOffsetID.self,
                 for: .seconds(0.2),
                 scheduler: mainQueue
             )
             
-        case let .pageIndexChaged(index):
+        case let .pageIndexChanged(index):
             state.selectedMonth = state.monthStateList[index].id
             do {
                 if index == .zero {
