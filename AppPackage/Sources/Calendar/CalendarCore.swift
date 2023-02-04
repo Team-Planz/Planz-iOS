@@ -10,11 +10,14 @@ public struct CalendarCore: ReducerProtocol {
     }
     
     public enum Action: Equatable {
-        case task
+        case onAppear
+        case onDisAppear
         case scrollViewOffsetChanged(Int)
         case pageIndexChanged(Int)
         case leftSideButtonTapped
         case rightSideButtonTapped
+        case createMonthStateList(CalendarClient.DateRange)
+        case updateMonthStateList(CalendarClient.DateRange, TaskResult<[MonthState]>)
     }
     
     @Dependency(\.calendarClient) var calendarClient
@@ -28,53 +31,64 @@ public struct CalendarCore: ReducerProtocol {
     ) -> EffectTask<Action> {
         struct UpdateScrollViewOffsetID: Hashable { }
         switch action {
-        case .task:
-            do {
-                let monthStateList = try calendarClient.createMonthStateList(.default, .now)
-                state.monthStateList.append(contentsOf: monthStateList)
-            } catch {
-                
-            }
-            return .none
-
+        case .onAppear:
+            return .send(.createMonthStateList(.default))
+            
+        case .onDisAppear:
+            return .cancel(id: UpdateScrollViewOffsetID.self)
+            
         case let .scrollViewOffsetChanged(index):
             return .send(.pageIndexChanged(index))
-            .debounce(
-                id: UpdateScrollViewOffsetID.self,
-                for: .seconds(0.2),
-                scheduler: mainQueue
-            )
+                .debounce(
+                    id: UpdateScrollViewOffsetID.self,
+                    for: .seconds(0.2),
+                    scheduler: mainQueue
+                )
             
         case let .pageIndexChanged(index):
             state.selectedMonth = state.monthStateList[index].id
-            do {
-                if index == .zero {
-                    let item = try calendarClient.createMonthStateList(.lower, state.selectedMonth)
-                    state.monthStateList.insert(contentsOf: item, at: .zero)
-                } else if index == state.monthStateList.count - 1 {
-                    let item = try calendarClient.createMonthStateList(.upper, state.selectedMonth)
-                    state.monthStateList.append(contentsOf: item)
-                }
-            } catch {
-                
-            }
+            let isFirstIndex = index == .zero
+            guard
+                isFirstIndex || index == (state.monthStateList.count - 1)
+            else { return .none }
             
-            return .none
+            return .send(.createMonthStateList(isFirstIndex ? .lower : .upper))
             
         case .leftSideButtonTapped:
-            guard
-                let previousMonth = calendar.date(byAdding: .month, value: -1, to: state.selectedMonth)
-            else { return .none }
+            let previousMonth = calendar
+                .date(byAdding: .month, value: -1, to: state.selectedMonth)
+            guard let previousMonth else { return .none }
             state.selectedMonth = previousMonth
             
             return .none
             
         case .rightSideButtonTapped:
-            guard
-                let nextMonth = calendar.date(byAdding: .month, value: -1, to: state.selectedMonth)
-            else { return .none }
+            let nextMonth = calendar
+                .date(byAdding: .month, value: 1, to: state.selectedMonth)
+            guard let nextMonth else { return .none }
             state.selectedMonth = nextMonth
             
+            return .none
+            
+        case let .createMonthStateList(range):
+            do {
+                let itemList = try calendarClient
+                    .createMonthStateList(range, state.selectedMonth)
+                return .send(.updateMonthStateList(range, .success(itemList)))
+            } catch {
+                return .send(.updateMonthStateList(range, .failure(error)))
+            }
+            
+        case let .updateMonthStateList(range, .success(itemList)):
+            switch range {
+            case .lower:
+                state.monthStateList.insert(contentsOf: itemList, at: .zero)
+            case .default, .upper:
+                state.monthStateList.append(contentsOf: itemList)
+            }
+            return .none
+            
+        case .updateMonthStateList:
             return .none
         }
     }

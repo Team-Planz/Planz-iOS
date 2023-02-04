@@ -1,7 +1,7 @@
 import Dependencies
 import Foundation
 
-struct CalendarClient {
+public struct CalendarClient {
     let createMonthStateList: (DateRange, Date) throws -> [MonthState]
 }
 
@@ -10,7 +10,7 @@ extension CalendarClient: DependencyKey {
         case unexpected
     }
     
-    enum DateRange {
+    public enum DateRange: Equatable {
         var value: ClosedRange<Int> {
             switch self {
             case .lower:
@@ -29,7 +29,7 @@ extension CalendarClient: DependencyKey {
         case upper
     }
     
-    static var liveValue: CalendarClient = Self { range, targetDate in
+    public static var liveValue: CalendarClient = Self { range, targetDate in
         try range
             .value
             .map {

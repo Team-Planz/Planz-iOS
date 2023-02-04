@@ -216,7 +216,8 @@ public struct CalendarView: View {
                     .cornerRadius(layoutConstraint.contentBackgroundCornerRadius)
             }
         }
-        .onAppear { viewStore.send(.task) }
+        .onAppear { viewStore.send(.onAppear) }
+        .onDisappear { viewStore.send(.onDisAppear) }
     }
 }
 
