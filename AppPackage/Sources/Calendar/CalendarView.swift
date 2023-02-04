@@ -46,6 +46,7 @@ public struct CalendarView: View {
         let contentBackgroundCornerRadius: CGFloat
     }
     
+    @Namespace var coordinateSpace
     let style: Style
     let layoutConstraint: LayoutConstraint
     let store: StoreOf<CalendarCore>
@@ -74,7 +75,7 @@ public struct CalendarView: View {
                                     .font(.system(size: 18))
                                     .padding(.trailing, 11)
                                 
-                                Button(action: { }) {
+                                Button(action: { viewStore.send(.leftSideButtonTapped) }) {
                                     Image.left
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -85,7 +86,7 @@ public struct CalendarView: View {
                                 }
                                 .padding(.trailing, 6)
                                 
-                                Button(action: { }) {
+                                Button(action: { viewStore.send(.rightSideButtonTapped) }) {
                                     Image.right
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -115,7 +116,7 @@ public struct CalendarView: View {
                         }
                         
                     case .promise:
-                        Button(action: { }) {
+                        Button(action: { viewStore.send(.leftSideButtonTapped) }) {
                             Image.left
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
@@ -131,7 +132,7 @@ public struct CalendarView: View {
                             .foregroundColor(.grayg8)
                             .padding(.trailing, 16)
                         
-                        Button(action: { }) {
+                        Button(action: { viewStore.send(.rightSideButtonTapped) }) {
                             Image.right
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
@@ -184,10 +185,26 @@ public struct CalendarView: View {
                             }
                         }
                         .frame(height: layoutConstraint.scrollViewHeight)
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .preference(
+                                        key: ScrollViewOffset.self,
+                                        value: -proxy.frame(in: .named(coordinateSpace)).minX
+                                    )
+                            }
+                        }
                     }
                     .introspectScrollView { $0.isPagingEnabled = true }
                     .onReceive(viewStore.publisher.selectedMonth) { id in
                         scrollViewProxy.scrollTo(id)
+                    }
+                    .coordinateSpace(name: coordinateSpace)
+                    .onPreferenceChange(ScrollViewOffset.self) { offset in
+                        let horizontalPadding = (layoutConstraint.contentHorizontalPadding) * 2
+                        let scrollViewWidth = geometryProxy.size.width - horizontalPadding
+                        let index = (offset / scrollViewWidth).rounded(.down)
+                        viewStore.send(.scrollViewOffsetChanged(Int(index)))
                     }
                 }
             }
@@ -200,6 +217,7 @@ public struct CalendarView: View {
             }
         }
         .onAppear { viewStore.send(.onAppear) }
+        .onDisappear { viewStore.send(.onDisAppear) }
     }
 }
 
@@ -275,6 +293,17 @@ private extension Color {
     }
 }
 
+private struct ScrollViewOffset: PreferenceKey {
+    static var defaultValue: CGFloat = .zero
+    
+    static func reduce(
+        value: inout CGFloat,
+        nextValue: () -> CGFloat
+    ) {
+        value += nextValue()
+    }
+}
+
 #if DEBUG
 struct CalendarView_Previews: PreviewProvider {
     static var previews: some View {
@@ -324,7 +353,6 @@ extension Color {
             opacity: Double(alpha) / 255
         )
     }
-    
     static let scarlet1: Color = .init(hex: "FF7F77")
     static let cggraycg2: Color = .init(hex: "5B687A")
     static let grayg3: Color = .init(hex: "E8EAED")
