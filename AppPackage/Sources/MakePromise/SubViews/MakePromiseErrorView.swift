@@ -28,12 +28,12 @@ public struct RetryButton: View {
         Button("다시 시도") {
             print("Button clicked")
         }
-        .foregroundColor(PDSColor.purple900.scale)
+        .foregroundColor(PDS.COLOR.purple9.scale)
         .frame(width: 96, height: 34)
         .cornerRadius(cornerRadius)
         .overlay(
             RoundedRectangle(cornerRadius: cornerRadius)
-                .stroke(PDSColor.purple900.scale, lineWidth: 1)
+                .stroke(PDS.COLOR.purple9.scale, lineWidth: 1)
         )
     }
 }

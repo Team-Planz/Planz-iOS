@@ -39,7 +39,13 @@ public struct TextFieldWithTitleView: View {
                 }
                 TextField(placeHolderText, text: $textFieldText)
                     .padding()
-                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(PDSColor.purple900.scale, style: StrokeStyle(lineWidth: 1.0)))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .strokeBorder(
+                                PDS.COLOR.purple9.scale,
+                                style: StrokeStyle(lineWidth: 1.0)
+                            )
+                    )
                 HStack {
                     Spacer()
                     Text("4/10")

@@ -12,7 +12,11 @@ import SwiftUI
 import Then
 
 struct MakePromiseView: View {
-    let store: Store<MakePromiseState, MakePromiseAction> = Store(initialState: MakePromiseState(), reducer: makePromiseReducer, environment: MakePromiseEnvironment())
+    let store: Store<MakePromiseState, MakePromiseAction> = Store(
+        initialState: MakePromiseState(),
+        reducer: makePromiseReducer,
+        environment: MakePromiseEnvironment()
+    )
 
     @State private var tabSelection = 1
     @State private var promiseStep: MakePromiseStep = .selectTheme

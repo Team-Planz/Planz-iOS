@@ -21,7 +21,7 @@ public struct TopInformationView: View {
                     HStack {
                         Text("\(viewStore.currentStep.rawValue)")
                             .foregroundColor(Color(hex: "3E414B"))
-                        Text("/ 5").foregroundColor(PDSColor.gray300.scale)
+                        Text("/ 5").foregroundColor(PDS.COLOR.gray3.scale)
                     }
 
                     Spacer()

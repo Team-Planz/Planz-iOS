@@ -43,8 +43,8 @@ public struct SelectThemeItemView: View {
                 Text(promiseType.withEmoji)
                     .foregroundColor(
                         viewStore.selectedType == promiseType ?
-                            PDSColor.purple900.scale :
-                            PDSColor.gray500.scale
+                            PDS.COLOR.purple9.scale :
+                            PDS.COLOR.gray5.scale
                     )
                 Spacer()
                 Image(systemName:
@@ -54,21 +54,21 @@ public struct SelectThemeItemView: View {
                 )
                 .foregroundColor(
                     viewStore.selectedType == promiseType ?
-                        PDSColor.purple900.scale :
-                        PDSColor.gray500.scale
+                        PDS.COLOR.purple9.scale :
+                        PDS.COLOR.gray5.scale
                 )
             }
             .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20))
             .background(
                 viewStore.selectedType == promiseType ?
-                    PDSColor.purple900.scale.opacity(0.15) :
-                    PDSColor.gray100.scale
+                    PDS.COLOR.purple9.scale.opacity(0.15) :
+                    PDS.COLOR.gray1.scale
             )
             .cornerRadius(itemCornerRadius)
             .overlay(
                 RoundedRectangle(cornerRadius: itemCornerRadius)
                     .stroke(
-                        PDSColor.purple900.scale,
+                        PDS.COLOR.purple9.scale,
                         lineWidth: viewStore.selectedType == promiseType ? 0.7 : 0
                     )
             )

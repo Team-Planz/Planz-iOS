@@ -9,26 +9,26 @@ extension CalendarClient: DependencyKey {
     enum InternalError: Error {
         case unexpected
     }
-    
+
     public enum DateRange: Equatable {
         var value: ClosedRange<Int> {
             switch self {
             case .lower:
                 return -6 ... -1
-                
+
             case .default:
                 return -6 ... 6
-                
+
             case .upper:
                 return 1 ... 6
             }
         }
-        
+
         case lower
         case `default`
         case upper
     }
-    
+
     public static var liveValue: CalendarClient = Self { range, targetDate in
         try range
             .value
@@ -43,8 +43,8 @@ extension CalendarClient: DependencyKey {
                 else { throw InternalError.unexpected }
                 let currentMonthFirstWeekDay = calendar.component(.weekday, from: month)
                 let currentMonthLastWeekDay = calendar.component(.weekday, from: monthInLastDay)
-                
-                let list = (-(currentMonthFirstWeekDay - 1)..<(monthDays + (7 - currentMonthLastWeekDay)))
+
+                let list = (-(currentMonthFirstWeekDay - 1) ..< (monthDays + (7 - currentMonthLastWeekDay)))
                     .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
                     .map {
                         Day(
@@ -53,13 +53,13 @@ extension CalendarClient: DependencyKey {
                             isToday: calendar.isDate($0, inSameDayAs: .now)
                         )
                     }
-                
-                var ranges: [Date: [Date]] = [: ]
-                ranges[previousMonth] = (-(currentMonthFirstWeekDay - 1)..<0)
+
+                var ranges: [Date: [Date]] = [:]
+                ranges[previousMonth] = (-(currentMonthFirstWeekDay - 1) ..< 0)
                     .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
-                ranges[nextMonth] = (monthDays..<(monthDays + (7 - currentMonthLastWeekDay)))
+                ranges[nextMonth] = (monthDays ..< (monthDays + (7 - currentMonthLastWeekDay)))
                     .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
-                
+
                 return .init(id: month, days: list, ranges: ranges)
             }
     }
@@ -75,6 +75,6 @@ extension DependencyValues {
 let calendar: Calendar = {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = .gmt
-    
+
     return calendar
 }()
