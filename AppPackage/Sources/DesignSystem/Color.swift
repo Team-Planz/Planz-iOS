@@ -9,70 +9,83 @@ import SwiftUI
 
 public extension PlanzDesignSystem {
     enum COLOR {
-        case purple900
-        case purple700
-        case purple500
-        case purple300
-        case purple200
+        case purple9
+        case purple7
+        case purple5
+        case purple4
+        case purple3
+        case purple1
+        case purple0
 
-        case gray900
-        case gray800
-        case gray700
-        case gray500
-        case gray300
-        case gray200
-        case gray100
+        case gray8
+        case gray7
+        case gray6
+        case gray5
+        case gray4
+        case gray3
+        case gray2
+        case gray1
 
-        case coolGray500
-        case coolGray300
+        case cGray2
+        case cGray1
 
-        case whiteBackgroundColor1
-        case whiteBackgroundColor2
-        case whiteBackgroundColor3
+        case white3
+        case white2
+        case white1
 
-        case subColor1
-        case subColor2
+        case yellow1
+
+        case scarlet1
+        case scarlet0
 
         public var scale: Color {
             switch self {
-            case .purple900:
+            case .purple9:
                 return Color(hex: "6671F6")
-            case .purple700:
+            case .purple7:
                 return Color(hex: "858DF8")
-            case .purple500:
+            case .purple5:
                 return Color(hex: "B2B8FA")
-            case .purple300:
+            case .purple4:
+                return Color(hex: "CED2F9")
+            case .purple3:
                 return Color(hex: "E0E3FD")
-            case .purple200:
+            case .purple1:
                 return Color(hex: "E8EAFE")
-            case .gray900:
+            case .purple0:
+                return Color(hex: "F0F1FE")
+            case .gray8:
                 return Color(hex: "020202")
-            case .gray800:
+            case .gray7:
                 return Color(hex: "2D3038")
-            case .gray700:
-                return Color(hex: "61707A")
-            case .gray500:
+            case .gray6:
+                return Color(hex: "6A707A")
+            case .gray5:
                 return Color(hex: "9CA3AD")
-            case .gray300:
+            case .gray4:
                 return Color(hex: "CDD2D9")
-            case .gray200:
+            case .gray3:
                 return Color(hex: "E8EAED")
-            case .gray100:
+            case .gray2:
                 return Color(hex: "F3F5F8")
-            case .coolGray500:
+            case .gray1:
+                return Color(hex: "F3F5F8")
+            case .cGray2:
                 return Color(hex: "5B687A")
-            case .coolGray300:
-                return Color(hex: "8F9BB#")
-            case .whiteBackgroundColor1:
-                return Color(hex: "F7F7F8")
-            case .whiteBackgroundColor2:
-                return Color(hex: "FBFBFB")
-            case .whiteBackgroundColor3:
+            case .cGray1:
+                return Color(hex: "8F9BB3")
+            case .white3:
                 return Color(hex: "FFFFFF")
-            case .subColor1:
+            case .white2:
+                return Color(hex: "FBFBFB")
+            case .white1:
+                return Color(hex: "F7F7F8")
+            case .yellow1:
                 return Color(hex: "FEDB78")
-            case .subColor2:
+            case .scarlet1:
                 return Color(hex: "FF7F77")
+            case .scarlet0:
+                return Color(hex: "FFECEB")
             }
         }
     }
