@@ -9,12 +9,17 @@ let package = Package(
     products: [
         .library(
             name: "AppPackage",
-            targets: ["AppPackage", "TimeTableFeature", "MakePromise", "DesignSystem"]
+            targets: [
+                "AppPackage",
+                "TimeTableFeature",
+                "Calendar",
+                "MakePromise"
+            ]
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"])
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.47.2"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.50.0"),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0")
     ],
@@ -34,14 +39,24 @@ let package = Package(
             ]
         ),
         .target(
+            name: "DesignSystem"
+            ),
+        .target(
+            name: "Calendar",
+            dependencies: [
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Introspect", package: "SwiftUI-Introspect")
+            ],
+            resources: [
+                .process("Resources")
+            ]
+        ),
+        .target(
             name: "MakePromise",
             dependencies: [
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
-        ),
-        .target(
-            name: "DesignSystem"
         )
     ]
 )
