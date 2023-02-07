@@ -26,6 +26,7 @@ public struct RetryButton: View {
     let cornerRadius: CGFloat = 7
     public var body: some View {
         Button("다시 시도") {
+            // TODO: (Andrew) Network 통신 기능 개발 완료시 다시 시도하는 로직 추가될 예정
             print("Button clicked")
         }
         .foregroundColor(PDS.COLOR.purple9.scale)
