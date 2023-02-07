@@ -21,7 +21,7 @@ public enum SetNameAndPlaceAction: Equatable {
 
 public struct SetNameAndPlaceEnvironment {}
 
-public let makePromiseSetNameAndPlaceReducer = Reducer<SetNameAndPlaceState, SetNameAndPlaceAction, SetNameAndPlaceEnvironment> { state, action, _ in
+public let makePromiseSetNameAndPlaceReducer = AnyReducer<SetNameAndPlaceState, SetNameAndPlaceAction, SetNameAndPlaceEnvironment> { state, action, _ in
     switch action {
     case let .filledPromiseName(name):
         state.promiseName = name

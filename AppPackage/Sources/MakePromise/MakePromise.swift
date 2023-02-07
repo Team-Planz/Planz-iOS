@@ -11,7 +11,7 @@ import DesignSystem
 import SwiftUI
 import Then
 
-struct MakePromiseView: View {
+public struct MakePromiseView: View {
     let store: Store<MakePromiseState, MakePromiseAction> = Store(
         initialState: MakePromiseState(),
         reducer: makePromiseReducer,
@@ -20,7 +20,7 @@ struct MakePromiseView: View {
 
     @State private var tabSelection = 1
     @State private var promiseStep: MakePromiseStep = .selectTheme
-    var body: some View {
+    public var body: some View {
         VStack {
             TopInformationView(store: store)
             PromiseContentView(store: store)
@@ -28,6 +28,11 @@ struct MakePromiseView: View {
             MakePromiseBottomButton(store: store)
             Spacer(minLength: 12)
         }
+    }
+
+    public init(tabSelection: Int = 1, promiseStep: MakePromiseStep = .selectTheme) {
+        self.tabSelection = tabSelection
+        self.promiseStep = promiseStep
     }
 }
 

@@ -9,12 +9,12 @@
 import ComposableArchitecture
 import Foundation
 
-enum MakePromiseStep: Int, Comparable {
+public enum MakePromiseStep: Int, Comparable {
     case error = 0
     case selectTheme = 1
     case fillNAndPlace
 
-    static func < (lhs: MakePromiseStep, rhs: MakePromiseStep) -> Bool {
+    public static func < (lhs: MakePromiseStep, rhs: MakePromiseStep) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
 }

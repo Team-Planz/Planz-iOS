@@ -36,11 +36,10 @@ public enum SelectThemeAction: Equatable {
 
 public struct SelectThemeEnvironment {}
 
-public let makePromiseSelectThemeReducer = Reducer<SelectThemeState, SelectThemeAction, SelectThemeEnvironment> { state, action, _ in
+public let makePromiseSelectThemeReducer = AnyReducer<SelectThemeState, SelectThemeAction, SelectThemeEnvironment> { state, action, _ in
     switch action {
     case let .promiseTypeListItemTapped(type):
         state.selectedType = (state.selectedType == type) ? nil : type
-        print("@@@ selected type is \(state.selectedType)")
         return .none
     }
 }
