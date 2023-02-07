@@ -1,4 +1,4 @@
-name: iOS starter workflow
+name: Heimdall
 
 # Project를 수호하는 Heimdall은 main에 병합되기전에 Build, Test가 실패하는지 확인합니다.
 on:
