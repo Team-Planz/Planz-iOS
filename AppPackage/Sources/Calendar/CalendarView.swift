@@ -33,6 +33,12 @@ public struct CalendarView: View {
     }
 
     struct LayoutConstraint {
+        var monthView: MonthView.LayoutConstraint {
+            .init(
+                rowHeight: dayRowHeight,
+                weekDayListCount: weekDayListCout,
+                horizontalPadding: contentHorizontalPadding)
+        }
         let currentMonthInfoBottomPadding: CGFloat
         let directionButtonSize: CGSize
         let listButtonSize: CGSize = .init(width: 22, height: 22)
@@ -161,27 +167,19 @@ public struct CalendarView: View {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(alignment: .top, spacing: .zero) {
-                            ForEach(viewStore.monthStateList) { month in
-                                let horizontalPadding = (layoutConstraint.contentHorizontalPadding) * 2
-                                let scrollViewWidth = geometryProxy.size.width - horizontalPadding
-                                let rowWidth = scrollViewWidth / CGFloat(layoutConstraint.weekDayListCout)
-                                let columns: [GridItem] = .init(
-                                    repeating: .init(.fixed(rowWidth), spacing: .zero),
-                                    count: layoutConstraint.weekDayListCout
+                            ForEachStore(
+                                store
+                                    .scope(
+                                        state: \.monthList,
+                                        action: CalendarCore.Action.monthAction(id:action:)
                                 )
-                                LazyVGrid(
-                                    columns: columns,
-                                    spacing: .zero
-                                ) {
-                                    ForEach(month.days) { day in
-                                        Text(day.date.dayString)
-                                            .bold(day.isToday)
-                                            .foregroundColor(.dayColor(date: day.date, isFaded: day.isFaded))
-                                            .frame(height: layoutConstraint.dayRowHeight)
-                                            .frame(maxWidth: .infinity)
-                                    }
-                                }
-                                .id(month.id)
+                            ) {
+                                
+                                MonthView(
+                                    layoutConstarint: layoutConstraint.monthView,
+                                    geometryWidth: geometryProxy.size.width,
+                                    store: $0
+                                )
                             }
                         }
                         .frame(height: layoutConstraint.scrollViewHeight)
@@ -219,9 +217,18 @@ public struct CalendarView: View {
         .onAppear { viewStore.send(.onAppear) }
         .onDisappear { viewStore.send(.onDisAppear) }
     }
+    
+    private func transformToIndex(point: CGPoint, viewWidth: CGFloat) -> Int {
+        let rowWidth = Int(viewWidth) / layoutConstraint.weekDayListCout
+        let rowHeight = Int(layoutConstraint.dayRowHeight)
+        let xLocation = Int(point.x) / rowWidth
+        let yLocation = Int(point.y) / rowHeight * 7
+        
+        return xLocation + yLocation
+    }
 }
 
-private enum WeekDay: CaseIterable, CustomStringConvertible {
+enum WeekDay: CaseIterable, CustomStringConvertible {
     var description: String {
         switch self {
         case .sunday:

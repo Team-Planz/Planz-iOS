@@ -1,0 +1,108 @@
+import ComposableArchitecture
+import SwiftUI
+
+struct MonthView: View {
+    struct LayoutConstraint {
+        let rowHeight: CGFloat
+        let weekDayListCount: Int
+        let horizontalPadding: CGFloat
+    }
+    
+    let layoutConstraint: LayoutConstraint
+    let geometryWidth: CGFloat
+    let store: StoreOf<MonthCore>
+    @ObservedObject var viewStore: ViewStoreOf<MonthCore>
+    
+    init(
+        layoutConstarint: LayoutConstraint,
+        geometryWidth: CGFloat,
+        store: StoreOf<MonthCore>
+    ) {
+        self.layoutConstraint = layoutConstarint
+        self.geometryWidth = geometryWidth
+        self.store = store
+        self.viewStore = ViewStore(store)
+    }
+    
+    var body: some View {
+        let horziontalPadding = layoutConstraint.horizontalPadding * 2
+        let scrollViewWidth = geometryWidth - horziontalPadding
+        let rowWidth = scrollViewWidth / CGFloat(layoutConstraint.weekDayListCount)
+        LazyVGrid(
+            columns: .init(
+                repeating: .init(.fixed(rowWidth), spacing: .zero),
+                count: layoutConstraint.weekDayListCount
+            ),
+            spacing: .zero
+        ) {
+            ForEach(viewStore.monthState.days) { day in
+                Text(day.date.dayString)
+                    .bold(day.isToday)
+                    .foregroundColor(.dayColor(date: day.date, isFaded: day.isFaded))
+                    .frame(height: layoutConstraint.rowHeight)
+                    .frame(maxWidth: .infinity)
+                    .background {
+                        ZStack {
+                            switch day.selectionType {
+                            case .clear:
+                                Color.clear
+                            case .painted:
+                                Color(hex: "6671F6")
+                                    .cornerRadius(11)
+                                    .frame(width: 32, height: 30)
+                            }
+                        }
+                    }
+            }
+        }
+        .id(viewStore.monthState.id)
+        .gesture(
+            DragGesture(minimumDistance: .zero)
+                .onChanged {
+                    let startIndex = transformToIndex(
+                        point: $0.startLocation,
+                        viewWidth: geometryWidth
+                    )
+                    let endIndex = transformToIndex(
+                        point: $0.location,
+                        viewWidth: geometryWidth
+                    )
+                    viewStore.send(.drag(startIndex: startIndex, endIndex: endIndex))
+                }
+                .onEnded {
+                    let startIndex = transformToIndex(
+                        point: $0.startLocation,
+                        viewWidth: geometryWidth
+                    )
+                    viewStore.send(.dragEnded(startIndex: startIndex))
+                }
+        )
+    }
+    
+    private func transformToIndex(point: CGPoint, viewWidth: CGFloat) -> Int {
+        let rowWidth = Int(viewWidth) / layoutConstraint.weekDayListCount
+        let rowHeight = Int(layoutConstraint.rowHeight)
+        let xLocation = Int(point.x) / rowWidth
+        let yLocation = Int(point.y) / rowHeight * layoutConstraint.weekDayListCount
+        
+        return xLocation + yLocation
+    }
+}
+
+private extension Date {
+    var dayString: String {
+        formatted(
+            .dateTime
+                .day()
+        )
+    }
+}
+
+private extension Color {
+    static func dayColor(date: Date, isFaded: Bool) -> Self {
+        guard !isFaded else { return .grayg3 }
+        return  calendar.component(.weekday, from: date) == 1
+        ? .scarlet1
+        : .cggraycg2
+    }
+}
