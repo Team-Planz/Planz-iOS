@@ -8,5 +8,4 @@
 
 import XCTest
 
-final class PlanzUITests: XCTestCase {
-}
+final class PlanzUITests: XCTestCase {}

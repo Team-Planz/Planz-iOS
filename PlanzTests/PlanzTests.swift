@@ -9,5 +9,4 @@
 @testable import Planz
 import XCTest
 
-final class PlanzTests: XCTestCase {
-}
+final class PlanzTests: XCTestCase {}

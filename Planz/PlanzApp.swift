@@ -6,13 +6,14 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import Share
 import SwiftUI
 
 @main
 struct PlanzApp: App {
     var body: some Scene {
         WindowGroup {
-            AppView()
+            ShareView()
         }
     }
 }
