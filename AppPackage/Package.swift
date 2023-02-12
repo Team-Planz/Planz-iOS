@@ -39,7 +39,10 @@ let package = Package(
             ]
         ),
         .target(
-            name: "DesignSystem"
+            name: "DesignSystem",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .target(
             name: "Calendar",
@@ -58,7 +61,7 @@ let package = Package(
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
             resources: [
-                .process("Resources")
+                .process("Resources/Assets.xcassets")
             ]
         )
     ]

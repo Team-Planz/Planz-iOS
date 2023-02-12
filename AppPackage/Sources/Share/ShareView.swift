@@ -9,6 +9,7 @@ import DesignSystem
 import SwiftUI
 
 public struct ShareView: View {
+    static let mailImage: String = "mailIllustration"
     public init() {}
 
     public var body: some View {
@@ -43,57 +44,24 @@ public struct ShareView: View {
                     }
                     .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
                 }
-                Image(uiImage: .init(named: "mailIllustration", in: .module, with: nil)!)
+                Image(ShareView.mailImage, bundle: Bundle.module)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             }
             Spacer()
             VStack(spacing: 12) {
                 ShareLinkCopyView()
-//                Button("카카오톡으로 약속 공유하기") {}
                 Button {} label: {
-                    Text("카카오톡으로 약속 공유하기")
-                        .frame(maxWidth: .infinity)
+                    HStack(spacing: 0) {
+                        PDS.Icon.kakao.image
+                        Text("카카오톡으로 약속 공유하기")
+                            .lineLimit(1)
+                    }.frame(maxWidth: .infinity)
                 }
                 .buttonStyle(KakaoShareButtonStyle())
-//                    .frame(minWidth: .infinity)
             }
         }
         .background(PDS.COLOR.white1.scale)
-    }
-}
-
-struct ShareLinkCopyView: View {
-    public var body: some View {
-        HStack {
-            HStack {
-                Text("url/link/1234/1234")
-                Spacer()
-                Button("복사") {}
-                    .font(.system(size: 14))
-                    .foregroundColor(PDS.COLOR.purple9)
-            }
-            .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20))
-            .background(PDS.COLOR.white3.scale)
-            .border(PDS.COLOR.gray2.scale, width: 1)
-            .cornerRadius(10)
-        }
-        .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
-    }
-}
-
-struct KakaoShareButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(size: 16, weight: .semibold))
-            .foregroundColor(PDS.COLOR.gray7.scale)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(PDS.COLOR.yellow1.scale)
-            )
-            .frame(maxWidth: .infinity)
-            .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20))
     }
 }
 
