@@ -41,9 +41,9 @@ struct PromiseContentView: View {
                     NameAndPlaceView()
                 case .error:
                     MakePromiseErrorView()
-                    Spacer()
                 }
             }
+            .frame(alignment: .top)
         }
     }
 }
