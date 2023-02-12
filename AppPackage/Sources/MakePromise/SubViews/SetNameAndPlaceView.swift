@@ -13,11 +13,36 @@ import SwiftUI
 typealias NameAndPlaceView = SetNameAndPlaceView
 
 public struct SetNameAndPlaceView: View {
+    private enum TextFieldTexts {
+        case promise
+        case place
+
+        var title: String {
+            switch self {
+            case .promise: return "약속명(선택)"
+            case .place: return "YUMMY"
+            }
+        }
+
+        var placeHolder: String {
+            switch self {
+            case .promise: return "장소(선택)"
+            case .place: return "강남, 온라인 등"
+            }
+        }
+    }
+
     public var body: some View {
         return VStack {
             Spacer()
-            TextFieldWithTitleView(titleText: "약속명(선택)", placeHolderText: "YUMMY")
-            TextFieldWithTitleView(titleText: "장소(선택)", placeHolderText: "강남, 온라인 등")
+            TextFieldWithTitleView(
+                titleText: TextFieldTexts.promise.title,
+                placeHolderText: TextFieldTexts.promise.placeHolder
+            )
+            TextFieldWithTitleView(
+                titleText: TextFieldTexts.place.title,
+                placeHolderText: TextFieldTexts.place.placeHolder
+            )
             Spacer()
         }
     }
