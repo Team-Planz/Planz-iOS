@@ -9,17 +9,10 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
-import Then
 
 public struct MakePromiseView: View {
-    let store: Store<MakePromiseState, MakePromiseAction> = Store(
-        initialState: MakePromiseState(),
-        reducer: makePromiseReducer,
-        environment: MakePromiseEnvironment()
-    )
+    let store: Store<MakePromiseState, MakePromiseAction>
 
-    @State private var tabSelection = 1
-    @State private var promiseStep: MakePromiseStep = .selectTheme
     public var body: some View {
         VStack {
             TopInformationView(store: store)
@@ -30,9 +23,8 @@ public struct MakePromiseView: View {
         }
     }
 
-    public init(tabSelection: Int = 1, promiseStep: MakePromiseStep = .selectTheme) {
-        self.tabSelection = tabSelection
-        self.promiseStep = promiseStep
+    public init(store: Store<MakePromiseState, MakePromiseAction>) {
+        self.store = store
     }
 }
 
