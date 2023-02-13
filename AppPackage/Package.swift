@@ -12,7 +12,8 @@ let package = Package(
             targets: [
                 "AppPackage",
                 "TimeTableFeature",
-                "Calendar"
+                "Calendar",
+                "APIClient"
             ]
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"])
@@ -32,6 +33,12 @@ let package = Package(
             ]
         ),
         .target(
+            name: "APIClient",
+            dependencies: [
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .target(
             name: "TimeTableFeature",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
@@ -39,7 +46,7 @@ let package = Package(
         ),
         .target(
             name: "DesignSystem"
-            ),
+        ),
         .target(
             name: "Calendar",
             dependencies: [
