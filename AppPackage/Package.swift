@@ -39,7 +39,7 @@ let package = Package(
         ),
         .target(
             name: "DesignSystem"
-            ),
+        ),
         .target(
             name: "Calendar",
             dependencies: [
