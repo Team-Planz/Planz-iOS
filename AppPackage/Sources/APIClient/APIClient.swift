@@ -25,23 +25,3 @@ public struct APIClient {
         }
     }
 }
-
-#if DEBUG
-    public extension APIClient {
-        static var live: Self {
-            .init(session: .shared) { @Sendable route in
-                let baseURL = URL(string: "https://jsonplaceholder.typicode.com")!
-                switch route {
-                case let .todos(index):
-                    var request = URLRequest(
-                        url: baseURL
-                            .appendingPathComponent("todos")
-                            .appendingPathComponent("\(index)")
-                    )
-                    request.httpMethod = "GET"
-                    return request
-                }
-            }
-        }
-    }
-#endif
