@@ -36,7 +36,7 @@ public struct APIClient {
 }
 
 extension APIClient: DependencyKey {
-    public static let liveValue = Self.init { route in
+    public static let liveValue = Self.init { _ in
         return .init(url: URL(string: "")!)
     }
 }
