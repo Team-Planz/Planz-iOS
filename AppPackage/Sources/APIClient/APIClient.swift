@@ -16,7 +16,7 @@ public struct APIClient {
         token: String? = nil
     ) async throws -> (Data, URLResponse) {
         do {
-            let urlRequest = try await router(route)
+            var urlRequest = try await router(route)
             if let token = token {
                 urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authentication")
             }
