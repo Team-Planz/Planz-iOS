@@ -12,10 +12,14 @@ public struct APIClient {
     public var router: @Sendable (APIRoute) async throws -> (URLRequest)
 
     public func request(
-        route: APIRoute
+        route: APIRoute,
+        token: String? = nil
     ) async throws -> (Data, URLResponse) {
         do {
             let urlRequest = try await router(route)
+            if let token = token {
+                urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authentication")
+            }
             return try await URLSession.shared.data(for: urlRequest)
         } catch {
             throw APIError(message: error.localizedDescription)
@@ -24,10 +28,11 @@ public struct APIClient {
 
     public func request<Model: Decodable>(
         route: APIRoute,
+        token: String? = nil,
         as _: Model.Type
     ) async throws -> Model {
         do {
-            let (data, _) = try await request(route: route)
+            let (data, _) = try await request(route: route, token: token)
             return try decode(as: Model.self, from: data)
         } catch {
             throw APIError(message: error.localizedDescription)
