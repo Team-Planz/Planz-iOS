@@ -19,7 +19,7 @@ public enum APIRoute {
         case updateName(SharedModels.UpdateUsernameRequest)
         case fetchInfo
     }
-    
+
     public enum Promising {
         case create(SharedModels.CreatePromisingRequest)
         case fetchSession(String)
@@ -41,8 +41,8 @@ public enum APIRoute {
 
         public enum Query {
             case user
-            case month(Date)
-            case date(Date)
+            case month(String)
+            case date(String)
             case today
         }
     }
