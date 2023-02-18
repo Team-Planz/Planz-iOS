@@ -26,7 +26,6 @@ public struct TopInformationView: View {
                     Spacer()
                     Button(action: {
                         // TODO: (Andrew) 상위 뷰에서 해당 뷰를 닫아주는 로직 추가 예정
-                        print("button tapped")
                     }) {
                         Image(systemName: PlanzText.xmark.rawValue)
                     }
