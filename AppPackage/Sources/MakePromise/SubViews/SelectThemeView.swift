@@ -16,14 +16,10 @@ public struct SelectThemeView: View {
     public var body: some View {
         VStack {
             Spacer()
-            SelectThemeItemView(promiseType: .meal, store: store)
-                .padding(listItemEdgePadding)
-            SelectThemeItemView(promiseType: .meeting, store: store)
-                .padding(listItemEdgePadding)
-            SelectThemeItemView(promiseType: .travel, store: store)
-                .padding(listItemEdgePadding)
-            SelectThemeItemView(promiseType: .etc, store: store)
-                .padding(listItemEdgePadding)
+            ForEach(PromiseType.allCases, id: \.self) {
+                SelectThemeItemView(promiseType: $0, store: store)
+                    .padding(listItemEdgePadding)
+            }
             Spacer()
         }
         .background(Color.white)
