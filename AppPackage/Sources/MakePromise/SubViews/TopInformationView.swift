@@ -12,7 +12,6 @@ import SwiftUI
 
 public struct TopInformationView: View {
     var store: Store<MakePromiseState, MakePromiseAction>
-    let xmark = "xmark"
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             VStack(spacing: 4) {
@@ -29,17 +28,23 @@ public struct TopInformationView: View {
                         // TODO: (Andrew) 상위 뷰에서 해당 뷰를 닫아주는 로직 추가 예정
                         print("button tapped")
                     }) {
-                        Image(systemName: xmark)
+                        Image(systemName: PlanzText.xmark.rawValue)
                     }
                     Spacer().frame(width: 20)
                 }
                 HStack {
                     Spacer().frame(width: 20)
-                    Text("약속 테마를 선택해 주세요!")
+                    Text(PlanzText.themeSelectTitle.rawValue)
                         .bold()
                     Spacer()
                 }
             }
         }
+    }
+
+    // TODO: (Andrew) 모듈화 필요
+    enum PlanzText: String {
+        case xmark
+        case themeSelectTitle = "약속 테마를 선택해 주세요!"
     }
 }
