@@ -6,11 +6,19 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import MakePromise
 import SwiftUI
 
 struct AppView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+//        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        MakePromiseView(
+            store: .init(
+                initialState: .init(),
+                reducer: makePromiseReducer,
+                environment: .init()
+            )
+        )
     }
 }
 

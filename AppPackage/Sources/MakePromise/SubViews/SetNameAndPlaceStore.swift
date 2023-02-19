@@ -12,6 +12,11 @@ import Foundation
 public struct SetNameAndPlaceState: Equatable {
     var promiseName: String?
     var promisePlace: String?
+
+    public init(promiseName: String? = nil, promisePlace: String? = nil) {
+        self.promiseName = promiseName
+        self.promisePlace = promisePlace
+    }
 }
 
 public enum SetNameAndPlaceAction: Equatable {

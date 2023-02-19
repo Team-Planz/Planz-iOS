@@ -25,6 +25,52 @@ public struct MakePromiseState: Equatable {
     var selectThemeState: SelectThemeState = .init()
     var setNameAndPlaceState: SetNameAndPlaceState = .init()
 
+    var selectTheme: SelectThemeState? {
+        get {
+            steps
+                .compactMap {
+                    guard case let .selectTheme(state) = $0 else {
+                        return nil
+                    }
+                    return state
+                }
+                .first
+        }
+        set {
+            guard let newState = newValue else {
+                return
+            }
+            let index = steps.firstIndex {
+                guard case .selectTheme = $0 else {
+                    return false
+                }
+                return true
+            }
+            steps[index!] = Step.selectTheme(newState)
+        }
+    }
+
+    var steps: [Step]
+
+    public init(
+        shouldShowBackButton: Bool = false,
+        currentStep: MakePromiseStep = .selectTheme,
+        selectThemeState: SelectThemeState = .init(),
+        setNameAndPlaceState: SetNameAndPlaceState = .init(),
+        steps: [Step] = [.selectTheme(.init())]
+    ) {
+        self.shouldShowBackButton = shouldShowBackButton
+        self.currentStep = currentStep
+        self.selectThemeState = selectThemeState
+        self.setNameAndPlaceState = setNameAndPlaceState
+        self.steps = steps
+    }
+
+    public enum Step: Equatable {
+        case selectTheme(SelectThemeState)
+        case setNameAndPlace(SetNameAndPlaceState)
+    }
+
     func isPossibleToNextContents() -> Bool {
         switch currentStep {
         case .selectTheme:
@@ -45,22 +91,19 @@ public enum MakePromiseAction: Equatable {
     case setNameAndPlace(SetNameAndPlaceAction)
 }
 
-public struct MakePromiseEnvironment {}
+public struct MakePromiseEnvironment {
+    public init() {}
+}
 
 typealias Step = MakePromiseStep
 
 public let makePromiseReducer = Reducer<MakePromiseState, MakePromiseAction, MakePromiseEnvironment>.combine(
     makePromiseSelectThemeReducer
+        .optional()
         .pullback(
-            state: \.selectThemeState,
+            state: \.selectTheme,
             action: /MakePromiseAction.selectTheme,
             environment: { _ in SelectThemeEnvironment() }
-        ),
-    makePromiseSetNameAndPlaceReducer
-        .pullback(
-            state: \.setNameAndPlaceState,
-            action: /MakePromiseAction.setNameAndPlace,
-            environment: { _ in SetNameAndPlaceEnvironment() }
         ),
     Reducer { state, action, _ in
         switch action {
@@ -78,6 +121,7 @@ public let makePromiseReducer = Reducer<MakePromiseState, MakePromiseAction, Mak
             state.shouldShowBackButton = state.currentStep > initialStep
             return .none
         case let .selectTheme(.promiseTypeListItemTapped(promiseType)):
+            state.selectTheme = .init(selectedType: promiseType)
             return .none
         case let .setNameAndPlace(.filledPromiseName(name)):
             return .none
