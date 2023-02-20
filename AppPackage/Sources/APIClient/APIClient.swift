@@ -9,18 +9,13 @@ import ComposableArchitecture
 import Foundation
 
 public struct APIClient {
-    public var router: @Sendable (APIRoute) async throws -> (URLRequest)
+    public var router: @Sendable (APIRoute) async throws -> (Data, URLResponse)
 
     public func request(
-        route: APIRoute,
-        token: String? = nil
+        route: APIRoute
     ) async throws -> (Data, URLResponse) {
         do {
-            var urlRequest = try await router(route)
-            if let token = token {
-                urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authentication")
-            }
-            return try await URLSession.shared.data(for: urlRequest)
+            return try await router(route)
         } catch {
             throw APIError(message: error.localizedDescription)
         }
@@ -28,11 +23,10 @@ public struct APIClient {
 
     public func request<Model: Decodable>(
         route: APIRoute,
-        token: String? = nil,
         as _: Model.Type
     ) async throws -> Model {
         do {
-            let (data, _) = try await request(route: route, token: token)
+            let (data, _) = try await router(route)
             return try decode(as: Model.self, from: data)
         } catch {
             throw APIError(message: error.localizedDescription)
@@ -52,194 +46,158 @@ public func encode(from model: Encodable) throws -> Data {
     return try jsonEncoder.encode(model)
 }
 
-extension APIClient: DependencyKey {
-    public static let liveValue = Self.init { route in
-        guard let baseURLString = ProcessInfo.processInfo.environment["BASE_URL"],
-              let baseURL = URL(string: baseURLString)
-        else {
-            fatalError()
-        }
+public extension APIClient {
+    static var mock: Self {
+        return .init { route in
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
 
-        switch route {
-        case let .user(user):
-            var url = baseURL
-                .appendingPathComponent("api")
-                .appendingPathComponent("users")
-            switch user {
-            case let .signup(info):
-                url = url.appendingPathComponent("sign-up")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "POST"
-                urlRequest.httpBody = try encode(from: info)
-                return urlRequest
-            case .resign:
-                url = url.appendingPathComponent("resign-member")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "POST"
-                return urlRequest
-            case let .updateName(request):
-                url = url.appendingPathComponent("name")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "POST"
-                urlRequest.httpBody = try encode(from: request)
-                return urlRequest
-            case .fetchInfo:
-                url = url.appendingPathComponent("info")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "GET"
-                return urlRequest
-            }
-        case let .promising(promising):
-            var url = baseURL
-                .appendingPathComponent("api")
-                .appendingPathComponent("promisings")
-            switch promising {
-            case let .create(request):
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "POST"
-                urlRequest.httpBody = try encode(from: request)
-                return urlRequest
-            case let .fetchSession(id):
-                url = url
-                    .appendingPathComponent("session")
-                    .appendingPathExtension("\(id)")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "GET"
-                return urlRequest
-            case let .respondTimeByHost(id, promisingTime):
-                url = url
-                    .appendingPathComponent("session")
-                    .appendingPathComponent("\(id)")
-                    .appendingPathComponent("time-response")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "POST"
-                urlRequest.httpBody = try encode(from: promisingTime)
-                return urlRequest
-            case let .respondTimeByGuest(id, promisingTime):
-                url = url
-                    .appendingPathComponent("\(id)")
-                    .appendingPathComponent("time-response")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "POST"
-                urlRequest.httpBody = try encode(from: promisingTime)
-                return urlRequest
-            case let .reject(id):
-                url = url
-                    .appendingPathComponent("\(id)")
-                    .appendingPathComponent("time-response")
-                    .appendingPathComponent("rejection")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "POST"
-                return urlRequest
-            case let .confirm(id, request):
-                url = url
-                    .appendingPathComponent("\(id)")
-                    .appendingPathComponent("confirmation")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "POST"
-                return urlRequest
-            case let .fetch(promisingID):
-                url = url
-                    .appendingPathComponent("id")
-                    .appendingPathComponent("\(promisingID)")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "GET"
-                return urlRequest
-            case let .fetchStatus(promisingID):
-                url = url
-                    .appendingPathComponent("\(promisingID)")
-                    .appendingPathComponent("status")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "GET"
-                return urlRequest
-            case .fetchAll:
-                url = url
-                    .appendingPathComponent("user")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "GET"
-                return urlRequest
-            case let .fetchTimeTable(promisingID):
-                url = url
-                    .appendingPathComponent("\(promisingID)")
-                    .appendingPathComponent("time-table")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "GET"
-                return urlRequest
-            case .fetchCategories:
-                url = url
-                    .appendingPathComponent("categories")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "GET"
-                return urlRequest
-            case let .randomName(categoryID):
-                url = url
-                    .appendingPathComponent("categories")
-                    .appendingPathComponent("\(categoryID)")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "GET"
-                return urlRequest
-            }
-        case let .promise(promise):
-            var url = baseURL
-                .appendingPathComponent("api")
-                .appendingPathComponent("promises")
-            switch promise {
-            case let .fetchAll(query):
-                switch query {
-                case .user:
-                    url = url
-                        .appendingPathComponent("user")
-                    var urlRequest = URLRequest(url: url)
-                    urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                    urlRequest.httpMethod = "GET"
-                    return urlRequest
-                case let .month(dateString):
-                    url = url
-                        .appendingPathComponent("month")
-                        .appendingPathComponent("\(dateString)")
-                    var urlRequest = URLRequest(url: url)
-                    urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                    urlRequest.httpMethod = "GET"
-                    return urlRequest
-                case let .date(dateString):
-                    url = url
-                        .appendingPathComponent("date")
-                        .appendingPathComponent("\(dateString)")
-                    var urlRequest = URLRequest(url: url)
-                    urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                    urlRequest.httpMethod = "GET"
-                    return urlRequest
-                case .today:
-                    url = url
-                        .appendingPathComponent("today")
-                    var urlRequest = URLRequest(url: url)
-                    urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                    urlRequest.httpMethod = "GET"
-                    return urlRequest
+            switch route {
+            case let .user(user):
+                switch user {
+                case .signup:
+                    fallthrough
+                case .resign:
+                    fallthrough
+                case .updateName:
+                    fallthrough
+                case .fetchInfo:
+                    let info = SharedModels.User(
+                        id: 0,
+                        name: "name"
+                    )
+                    let data = try encode(from: info)
+                    return (data, URLResponse())
                 }
-            case let .fetch(id):
-                url = url
-                    .appendingPathComponent("\(id)")
-                var urlRequest = URLRequest(url: url)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                urlRequest.httpMethod = "GET"
-                return urlRequest
+            case let .promising(promising):
+                switch promising {
+                case .create:
+                    fallthrough
+                case .respondTimeByHost:
+                    fallthrough
+                case .respondTimeByGuest:
+                    fallthrough
+                case .reject:
+                    fallthrough
+                case .confirm:
+                    fallthrough
+                case .fetchSession:
+                    let session = SharedModels.PromisingSession(
+                        startDate: dateFormatter.date(from: "2023-02-10 09:00:00")!,
+                        endDate: dateFormatter.date(from: "2023-02-20 22:00:00")!,
+                        count: 0,
+                        unit: 0,
+                        availableDates: [
+                            dateFormatter.date(from: "2023-02-15 00:00:00")!
+                        ]
+                    )
+                    let data = try encode(from: session)
+                    return (data, URLResponse())
+                case .fetch:
+                    let timeStamp = SharedModels.PromisingTimeStamp(
+                        updatedAt: dateFormatter.date(from: "2023-02-10 09:00:00")!,
+                        isOwner: true,
+                        isResponded: true,
+                        id: 0,
+                        promisingName: "promising name",
+                        owner: .init(id: 0, name: "name"),
+                        startDate: dateFormatter.date(from: "2023-02-15 09:00:00")!,
+                        endDate: dateFormatter.date(from: "2023-02-15 14:00:00")!,
+                        category: .init(
+                            id: 0,
+                            keyword: "keyword",
+                            type: "type"
+                        ),
+                        availableDates: [
+                            dateFormatter.date(from: "2023-02-15 00:00:00")!
+                        ],
+                        members: [
+                            .init(id: 0, name: "name")
+                        ],
+                        placeName: "place name"
+                    )
+                    let data = try encode(from: timeStamp)
+                    return (data, URLResponse())
+                case .fetchStatus:
+                    let status = SharedModels.PromisingStatusResponse(status: .owner)
+                    let data = try encode(from: status)
+                    return (data, URLResponse())
+                case .fetchTimeTable:
+                    let timeTable = SharedModels.PromisingTimeTable(
+                        members: [.init(id: 0, name: "name")],
+                        colors: [0],
+                        totalCount: 0,
+                        unit: 0,
+                        timeTable: .init(
+                            date: dateFormatter.date(from: "2023-02-15 00:00:00")!,
+                            blocks: [
+                                .init(
+                                    index: 0,
+                                    count: 0,
+                                    color: 0,
+                                    users: [.init(id: 0, name: "name")]
+                                )
+                            ]
+                        ),
+                        id: 0,
+                        promisingName: "promising name",
+                        owner: [.init(id: 0, name: "name")],
+                        startDate: dateFormatter.date(from: "2023-02-15 09:00:00")!,
+                        endDate: dateFormatter.date(from: "2023-02-15 14:00:00")!,
+                        category: .init(
+                            id: 0,
+                            keyword: "keyword",
+                            type: "type"
+                        ),
+                        availableDates: [
+                            dateFormatter.date(from: "2023-02-15 00:00:00")!
+                        ],
+                        placeName: "place name"
+                    )
+                    let data = try encode(from: timeTable)
+                    return (data, URLResponse())
+                case .fetchAll:
+                    let timeStamps = SharedModels.PromisingTimeStamps(
+                        [
+                            .init(
+                                updatedAt: dateFormatter.date(from: "2023-02-10 09:00:00")!,
+                                isOwner: true,
+                                isResponded: true,
+                                id: 0,
+                                promisingName: "promising name",
+                                owner: .init(id: 0, name: "name"),
+                                startDate: dateFormatter.date(from: "2023-02-15 09:00:00")!,
+                                endDate: dateFormatter.date(from: "2023-02-15 14:00:00")!,
+                                category: .init(
+                                    id: 0,
+                                    keyword: "keyword",
+                                    type: "type"
+                                ),
+                                availableDates: [
+                                    dateFormatter.date(from: "2023-02-15 00:00:00")!
+                                ],
+                                members: [
+                                    .init(id: 0, name: "name")
+                                ],
+                                placeName: "place name"
+                            )
+                        ]
+                    )
+                    let data = try encode(from: timeStamps)
+                    return (data, URLResponse())
+                case .fetchCategories:
+                    let categories = SharedModels.Categories(
+                        [.init(id: 0, keyword: "keyword", type: "type")]
+                    )
+                    let data = try encode(from: categories)
+                    return (data, URLResponse())
+                case .randomName:
+                    let name = SharedModels.CategoryName(name: "category name")
+                    let data = try encode(from: name)
+                    return (data, URLResponse())
+                }
+            default:
+                fatalError()
             }
         }
     }

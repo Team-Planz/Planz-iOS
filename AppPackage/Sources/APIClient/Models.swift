@@ -109,7 +109,7 @@ public enum SharedModels {
         }
     }
 
-    public struct PromisingSession: Decodable {
+    public struct PromisingSession: Codable {
         public let startDate: Date
         public let endDate: Date
         public let count: Int
@@ -131,10 +131,10 @@ public enum SharedModels {
         public let promiseDate: Date
     }
 
-    public struct PromisingStatusResponse: Decodable {
+    public struct PromisingStatusResponse: Codable {
         public let status: Status
 
-        public enum Status: String, Decodable {
+        public enum Status: String, Codable {
             case owner = "OWNER"
             case confirmed = "CONFIRMED"
             case alreadyResponded = "RESPONSE_ALREADY"
@@ -143,7 +143,7 @@ public enum SharedModels {
         }
     }
 
-    public struct PromisingTimeTable: Decodable {
+    public struct PromisingTimeTable: Codable {
         private enum CodingKeys: String, CodingKey {
             case members
             case colors
@@ -164,7 +164,7 @@ public enum SharedModels {
         public let colors: [Int]
         public let totalCount: Int
         public let unit: Int
-        public let timeTable: [Int]
+        public let timeTable: TimeTable
         public let id: Int
         public let promisingName: String
         public let owner: [User]
@@ -174,11 +174,11 @@ public enum SharedModels {
         public let availableDates: [Date]
         public let placeName: String
 
-        public struct TimeTable: Decodable {
+        public struct TimeTable: Codable {
             public let date: Date
             public let blocks: [Block]
 
-            public struct Block: Decodable {
+            public struct Block: Codable {
                 public let index: Int
                 public let count: Int
                 public let color: Int
@@ -187,7 +187,15 @@ public enum SharedModels {
         }
     }
 
-    public struct PromisingTimeStamp: Decodable {
+    public struct PromisingTimeStamps: Codable {
+        public let promisingTimeStamps: [PromisingTimeStamp]
+
+        init(_ promisingTimeStamps: [PromisingTimeStamp]) {
+            self.promisingTimeStamps = promisingTimeStamps
+        }
+    }
+
+    public struct PromisingTimeStamp: Codable {
         private enum CodingKeys: String, CodingKey {
             case updatedAt
             case isOwner
@@ -217,13 +225,21 @@ public enum SharedModels {
         public let placeName: String
     }
 
-    public struct Category: Decodable {
+    public struct Categories: Codable {
+        public let categories: [Category]
+
+        init(_ categories: [Category]) {
+            self.categories = categories
+        }
+    }
+
+    public struct Category: Codable {
         public let id: Int
         public let keyword: String
         public let type: String
     }
 
-    public struct CategoryName: Decodable {
+    public struct CategoryName: Codable {
         public let name: String
     }
 
