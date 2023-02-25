@@ -3,35 +3,6 @@ import Introspect
 import SwiftUI
 
 public struct CalendarView: View {
-    public enum Style {
-        var layoutConstraint: LayoutConstraint {
-            switch self {
-            case .home:
-                return .init(
-                    currentMonthInfoBottomPadding: 16,
-                    directionButtonSize: .init(width: 20, height: 20),
-                    contentHorizontalPadding: 19.5,
-                    contentTopPadding: 20,
-                    contentBottomPadding: 24,
-                    contentBackgroundCornerRadius: 16
-                )
-
-            case .promise:
-                return .init(
-                    currentMonthInfoBottomPadding: 20,
-                    directionButtonSize: .init(width: 24, height: 24),
-                    contentHorizontalPadding: .zero,
-                    contentTopPadding: .zero,
-                    contentBottomPadding: .zero,
-                    contentBackgroundCornerRadius: .zero
-                )
-            }
-        }
-
-        case home
-        case promise
-    }
-
     struct LayoutConstraint {
         var monthView: MonthView.LayoutConstraint {
             .init(
@@ -54,17 +25,17 @@ public struct CalendarView: View {
     }
 
     @Namespace var coordinateSpace
-    let style: Style
+    let type: CalendarType
     let layoutConstraint: LayoutConstraint
     let store: StoreOf<CalendarCore>
     @ObservedObject var viewStore: ViewStoreOf<CalendarCore>
 
     public init(
-        style: Style,
+        type: CalendarType,
         store: StoreOf<CalendarCore>
     ) {
-        self.style = style
-        layoutConstraint = style.layoutConstraint
+        self.type = type
+        layoutConstraint = type.layoutConstraint
         self.store = store
         viewStore = ViewStore(store)
     }
@@ -73,7 +44,7 @@ public struct CalendarView: View {
         GeometryReader { geometryProxy in
             VStack(spacing: .zero) {
                 HStack(spacing: .zero) {
-                    switch style {
+                    switch type {
                     case .home:
                         VStack(spacing: .zero) {
                             HStack(spacing: .zero) {
@@ -122,7 +93,7 @@ public struct CalendarView: View {
                                 .frame(height: 1)
                         }
 
-                    case .promise:
+                    case .appointment:
                         Button(action: { viewStore.send(.leftSideButtonTapped) }) {
                             Image.left
                                 .resizable()
@@ -228,6 +199,32 @@ public struct CalendarView: View {
     }
 }
 
+private extension CalendarType {
+    var layoutConstraint: CalendarView.LayoutConstraint {
+        switch self {
+        case .home:
+            return .init(
+                currentMonthInfoBottomPadding: 16,
+                directionButtonSize: .init(width: 20, height: 20),
+                contentHorizontalPadding: 19.5,
+                contentTopPadding: 20,
+                contentBottomPadding: 24,
+                contentBackgroundCornerRadius: 16
+            )
+
+        case .appointment:
+            return .init(
+                currentMonthInfoBottomPadding: 20,
+                directionButtonSize: .init(width: 24, height: 24),
+                contentHorizontalPadding: .zero,
+                contentTopPadding: .zero,
+                contentBottomPadding: .zero,
+                contentBackgroundCornerRadius: .zero
+            )
+        }
+    }
+}
+
 enum WeekDay: CaseIterable, CustomStringConvertible {
     var description: String {
         switch self {
@@ -316,18 +313,18 @@ private struct ScrollViewOffset: PreferenceKey {
         static var previews: some View {
             Group {
                 CalendarView(
-                    style: .home,
+                    type: .home,
                     store: .init(
                         initialState: .init(),
-                        reducer: CalendarCore()
+                        reducer: CalendarCore(type: .home)
                     )
                 )
 
                 CalendarView(
-                    style: .promise,
+                    type: .appointment,
                     store: .init(
                         initialState: .init(),
-                        reducer: CalendarCore()
+                        reducer: CalendarCore(type: .appointment)
                     )
                 )
             }

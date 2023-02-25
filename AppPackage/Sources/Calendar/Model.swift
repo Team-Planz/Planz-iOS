@@ -1,5 +1,15 @@
 import Foundation
 
+public enum CalendarType {
+    case home
+    case appointment
+}
+
+public enum TimeOrder: CaseIterable, Hashable {
+    case previous
+    case next
+}
+
 public struct Day: Identifiable, Hashable {
     public var id: Date { date }
     let date: Date
@@ -17,8 +27,39 @@ enum ColorState: Equatable {
     case clear
 }
 
+public enum GestureType {
+    case insert
+    case remove
+}
+
+public struct Month: Hashable {
+    let date: Date
+    
+    init(date: Date) {
+        self.date = date.month
+    }
+}
+
 public struct MonthState: Identifiable, Hashable {
-    public let id: Date
+    public let id: Month
     var days: [Day] = []
-    var ranges: [Date: [Date]] = [:]
+    var relatedMonthList: [TimeOrder: [Date]] = [:]
+    
+    var previousRange: ClosedRange<Int> {
+        0 ... 6
+    }
+    var nextRange: ClosedRange<Int> {
+        let count = days.count / 7
+        return (7 * count - 7)  ... (7 * count - 1)
+    }
+    
+    public init(
+        id: Date,
+        days: [Day],
+        relatedMonthList: [TimeOrder: [Date]]
+    ) {
+        self.id = Month(date: id)
+        self.days = days
+        self.relatedMonthList = relatedMonthList
+    }
 }

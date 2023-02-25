@@ -2,7 +2,8 @@ import Dependencies
 import Foundation
 
 public struct CalendarClient {
-    let createMonthStateList: (DateRange, Date) throws -> [MonthState]
+    let createMonthStateList: (CalendarType, DateRange, Date) throws -> [MonthState]
+    let isEdgeDay: (Date, [Date: [Date]]) throws -> Bool
 }
 
 extension CalendarClient: DependencyKey {
@@ -29,7 +30,7 @@ extension CalendarClient: DependencyKey {
         case upper
     }
 
-    public static var liveValue: CalendarClient = Self { range, targetDate in
+    public static var liveValue: CalendarClient = Self { type, range, targetDate in
         try range
             .value
             .map {
@@ -37,9 +38,7 @@ extension CalendarClient: DependencyKey {
                     let targetDate = calendar.date(from: calendar.dateComponents([.year, .month], from: targetDate)),
                     let month = calendar.date(byAdding: .month, value: $0, to: targetDate),
                     let monthDays = calendar.range(of: .day, in: .month, for: month)?.count,
-                    let monthInLastDay = calendar.date(byAdding: .day, value: monthDays - 1, to: month),
-                    let previousMonth = calendar.date(byAdding: .month, value: -1, to: month),
-                    let nextMonth = calendar.date(byAdding: .month, value: 1, to: month)
+                    let monthInLastDay = calendar.date(byAdding: .day, value: monthDays - 1, to: month)
                 else { throw InternalError.unexpected }
                 let currentMonthFirstWeekDay = calendar.component(.weekday, from: month)
                 let currentMonthLastWeekDay = calendar.component(.weekday, from: monthInLastDay)
@@ -47,21 +46,40 @@ extension CalendarClient: DependencyKey {
                 let list = (-(currentMonthFirstWeekDay - 1) ..< (monthDays + (7 - currentMonthLastWeekDay)))
                     .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
                     .map {
-                        Day(
+                        let isFaded = type == .home ?
+                        !calendar.isDate($0, equalTo: month, toGranularity: .month)
+                        : .today > $0
+                        return Day(
                             date: $0,
-                            isFaded: !calendar.isDate($0, equalTo: month, toGranularity: .month),
+                            isFaded: isFaded,
                             isToday: calendar.isDate($0, inSameDayAs: .now)
                         )
                     }
 
-                var ranges: [Date: [Date]] = [:]
-                ranges[previousMonth] = (-(currentMonthFirstWeekDay - 1) ..< 0)
-                    .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
-                ranges[nextMonth] = (monthDays ..< (monthDays + (7 - currentMonthLastWeekDay)))
-                    .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
+                let relatedMonthList = TimeOrder.allCases
+                    .map {
+                        let dateList: [Date]
+                        switch $0 {
+                        case .previous:
+                            dateList = (-(currentMonthFirstWeekDay - 1) ..< 0)
+                                .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
+                        case .next:
+                            dateList = (monthDays ..< (monthDays + (7 - currentMonthLastWeekDay)))
+                                .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
+                        }
+                        return ($0, dateList)
+                    }
+                    .reduce(into: [TimeOrder: [Date]]()) { result, item in
+                        result[item.0] = item.1
+                    }
 
-                return .init(id: month, days: list, ranges: ranges)
+                return .init(id: month, days: list, relatedMonthList: relatedMonthList)
             }
+    } isEdgeDay: { date, list in
+        let isPreviousContains = list[date.previousMonth]?.contains(date) ?? false
+        let isNextConains = list[date.nextMonth]?.contains(date) ?? false
+        
+        return isPreviousContains || isNextConains
     }
 }
 
@@ -78,3 +96,41 @@ let calendar: Calendar = {
 
     return calendar
 }()
+
+private extension Date {
+    static var today: Date {
+        let components = calendar.dateComponents([.year, .month, .day], from: .now)
+        guard
+            let date = calendar.date(from: components)
+        else { return .now }
+     
+        return date
+    }
+}
+
+extension Date {
+    var previousMonth: Date {
+        guard
+            let date = calendar.date(byAdding: .month, value: -1, to: month)
+        else { return .now }
+        
+        return date
+    }
+    
+    var month: Date {
+        let components = calendar.dateComponents([.year, .month], from: self)
+        guard
+            let date = calendar.date(from: components)
+        else { return .now }
+     
+        return date
+    }
+    
+    var nextMonth: Date {
+        guard
+            let date = calendar.date(byAdding: .month, value: 1, to: month)
+        else { return .now }
+        
+        return date
+    }
+}

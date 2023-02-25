@@ -23,8 +23,11 @@ public struct CalendarCore: ReducerProtocol {
     
     @Dependency(\.calendarClient) var calendarClient
     @Dependency(\.mainQueue) var mainQueue
+    let type: CalendarType
     
-    public init() { }
+    public init(type: CalendarType) {
+        self.type = type
+    }
     
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
@@ -71,7 +74,7 @@ public struct CalendarCore: ReducerProtocol {
             case let .createMonthStateList(range):
                 do {
                     let itemList = try calendarClient
-                        .createMonthStateList(range, state.selectedMonth)
+                        .createMonthStateList(type, range, state.selectedMonth)
                     return .send(.updateMonthStateList(range, .success(itemList)))
                 } catch {
                     return .send(.updateMonthStateList(range, .failure(error)))
@@ -93,7 +96,36 @@ public struct CalendarCore: ReducerProtocol {
                 
             case .updateMonthStateList:
                 return .none
-            
+                
+            case let .monthAction(
+                id: id,
+                action: .dragEnded(startIndex: startIndex)
+            ):
+                guard
+                    let item = state.monthList[id: state.selectedMonth],
+                    let range = item.gesture.range
+                else { return .none }
+                
+                if let range = item.gesture.temp {
+                    if item.monthState.previousRange.overlaps(range) {
+                        return .send(.monthAction(id: state.selectedMonth.previousMonth, action: .update(.remove, .previous, range)))
+                    } else if item.monthState.nextRange.overlaps(range) {
+                        return .send(.monthAction(id: state.selectedMonth.nextMonth, action: .update(.remove, .next, range)))
+                    }
+                } else {
+                    if item.monthState.previousRange.overlaps(range) {
+                         if let item2 =  range.intersection(item.monthState.previousRange) {
+                             return .send(.monthAction(id: state.selectedMonth.previousMonth, action: .update(.insert, .next, item2)))
+                        }
+                    } else if item.monthState.nextRange.overlaps(range) {
+                        if let item2 = range.intersection(item.monthState.nextRange) {
+                            return .send(.monthAction(id: state.selectedMonth.nextMonth, action: .update(.insert, .previous, item2)))
+                        }
+                    }
+                }
+                
+                return .none
+                
             case .monthAction:
                 return .none
             }
@@ -111,4 +143,17 @@ extension Date {
         let components = calendar.dateComponents([.year, .month], from: .now)
         return calendar.date(from: components) ?? .now
     }()
+}
+
+extension ClosedRange where Bound == Int {
+    func intersection(_ other: Self) -> Self? {
+        let intersection = set.intersection(other.set)
+        let item = IndexSet(intersection)
+            .rangeView
+            .map(\.closedRange)
+            .first
+        guard let result = item else { return nil }
+        
+        return result
+    }
 }
