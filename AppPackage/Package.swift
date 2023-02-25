@@ -12,7 +12,8 @@ let package = Package(
             targets: [
                 "AppPackage",
                 "TimeTableFeature",
-                "Calendar"
+                "Calendar",
+                "MakePromise"
             ]
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"])
@@ -48,6 +49,13 @@ let package = Package(
             ],
             resources: [
                 .process("Resources")
+            ]
+        ),
+        .target(
+            name: "MakePromise",
+            dependencies: [
+                "DesignSystem",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         )
     ]
