@@ -12,6 +12,8 @@ import Foundation
 public struct SetNameAndPlaceState: Equatable {
     var promiseName: String?
     var promisePlace: String?
+
+    public init() {}
 }
 
 public enum SetNameAndPlaceAction: Equatable {

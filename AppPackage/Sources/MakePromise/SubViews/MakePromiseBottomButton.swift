@@ -45,7 +45,7 @@ public struct PromiseNextButton: View {
             }
             .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0))
             .background(
-                viewStore.selectThemeState.selectedType != nil ?
+                viewStore.selectTheme?.selectedType != nil ?
                     PDS.COLOR.purple9.scale :
                     PDS.COLOR.gray3.scale
             )

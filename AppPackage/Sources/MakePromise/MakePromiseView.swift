@@ -36,10 +36,10 @@ struct PromiseContentView: View {
             VStack {
                 switch viewStore.currentStep {
                 case .selectTheme:
-                    SelectThemeView(store: self.store.scope(state: \.selectThemeState, action: { .selectTheme($0) }))
-                case .fillNAndPlace:
+                    SelectThemeView(store: self.store.scope(state: \.selectTheme!, action: { .selectTheme($0) }))
+                case .setNameAndPlace:
                     NameAndPlaceView()
-                case .error:
+                case .none:
                     MakePromiseErrorView()
                 }
             }
