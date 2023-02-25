@@ -6,7 +6,6 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
-import Share
 import SwiftUI
 
 @main
