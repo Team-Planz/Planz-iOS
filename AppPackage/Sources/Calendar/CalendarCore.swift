@@ -86,7 +86,7 @@ public struct CalendarCore: ReducerProtocol {
                     let monthCoreStates = itemList
                         .map { MonthCore.State(monthState: $0) }
                     state.monthList.insert(contentsOf: monthCoreStates, at: .zero)
-                
+                    
                 case .default, .upper:
                     let monthCoreStates = itemList
                         .map { MonthCore.State(monthState: $0) }
@@ -96,35 +96,32 @@ public struct CalendarCore: ReducerProtocol {
                 
             case .updateMonthStateList:
                 return .none
+
+            case let .monthAction(
+                id: id,
+                action: .firstWeekDraged(type, range)
+            ):
+                return .send(
+                    .monthAction(
+                        id: id.previousMonth,
+                        action: type == .insert
+                        ? .selectRelatedDays(.next, range)
+                        : .deSelectRelatedDays(.next, range)
+                    )
+                )
                 
             case let .monthAction(
                 id: id,
-                action: .dragEnded(startIndex: startIndex)
+                action: .lastWeekDraged(type, range)
             ):
-                guard
-                    let item = state.monthList[id: state.selectedMonth],
-                    let range = item.gesture.range
-                else { return .none }
-                
-                if let range = item.gesture.temp {
-                    if item.monthState.previousRange.overlaps(range) {
-                        return .send(.monthAction(id: state.selectedMonth.previousMonth, action: .update(.remove, .previous, range)))
-                    } else if item.monthState.nextRange.overlaps(range) {
-                        return .send(.monthAction(id: state.selectedMonth.nextMonth, action: .update(.remove, .next, range)))
-                    }
-                } else {
-                    if item.monthState.previousRange.overlaps(range) {
-                         if let item2 =  range.intersection(item.monthState.previousRange) {
-                             return .send(.monthAction(id: state.selectedMonth.previousMonth, action: .update(.insert, .next, item2)))
-                        }
-                    } else if item.monthState.nextRange.overlaps(range) {
-                        if let item2 = range.intersection(item.monthState.nextRange) {
-                            return .send(.monthAction(id: state.selectedMonth.nextMonth, action: .update(.insert, .previous, item2)))
-                        }
-                    }
-                }
-                
-                return .none
+                return .send(
+                    .monthAction(
+                        id: id.nextMonth,
+                        action: type == .insert
+                        ? .selectRelatedDays(.previous, range)
+                        : .deSelectRelatedDays(.previous, range)
+                    )
+                )
                 
             case .monthAction:
                 return .none
@@ -133,7 +130,7 @@ public struct CalendarCore: ReducerProtocol {
         .forEach(
             \.monthList,
              action: /Action.monthAction(id:action:),
-             MonthCore.init
+             element: MonthCore.init
         )
     }
 }

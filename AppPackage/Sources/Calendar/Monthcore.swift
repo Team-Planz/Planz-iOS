@@ -23,8 +23,11 @@ public struct MonthCore: ReducerProtocol {
     public enum Action: Equatable {
         case drag(startIndex: Int, endIndex: Int)
         case dragEnded(startIndex: Int)
+        case firstWeekDraged(GestureType, ClosedRange<Int>)
+        case lastWeekDraged(GestureType, ClosedRange<Int>)
+        case selectRelatedDays(TimeOrder, ClosedRange<Int>)
+        case deSelectRelatedDays(TimeOrder, ClosedRange<Int>)
         case resetGesture
-        case update(GestureType, TimeOrder, ClosedRange<Int>)
     }
     
     public func reduce(
@@ -52,11 +55,18 @@ public struct MonthCore: ReducerProtocol {
             guard
                 let storedRange = state.gesture.range
             else {
-                currentRange
-                    .forEach {
-                        state.gesture.tempElements.insert(item: $0)
-                        state.monthState.days[$0].selectionType = .painted
-                    }
+                if state.gesture.rangeList.contains(where: { $0.overlaps(currentRange) }) {
+                    currentRange
+                        .forEach {
+                            state.monthState.days[$0].selectionType = .clear
+                        }
+                } else {
+                    currentRange
+                        .forEach {
+                            state.gesture.tempElements.insert(item: $0)
+                            state.monthState.days[$0].selectionType = .painted
+                        }
+                }
                 
                 return .none
             }
@@ -141,39 +151,45 @@ public struct MonthCore: ReducerProtocol {
             let filterdList = state.gesture.rangeList
                 .filter { $0.overlaps(currentRange) }
             if state.gesture.rangeList.contains(where: { $0.contains(startIndex) }) {
-                var items: [Int] = []
-                var flag = false
-                filterdList
-                    .forEach {
+                let effects = filterdList
+                    .compactMap { value -> EffectTask<Action>? in
                         guard
-                            let index = state.gesture.rangeList.firstIndex(of: $0)
-                        else { return }
-                        
-                        if state.monthState.previousRange.overlaps(currentRange) {
-                            if let range = state.monthState.previousRange.intersection(currentRange) {
-                                items.append(contentsOf: range.map { $0 })
-                                flag = true
-                            }
-                        } else if state.monthState.nextRange.overlaps(currentRange) {
-                            if let range = state.monthState.nextRange.intersection(currentRange) {
-                                items.append(contentsOf: range.map { $0 })
-                            }
-                        }
+                            let index = state.gesture.rangeList.firstIndex(of: value)
+                        else { return nil }
                         state.gesture.rangeList.remove(at: index)
-                        IndexSet($0.set.subtracting(currentRange))
+                        IndexSet(value.set.subtracting(currentRange))
                             .rangeView
                             .map(\.closedRange)
                             .forEach { state.gesture.rangeList.appendSorted(item: $0) }
+                        
+                        if value.overlaps(state.monthState.previousRange) {
+                            if
+                                let intersection = value.intersection(state.monthState.previousRange),
+                                let item = intersection.intersection(currentRange) {
+                                return EffectTask(value: .firstWeekDraged(.remove, item))
+                            }
+                        } else if value.overlaps(state.monthState.nextRange) {
+                            if
+                                let intersection = value.intersection(state.monthState.nextRange),
+                                let item = intersection.intersection(currentRange ) {
+                                return EffectTask(value: .lastWeekDraged(.remove, item))
+                            }
+                        }
+                        return nil
                     }
-                
-                if !items.isEmpty {
-                    let item22 = ClosedRange<Int>.init(uncheckedBounds: (items.first!, items.last!))
-                    if flag {
-                        state.gesture.temp = item22
-                    } else {
-                        state.gesture.temp = item22
-                    }
+                let item = state.gesture.rangeList
+                    .flatMap { $0 }
+                let comparedList = IndexSet(item).rangeView
+                    .map(\.closedRange)
+                if state.gesture.rangeList != comparedList {
+                    state.gesture.rangeList = comparedList
                 }
+                if !effects.isEmpty {
+                    return .merge(effects)
+                } else {
+                    return .send(.resetGesture)
+                }
+
             } else {
                 let extendedRange = filterdList
                     .reduce(into: currentRange) { result, item in
@@ -185,6 +201,26 @@ public struct MonthCore: ReducerProtocol {
                         state.gesture.rangeList.remove(at: index)
                     }
                 state.gesture.rangeList.appendSorted(item: extendedRange)
+                
+                if let intersection = state.monthState.previousRange.intersection(extendedRange) {
+                    let item = state.gesture.rangeList
+                        .flatMap { $0 }
+                    let comparedList = IndexSet(item).rangeView
+                        .map(\.closedRange)
+                    if state.gesture.rangeList != comparedList {
+                        state.gesture.rangeList = comparedList
+                    }
+                    return .send(.firstWeekDraged(.insert, intersection))
+                } else if let intersection = state.monthState.nextRange.intersection(extendedRange) {
+                    let item = state.gesture.rangeList
+                        .flatMap { $0 }
+                    let comparedList = IndexSet(item).rangeView
+                        .map(\.closedRange)
+                    if state.gesture.rangeList != comparedList {
+                        state.gesture.rangeList = comparedList
+                    }
+                    return .send(.lastWeekDraged(.insert, intersection))
+                }
             }
             let item = state.gesture.rangeList
                 .flatMap { $0 }
@@ -196,131 +232,136 @@ public struct MonthCore: ReducerProtocol {
             
             return .send(.resetGesture)
             
+        case .firstWeekDraged, .lastWeekDraged:
+            print("🐶", state.gesture.rangeList)
+            return .send(.resetGesture)
+            
+        case let .selectRelatedDays(timeOrder, range):
+            switch timeOrder {
+            case .previous:
+                let target = range.map { $0 % 7 }
+                let range = target.first! ... target.last!
+                if state.gesture.rangeList.contains(where: { $0.overlaps(range) }) {
+                    let filterdList = state.gesture.rangeList
+                        .filter { $0.overlaps(range) }
+                    let extendedRange = filterdList
+                        .reduce(into: range) { result, item in
+                            guard
+                                let index = state.gesture.rangeList.firstIndex(of: item),
+                                let firstItem = IndexSet(item.set.union(range.set)).rangeView.first
+                            else { return }
+                            result = firstItem.closedRange
+                            state.gesture.rangeList.remove(at: index)
+                        }
+                    state.gesture.rangeList.appendSorted(item: extendedRange)
+                } else {
+                    state.gesture.rangeList.appendSorted(item: range)
+                }
+                let item = state.gesture.rangeList
+                    .flatMap { $0 }
+                let comparedList = IndexSet(item).rangeView
+                    .map(\.closedRange)
+                if state.gesture.rangeList != comparedList {
+                    state.gesture.rangeList = comparedList
+                }
+                
+                target.forEach {
+                    state.monthState.days[$0].selectionType = .painted
+                }
+            case .next:
+                let item = (state.monthState.days.count / 7) - 1
+                let target = range.map { $0 + item * 7 }
+                let range = target.first! ... target.last!
+                if state.gesture.rangeList.contains(where: { $0.overlaps(range) }) {
+                    let filterdList = state.gesture.rangeList
+                        .filter { $0.overlaps(range) }
+                    let extendedRange = filterdList
+                        .reduce(into: range) { result, item in
+                            guard
+                                let index = state.gesture.rangeList.firstIndex(of: item),
+                                let firstItem = IndexSet(item.set.union(range.set)).rangeView.first
+                            else { return }
+                            result = firstItem.closedRange
+                            state.gesture.rangeList.remove(at: index)
+                        }
+                    state.gesture.rangeList.appendSorted(item: extendedRange)
+                } else {
+                    state.gesture.rangeList.appendSorted(item: range)
+                }
+                let item2 = state.gesture.rangeList
+                    .flatMap { $0 }
+                let comparedList = IndexSet(item2).rangeView
+                    .map(\.closedRange)
+                if state.gesture.rangeList != comparedList {
+                    state.gesture.rangeList = comparedList
+                }
+                target.forEach {
+                    state.monthState.days[$0].selectionType = .painted
+                }
+            }
+            return .send(.resetGesture)
+            
+        case let .deSelectRelatedDays(timeOrder, range):
+            switch timeOrder {
+            case .previous:
+                let targetRange = range.lowerBound % 7 ... range.upperBound % 7
+                state.gesture.rangeList
+                    .filter { $0.overlaps(targetRange) }
+                    .forEach {
+                        guard
+                            let index = state.gesture.rangeList.firstIndex(of: $0)
+                        else { return }
+                        state.gesture.rangeList.remove(at: index)
+                        IndexSet($0.set.subtracting(targetRange))
+                            .rangeView
+                            .map(\.closedRange)
+                            .forEach {
+                                state.gesture.rangeList.appendSorted(item: $0)
+                            }
+                        IndexSet($0.set.intersection(targetRange))
+                            .rangeView
+                            .map(\.closedRange)
+                            .forEach {
+                                $0.forEach {
+                                    state.monthState.days[$0].selectionType = .clear
+                                }
+                            }
+                    }
+                
+            case .next:
+                let number = (state.monthState.days.count / 7) - 1
+                let targetRange = (range.lowerBound + (number * 7)) ... (range.upperBound + (number * 7))
+                state.gesture.rangeList
+                    .filter { $0.overlaps(targetRange) }
+                    .forEach {
+                        guard
+                            let index = state.gesture.rangeList.firstIndex(of: $0)
+                        else { return }
+                        state.gesture.rangeList.remove(at: index)
+                        IndexSet($0.set.subtracting(targetRange))
+                            .rangeView
+                            .map(\.closedRange)
+                            .forEach {
+                                state.gesture.rangeList.appendSorted(item: $0)
+                            }
+                        IndexSet($0.set.intersection(targetRange))
+                            .rangeView
+                            .map(\.closedRange)
+                            .forEach {
+                                $0.forEach {
+                                    state.monthState.days[$0].selectionType = .clear
+                                }
+                            }
+                    }
+            }
+            return  .send(.resetGesture)
+
         case .resetGesture:
             state.gesture.range = nil
             state.gesture.tempElements = []
             state.gesture.removableElements = []
-            state.gesture.temp = nil
             print("🎁", state.id, state.gesture.rangeList)
             return .none
-            
-        case let .update(gestureType, timeOrder, dates):
-            switch gestureType {
-            case .insert:
-                switch timeOrder {
-                case .previous:
-                    let target = dates.map { $0 % 7 }
-                    let range = target.first! ... target.last!
-                    if state.gesture.rangeList.contains(where: { $0.overlaps(range) }) {
-                        let filterdList = state.gesture.rangeList
-                            .filter { $0.overlaps(range) }
-                        let extendedRange = filterdList
-                            .reduce(into: range) { result, item in
-                                guard
-                                    let index = state.gesture.rangeList.firstIndex(of: item),
-                                    let firstItem = IndexSet(item.set.union(range.set)).rangeView.first
-                                else { return }
-                                result = firstItem.closedRange
-                                state.gesture.rangeList.remove(at: index)
-                            }
-                        state.gesture.rangeList.appendSorted(item: extendedRange)
-                    } else {
-                        state.gesture.rangeList.appendSorted(item: range)
-                    }
-                    let item = state.gesture.rangeList
-                        .flatMap { $0 }
-                    let comparedList = IndexSet(item).rangeView
-                        .map(\.closedRange)
-                    if state.gesture.rangeList != comparedList {
-                        state.gesture.rangeList = comparedList
-                    }
-                    
-                    target.forEach {
-                        state.monthState.days[$0].selectionType = .painted
-                    }
-                    
-                case .next:
-                    let item = (state.monthState.days.count / 7) - 1
-                    let target = dates.map { $0 + item * 7 }
-                    let range = target.first! ... target.last!
-                    if state.gesture.rangeList.contains(where: { $0.overlaps(range) }) {
-                        let filterdList = state.gesture.rangeList
-                            .filter { $0.overlaps(range) }
-                        let extendedRange = filterdList
-                            .reduce(into: range) { result, item in
-                                guard
-                                    let index = state.gesture.rangeList.firstIndex(of: item),
-                                    let firstItem = IndexSet(item.set.union(range.set)).rangeView.first
-                                else { return }
-                                result = firstItem.closedRange
-                                state.gesture.rangeList.remove(at: index)
-                            }
-                        state.gesture.rangeList.appendSorted(item: extendedRange)
-                    } else {
-                        state.gesture.rangeList.appendSorted(item: range)
-                    }
-                    let item2 = state.gesture.rangeList
-                        .flatMap { $0 }
-                    let comparedList = IndexSet(item2).rangeView
-                        .map(\.closedRange)
-                    if state.gesture.rangeList != comparedList {
-                        state.gesture.rangeList = comparedList
-                    }
-                    target.forEach {
-                        state.monthState.days[$0].selectionType = .painted
-                    }
-                }
-                
-                print("🐶", state.id, state.gesture.rangeList)
-                return .none
-
-            case .remove:
-                switch timeOrder {
-                case .previous:
-                    let item = (state.monthState.days.count / 7) - 1
-                    let target = dates.map { $0 + item * 7 }
-                    target.forEach {
-                        state.monthState.days[$0].selectionType = .clear
-                    }
-                    let range = target.first! ... target.last!
-                    let filterdList = state.gesture.rangeList
-                        .filter { $0.overlaps(range) }
-                    filterdList
-                        .forEach {
-                            guard
-                                let index = state.gesture.rangeList.firstIndex(of: $0)
-                            else { return }
-                            state.gesture.rangeList.remove(at: index)
-                            IndexSet($0.set.subtracting(range))
-                                .rangeView
-                                .map(\.closedRange)
-                                .forEach { state.gesture.rangeList.appendSorted(item: $0) }
-                        }
-                    
-                case .next:
-                    let target = dates.map { $0 % 7 }
-                    let range = target.first! ... target.last!
-                    
-                    target.forEach {
-                        state.monthState.days[$0].selectionType = .clear
-                    }
-                    let filterdList = state.gesture.rangeList
-                        .filter { $0.overlaps(range) }
-                    filterdList
-                        .forEach {
-                            guard
-                                let index = state.gesture.rangeList.firstIndex(of: $0)
-                            else { return }
-                            state.gesture.rangeList.remove(at: index)
-                            IndexSet($0.set.subtracting(range))
-                                .rangeView
-                                .map(\.closedRange)
-                                .forEach { state.gesture.rangeList.appendSorted(item: $0) }
-                        }
-                }
-                print("🌈", state.id, state.gesture.rangeList)
-                return .none
-            }
         }
     }
 }
@@ -331,8 +372,11 @@ extension MonthCore {
         var rangeList: [ClosedRange<Int>] = []
         var removableElements: Set<Int> = []
         var tempElements: Set<Int> = []
-        
-        var temp: ClosedRange<Int>?
+    }
+    
+    public struct RelatedDayInfo: Equatable {
+        let type: TimeOrder
+        let range: ClosedRange<Int>
     }
 }
 
