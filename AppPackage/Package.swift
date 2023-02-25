@@ -13,7 +13,8 @@ let package = Package(
                 "AppPackage",
                 "TimeTableFeature",
                 "Calendar",
-                "APIClient"
+                "APIClient",
+                "APIClientLive"
             ]
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"])
@@ -21,7 +22,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.50.0"),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
-        .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0")
+        .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
+        .package(url: "https://github.com/kakao/kakao-ios-sdk.git", from: "2.14.0")
     ],
     targets: [
         .target(
@@ -36,6 +38,14 @@ let package = Package(
             name: "APIClient",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .target(
+            name: "APIClientLive",
+            dependencies: [
+                "APIClient",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "KakaoSDK", package: "kakao-ios-sdk")
             ]
         ),
         .target(
