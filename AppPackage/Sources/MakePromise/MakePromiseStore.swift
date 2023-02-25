@@ -22,7 +22,6 @@ public enum MakePromiseStep: Int, Comparable {
 public struct MakePromiseState: Equatable {
     var shouldShowBackButton = false
     var currentStep: MakePromiseStep = .selectTheme
-    var selectThemeState: SelectThemeState = .init()
     var setNameAndPlaceState: SetNameAndPlaceState = .init()
 
     var selectTheme: SelectThemeState? {
@@ -55,13 +54,11 @@ public struct MakePromiseState: Equatable {
     public init(
         shouldShowBackButton: Bool = false,
         currentStep: MakePromiseStep = .selectTheme,
-        selectThemeState: SelectThemeState = .init(),
         setNameAndPlaceState: SetNameAndPlaceState = .init(),
         steps: [Step] = [.selectTheme(.init())]
     ) {
         self.shouldShowBackButton = shouldShowBackButton
         self.currentStep = currentStep
-        self.selectThemeState = selectThemeState
         self.setNameAndPlaceState = setNameAndPlaceState
         self.steps = steps
     }
@@ -74,7 +71,7 @@ public struct MakePromiseState: Equatable {
     func isPossibleToNextContents() -> Bool {
         switch currentStep {
         case .selectTheme:
-            return selectThemeState.selectedType != nil
+            return selectTheme?.selectedType != nil
         case .error:
             return false
         case .fillNAndPlace:
