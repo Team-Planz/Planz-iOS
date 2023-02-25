@@ -12,9 +12,7 @@ let package = Package(
             targets: [
                 "AppPackage",
                 "TimeTableFeature",
-                "Calendar",
-                "APIClient",
-                "APIClientLive"
+                "Calendar"
             ]
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"])
@@ -23,7 +21,7 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.50.0"),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
-        .package(url: "https://github.com/kakao/kakao-ios-sdk.git", from: "2.14.0")
+        .package(url: "https://github.com/Team-Planz/Planz-iOS-APIClient.git", branch: "main")
     ],
     targets: [
         .target(
@@ -31,21 +29,8 @@ let package = Package(
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect"),
-                .product(name: "Then", package: "Then")
-            ]
-        ),
-        .target(
-            name: "APIClient",
-            dependencies: [
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
-        ),
-        .target(
-            name: "APIClientLive",
-            dependencies: [
-                "APIClient",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "KakaoSDK", package: "kakao-ios-sdk")
+                .product(name: "Then", package: "Then"),
+                .product(name: "APIClient", package: "Planz-iOS-APIClient")
             ]
         ),
         .target(
