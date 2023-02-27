@@ -9,8 +9,13 @@
 import SwiftUI
 
 struct ManagementView: View {
-    @State private var selectedIndex = 0
     private let menus = ["대기중인 약속", "확정된 약속"]
+    @State private var selectedIndex = 0
+    @State private var models: [ConfirmedListView.CellModel] = [
+        .init(title: "약속1", role: .general, names: ["여윤정", "한지희", "김세현", "조하은", "일리윤", "이은정", "강빛나"]),
+        .init(title: "약속2", role: .leader, names: ["여윤정", "한지희", "김세현", "조하은"]),
+        .init(title: "약속3", role: .general, names: [ "한지희", "김세현", "이은정", "강빛나"])
+    ]
     
     var body: some View {
         
@@ -24,14 +29,13 @@ struct ManagementView: View {
                     )
                         
                     TabView(selection: $selectedIndex) {
-                        PromiseListView()
+                        StandbyListView()
                             .tag(0)
                         
-                        PromiseListView()
+                        ConfirmedListView(models: $models)
                             .tag(1)
                     }
                     .animation(.default, value: selectedIndex)
-                    .background(.gray)
                     .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 200)
                     .tabViewStyle(.page(indexDisplayMode: .never))
                 }
