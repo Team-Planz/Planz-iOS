@@ -14,17 +14,16 @@ struct NoDataView: View {
     }
 }
 
+struct ConfirmedModel: Identifiable {
+    var id = UUID()
+    let title: String
+    let role: RoleType
+    let names: [String]
+}
+
 // MARK: - PromiseListView
 struct ConfirmedListView: View {
-    
-    struct CellModel: Identifiable {
-        var id = UUID()
-        let title: String
-        let role: RoleType
-        let names: [String]
-    }
-    
-    @Binding var models: [CellModel]
+    @Binding var models: [ConfirmedModel]
     
     var body: some View {
         if models.isEmpty {

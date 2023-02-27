@@ -11,7 +11,14 @@ import SwiftUI
 struct ManagementView: View {
     private let menus = ["대기중인 약속", "확정된 약속"]
     @State private var selectedIndex = 0
-    @State private var models: [ConfirmedListView.CellModel] = [
+    
+    @State private var standbyModels: [StandbyModel] = [
+        .init(title: "약속1", role: .general, leaderName: "김세현", replyPeopleCount: 3),
+        .init(title: "약속2", role: .general, leaderName: "강빛나", replyPeopleCount: 5),
+        .init(title: "약속3", role: .general, leaderName: "한지희", replyPeopleCount: 8)
+    ]
+    
+    @State private var confirmedModels: [ConfirmedModel] = [
         .init(title: "약속1", role: .general, names: ["여윤정", "한지희", "김세현", "조하은", "일리윤", "이은정", "강빛나"]),
         .init(title: "약속2", role: .leader, names: ["여윤정", "한지희", "김세현", "조하은"]),
         .init(title: "약속3", role: .general, names: [ "한지희", "김세현", "이은정", "강빛나"])
@@ -29,10 +36,10 @@ struct ManagementView: View {
                     )
                         
                     TabView(selection: $selectedIndex) {
-                        StandbyListView()
+                        StandbyListView(models: $standbyModels)
                             .tag(0)
                         
-                        ConfirmedListView(models: $models)
+                        ConfirmedListView(models: $confirmedModels)
                             .tag(1)
                     }
                     .animation(.default, value: selectedIndex)

@@ -24,6 +24,7 @@
 		9865782B29ACB32700BB1BDA /* StandbyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865782A29ACB32700BB1BDA /* StandbyListView.swift */; };
 		9865782D29ACC86F00BB1BDA /* RoleMarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865782C29ACC86F00BB1BDA /* RoleMarkView.swift */; };
 		9865783529ACCD1300BB1BDA /* ConfirmedCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865783429ACCD1300BB1BDA /* ConfirmedCellView.swift */; };
+		9865783729ACCE5400BB1BDA /* StandbyCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865783629ACCE5400BB1BDA /* StandbyCellView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		9865782A29ACB32700BB1BDA /* StandbyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandbyListView.swift; sourceTree = "<group>"; };
 		9865782C29ACC86F00BB1BDA /* RoleMarkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleMarkView.swift; sourceTree = "<group>"; };
 		9865783429ACCD1300BB1BDA /* ConfirmedCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmedCellView.swift; sourceTree = "<group>"; };
+		9865783629ACCE5400BB1BDA /* StandbyCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandbyCellView.swift; sourceTree = "<group>"; };
 		AE79C84329863F400098BA28 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -179,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				9865782A29ACB32700BB1BDA /* StandbyListView.swift */,
+				9865783629ACCE5400BB1BDA /* StandbyCellView.swift */,
 			);
 			path = Standby;
 			sourceTree = "<group>";
@@ -376,6 +379,7 @@
 				6F47599A28D9D0CE005CC91B /* PlanzApp.swift in Sources */,
 				9865783529ACCD1300BB1BDA /* ConfirmedCellView.swift in Sources */,
 				9865782B29ACB32700BB1BDA /* StandbyListView.swift in Sources */,
+				9865783729ACCE5400BB1BDA /* StandbyCellView.swift in Sources */,
 				986577DF29A9B0E300BB1BDA /* ManagementView.swift in Sources */,
 				9865782D29ACC86F00BB1BDA /* RoleMarkView.swift in Sources */,
 			);

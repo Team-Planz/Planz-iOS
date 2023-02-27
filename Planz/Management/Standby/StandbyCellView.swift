@@ -1,5 +1,5 @@
 //
-//  ConfirmedCellView.swift
+//  StandbyCellView.swift
 //  Planz
 //
 //  Created by Sujin Jin on 2023/02/27.
@@ -8,9 +8,9 @@
 
 import SwiftUI
 
-struct ConfirmedCellView: View {
+struct StandbyCellView: View {
     
-    @Binding var item: ConfirmedModel
+    @Binding var item: StandbyModel
     
     var body: some View {
         Group {
@@ -25,9 +25,12 @@ struct ConfirmedCellView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .border(.black)
                 
-                Text(item.names.joined(separator: ", "))
-                    .foregroundColor(.gray)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack {
+                    Text(item.leaderName)
+                    Text("\(item.replyPeopleCount)명 응답완료")
+                }
+                .foregroundColor(.gray)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .border(.gray)
             .padding()
@@ -40,9 +43,10 @@ struct ConfirmedCellView: View {
         .cornerRadius(12)
     }
 }
-
-struct ConfirmedCellView_Previews: PreviewProvider {
+struct StandbyCellView_Previews: PreviewProvider {
     static var previews: some View {
-        ConfirmedCellView(item: .constant(.init(title: "Title", role: .general, names: ["A", "B", "C"])))
+        StandbyCellView(item:
+                .constant(.init(title: "Title-1", role: .general, leaderName: "LeaderName", replyPeopleCount: 5))
+        )
     }
 }
