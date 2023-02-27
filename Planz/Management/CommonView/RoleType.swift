@@ -39,22 +39,3 @@ enum RoleType: String {
         }
     }
 }
-
-struct RoleMarkView: View {
-    let role: RoleType
-    
-    var body: some View {
-        Text(role.title)
-            .padding(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
-            .background(role.bgColor)
-            .foregroundColor(role.textColor)
-            .cornerRadius(4)
-            .bold()
-    }
-}
-
-struct RoleMarkView_Previews: PreviewProvider {
-    static var previews: some View {
-        RoleMarkView(role: .general)
-    }
-}

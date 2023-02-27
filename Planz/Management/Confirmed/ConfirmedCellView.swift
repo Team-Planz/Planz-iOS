@@ -15,14 +15,10 @@ struct ConfirmedCellView: View {
     var body: some View {
         Group {
             VStack {
-                HStack {
-                    Text(item.title)
-                        .font(.title3)
-                        .bold()
-                        .border(.orange)
-                    RoleMarkView(role: item.role)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                ManagementTitleCellView(
+                    title: item.title,
+                    role: item.role
+                )
                 .border(.black)
                 
                 Text(item.names.joined(separator: ", "))
