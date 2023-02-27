@@ -31,7 +31,7 @@ struct ConfirmedListView: View {
             NoDataView()
         } else {
             List($models) { item in
-                ManagementCellView(item: item)
+                ConfirmedCellView(item: item)
                     .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
@@ -39,41 +39,7 @@ struct ConfirmedListView: View {
     }
 }
 
-// MARK: - Cell View
-struct ManagementCellView: View {
-    
-    @Binding var item: ConfirmedListView.CellModel
-    
-    var body: some View {
-        Group {
-            VStack {
-                HStack {
-                    Text(item.title)
-                        .font(.title3)
-                        .bold()
-                        .border(.orange)
-                    RoleMarkView(role: item.role)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .border(.black)
-                
-                Text(item.names.joined(separator: ", "))
-                    .foregroundColor(.gray)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .border(.gray)
-            .padding()
-            .background(.gray.opacity(0.2))
-        }
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.gray, lineWidth: 1)
-        )
-        .cornerRadius(12)
-    }
-}
-
-struct PromiseListView_Previews: PreviewProvider {
+struct ConfirmedListView_Previews: PreviewProvider {
     static var previews: some View {
         ConfirmedListView(models: .constant([]))
     }
