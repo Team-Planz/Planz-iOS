@@ -5,7 +5,7 @@
 //  Created by Sujin Jin on 2023/02/25.
 //  Copyright © 2023 Team-Planz. All rights reserved.
 //
-
+import ComposableArchitecture
 import SwiftUI
 
 struct NoDataView: View {
@@ -14,32 +14,35 @@ struct NoDataView: View {
     }
 }
 
-struct ConfirmedModel: Identifiable {
-    var id = UUID()
-    let title: String
-    let role: RoleType
-    let names: [String]
-}
-
 // MARK: - PromiseListView
 struct ConfirmedListView: View {
-    @Binding var models: [ConfirmedModel]
+    
+    let store: StoreOf<PromiseManagement>
     
     var body: some View {
-        if models.isEmpty {
-            NoDataView()
-        } else {
-            List($models) { item in
-                ConfirmedCellView(item: item)
-                    .listRowSeparator(.hidden)
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            Group {
+                if viewStore.confirmedData.isEmpty {
+                    NoDataView()
+                } else {
+                    List {
+                        ForEachStore(self.store.scope(
+                            state: \.confirmedData,
+                            action: PromiseManagement.Action.goConfirmedDetailView(id: action:))) {
+                                ConfirmedCellView(store: $0)
+                            }
+                    }
+                    .listStyle(.plain)
+                }
             }
-            .listStyle(.plain)
         }
     }
 }
 
 struct ConfirmedListView_Previews: PreviewProvider {
     static var previews: some View {
-        ConfirmedListView(models: .constant([]))
+        ConfirmedListView(store: StoreOf<PromiseManagement>(
+            initialState: PromiseManagement.State(),
+            reducer: PromiseManagement()))
     }
 }

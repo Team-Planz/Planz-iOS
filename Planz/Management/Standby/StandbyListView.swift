@@ -5,41 +5,37 @@
 //  Created by Sujin Jin on 2023/02/27.
 //  Copyright © 2023 Team-Planz. All rights reserved.
 //
-
+import ComposableArchitecture
 import SwiftUI
 
-struct StandbyModel: Identifiable {
-    var id = UUID()
-    let title: String
-    let role: RoleType
-    let leaderName: String
-    let replyPeopleCount: Int
-}
-
 struct StandbyListView: View {
-    @Binding var models: [StandbyModel]
+    
+    let store: StoreOf<PromiseManagement>
     
     var body: some View {
-        if models.isEmpty {
-            NoDataView()
-        } else {
-            List($models) { item in
-                StandbyCellView(item: item)
-                    .listRowSeparator(.hidden)
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            Group {
+                if viewStore.standbyData.isEmpty {
+                    NoDataView()
+                } else {
+                    List {
+                        ForEachStore(self.store.scope(
+                            state: \.standbyData,
+                            action: PromiseManagement.Action.goStandbyDetailView(id: action:))) {
+                                StandbyCellView(store: $0)
+                            }
+                    }
+                    .listStyle(.plain)
+                }
             }
-            .listStyle(.plain)
         }
     }
 }
 
 struct StandbyPromiseListView_Previews: PreviewProvider {
     static var previews: some View {
-        StandbyListView(models: .constant([
-            .init(
-                title: "Title-1",
-                role: .general,
-                leaderName: "파티장명",
-                replyPeopleCount: 3)
-        ]))
+        StandbyListView(store: StoreOf<PromiseManagement>(
+            initialState: PromiseManagement.State(),
+            reducer: PromiseManagement()))
     }
 }
