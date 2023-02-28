@@ -101,12 +101,17 @@ public struct CalendarCore: ReducerProtocol {
                 id: id,
                 action: .firstWeekDraged(type, range)
             ):
+                guard
+                    let count = state.monthList[id: id.previousMonth]?.monthState.days.count
+                else { return .none }
+                let value = ((count / 7) - 1) * 7
+                let relatedRange = (range.lowerBound + value) ... (range.upperBound + value)
                 return .send(
                     .monthAction(
                         id: id.previousMonth,
                         action: type == .insert
-                        ? .selectRelatedDays(.next, range)
-                        : .deSelectRelatedDays(.next, range)
+                        ? .selectRelatedDays(relatedRange)
+                        : .deSelectRelatedDays(relatedRange)
                     )
                 )
                 
@@ -114,12 +119,14 @@ public struct CalendarCore: ReducerProtocol {
                 id: id,
                 action: .lastWeekDraged(type, range)
             ):
+                let relatedRange = (range.lowerBound % 7) ... (range.upperBound % 7)
+                
                 return .send(
                     .monthAction(
                         id: id.nextMonth,
                         action: type == .insert
-                        ? .selectRelatedDays(.previous, range)
-                        : .deSelectRelatedDays(.previous, range)
+                        ? .selectRelatedDays(relatedRange)
+                        : .deSelectRelatedDays(relatedRange)
                     )
                 )
                 
@@ -132,25 +139,5 @@ public struct CalendarCore: ReducerProtocol {
              action: /Action.monthAction(id:action:),
              element: MonthCore.init
         )
-    }
-}
-
-extension Date {
-    static let currentMonth: Date = {
-        let components = calendar.dateComponents([.year, .month], from: .now)
-        return calendar.date(from: components) ?? .now
-    }()
-}
-
-extension ClosedRange where Bound == Int {
-    func intersection(_ other: Self) -> Self? {
-        let intersection = set.intersection(other.set)
-        let item = IndexSet(intersection)
-            .rangeView
-            .map(\.closedRange)
-            .first
-        guard let result = item else { return nil }
-        
-        return result
     }
 }
