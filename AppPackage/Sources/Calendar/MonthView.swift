@@ -11,7 +11,7 @@ struct MonthView: View {
     let layoutConstraint: LayoutConstraint
     let geometryWidth: CGFloat
     let store: StoreOf<MonthCore>
-    @ObservedObject var viewStore: ViewStoreOf<MonthCore>
+    @ObservedObject private var viewStore: ViewStore<ViewState, ViewAction>
     
     init(
         layoutConstarint: LayoutConstraint,
@@ -21,7 +21,13 @@ struct MonthView: View {
         self.layoutConstraint = layoutConstarint
         self.geometryWidth = geometryWidth
         self.store = store
-        self.viewStore = ViewStore(store)
+        self.viewStore = ViewStore(
+            store
+                .scope(
+                    state: \.viewState,
+                    action: \.reducerAction
+                )
+        )
     }
     
     var body: some View {
@@ -35,7 +41,7 @@ struct MonthView: View {
             ),
             spacing: .zero
         ) {
-            ForEach(viewStore.monthState.days) { day in
+            ForEach(viewStore.days) { day in
                 Text(day.date.dayString)
                     .bold(day.isToday)
                     .foregroundColor(.dayColor(date: day.date, isFaded: day.isFaded))
@@ -55,7 +61,7 @@ struct MonthView: View {
                     }
             }
         }
-        .id(viewStore.monthState.id)
+        .id(viewStore.id)
         .gesture(
             DragGesture(minimumDistance: .zero)
                 .onChanged {
@@ -86,6 +92,34 @@ struct MonthView: View {
         let yLocation = Int(point.y) / rowHeight * layoutConstraint.weekDayListCount
         
         return xLocation + yLocation
+    }
+}
+
+private extension MonthView {
+    struct ViewState: Equatable {
+        let id: Date
+        let days: [Day]
+    }
+    
+    enum ViewAction: Equatable {
+        var reducerAction: MonthCore.Action {
+            switch self {
+            case let .drag(startIndex: startIndex, endIndex: endIndex):
+                return .drag(startIndex: startIndex, endIndex: endIndex)
+                
+            case let .dragEnded(startIndex: startIndex):
+                return .dragEnded(startIndex: startIndex)
+            }
+        }
+        
+        case drag(startIndex: Int, endIndex: Int)
+        case dragEnded(startIndex: Int)
+    }
+}
+
+private extension MonthCore.State {
+    var viewState: MonthView.ViewState {
+        .init(id: id, days: monthState.days)
     }
 }
 
