@@ -5,11 +5,6 @@ public enum CalendarType {
     case appointment
 }
 
-public enum TimeOrder: CaseIterable, Hashable {
-    case previous
-    case next
-}
-
 public struct Day: Identifiable, Hashable {
     public var id: Date { date }
     let date: Date

@@ -5,6 +5,7 @@ public struct CalendarCore: ReducerProtocol {
     public struct State: Equatable {
         public var monthList: IdentifiedArrayOf<MonthCore.State> = []
         public var selectedMonth: Date = .currentMonth
+        public var selectedDates: Set<Date> = []
         
         public init() { }
     }
@@ -19,6 +20,7 @@ public struct CalendarCore: ReducerProtocol {
         case createMonthStateList(CalendarClient.DateRange)
         case updateMonthStateList(CalendarClient.DateRange, TaskResult<[MonthState]>)
         case monthAction(id: MonthCore.State.ID, action: MonthCore.Action)
+        case overSelection
     }
     
     @Dependency(\.calendarClient) var calendarClient
@@ -32,12 +34,17 @@ public struct CalendarCore: ReducerProtocol {
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             struct UpdateScrollViewOffsetID { }
+            struct OverSelectionID { }
+            
             switch action {
             case .onAppear:
                 return .send(.createMonthStateList(.default))
                 
             case .onDisAppear:
-                return .cancel(id: UpdateScrollViewOffsetID.self)
+                return .merge(
+                    .cancel(id: UpdateScrollViewOffsetID.self),
+                    .cancel(id: OverSelectionID.self)
+                )
                 
             case let .scrollViewOffsetChanged(index):
                 return .send(.pageIndexChanged(index))
@@ -96,7 +103,54 @@ public struct CalendarCore: ReducerProtocol {
                 
             case .updateMonthStateList:
                 return .none
-
+                
+            case let .monthAction(
+                id: id,
+                action: .drag(startIndex: startIndex, endIndex: endIndex)
+            ):
+                guard let item = state.monthList[id: id] else { return .none }
+                let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
+                guard
+                    item.gesture.rangeList.contains(where: { $0.contains(startIndex) })
+                else {
+                    guard
+                        range.count + state.selectedDates.count <= maximumCount
+                    else {
+                        return .send(.overSelection)
+                            .debounce(
+                                id: OverSelectionID.self,
+                                for: .seconds(0.5),
+                                scheduler: mainQueue
+                            )
+                    }
+                    
+                    return .send(
+                        .monthAction(
+                            id: id,
+                            action: .dragFiltered(
+                                startIndex: startIndex,
+                                currentRange: range
+                            )
+                        )
+                    )
+                }
+                
+                return .send(
+                    .monthAction(
+                        id: id,
+                        action: .dragFiltered(
+                            startIndex: startIndex,
+                            currentRange: range
+                        )
+                    )
+                )
+                
+            case let .monthAction(id: _, action: .removeSelectedDates(items: dates)):
+                dates
+                    .forEach { state.selectedDates.remove($0) }
+                
+                return .none
+                
             case let .monthAction(
                 id: id,
                 action: .firstWeekDraged(type, range)
@@ -130,7 +184,16 @@ public struct CalendarCore: ReducerProtocol {
                     )
                 )
                 
-            case .monthAction:
+            case let .monthAction(id: id, action: .resetGesture):
+                guard
+                    let monthState = state.monthList[id: id]
+                else { return .none }
+                monthState.selectedDates
+                    .forEach { state.selectedDates.insert(item: $0) }
+                print("🐶", state.selectedDates.sorted())
+                return .none
+                
+            case .monthAction, .overSelection:
                 return .none
             }
         }
@@ -141,3 +204,5 @@ public struct CalendarCore: ReducerProtocol {
         )
     }
 }
+
+private let maximumCount = 13
