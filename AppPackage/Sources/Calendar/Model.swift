@@ -43,7 +43,6 @@ public struct Month: Hashable {
 public struct MonthState: Identifiable, Hashable {
     public let id: Month
     var days: [Day] = []
-    var relatedMonthList: [TimeOrder: [Date]] = [:]
     
     var previousRange: ClosedRange<Int> {
         0 ... 6
@@ -55,11 +54,9 @@ public struct MonthState: Identifiable, Hashable {
     
     public init(
         id: Date,
-        days: [Day],
-        relatedMonthList: [TimeOrder: [Date]]
+        days: [Day]
     ) {
         self.id = Month(date: id)
         self.days = days
-        self.relatedMonthList = relatedMonthList
     }
 }

@@ -3,7 +3,6 @@ import Foundation
 
 public struct CalendarClient {
     let createMonthStateList: (CalendarType, DateRange, Date) throws -> [MonthState]
-    let isEdgeDay: (Date, [Date: [Date]]) throws -> Bool
 }
 
 extension CalendarClient: DependencyKey {
@@ -48,7 +47,7 @@ extension CalendarClient: DependencyKey {
                     .map {
                         let isFaded = type == .home ?
                         !calendar.isDate($0, equalTo: month, toGranularity: .month)
-                        : .today > $0
+                        : !calendar.isDate($0, equalTo: month, toGranularity: .month) || .today > $0
                         return Day(
                             date: $0,
                             isFaded: isFaded,
@@ -56,30 +55,8 @@ extension CalendarClient: DependencyKey {
                         )
                     }
 
-                let relatedMonthList = TimeOrder.allCases
-                    .map {
-                        let dateList: [Date]
-                        switch $0 {
-                        case .previous:
-                            dateList = (-(currentMonthFirstWeekDay - 1) ..< 0)
-                                .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
-                        case .next:
-                            dateList = (monthDays ..< (monthDays + (7 - currentMonthLastWeekDay)))
-                                .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
-                        }
-                        return ($0, dateList)
-                    }
-                    .reduce(into: [TimeOrder: [Date]]()) { result, item in
-                        result[item.0] = item.1
-                    }
-
-                return .init(id: month, days: list, relatedMonthList: relatedMonthList)
+                return .init(id: month, days: list)
             }
-    } isEdgeDay: { date, list in
-        let isPreviousContains = list[date.previousMonth]?.contains(date) ?? false
-        let isNextConains = list[date.nextMonth]?.contains(date) ?? false
-        
-        return isPreviousContains || isNextConains
     }
 }
 
