@@ -60,10 +60,8 @@ struct ManagementView: View {
     private let store: StoreOf<PromiseManagement>
     @ObservedObject var viewStore: ViewStore<ViewState, PromiseManagement.Action>
     
-    init() {
-        self.store = StoreOf<PromiseManagement>(
-            initialState: PromiseManagement.State(),
-            reducer: PromiseManagement()._printChanges())
+    init(store: StoreOf<PromiseManagement>) {
+        self.store = store
         self.viewStore = ViewStore(self.store.scope(state: ViewState.init(state:)))
     }
     
@@ -144,6 +142,8 @@ struct ManagementView: View {
 
 struct ManagementView_Previews: PreviewProvider {
     static var previews: some View {
-        ManagementView()
+        ManagementView(store: StoreOf<PromiseManagement>(
+            initialState: PromiseManagement.State(),
+            reducer: PromiseManagement()._printChanges()))
     }
 }
