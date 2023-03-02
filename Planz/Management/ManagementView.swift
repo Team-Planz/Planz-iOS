@@ -11,7 +11,7 @@ import SwiftUI
 
 struct PromiseManagement: ReducerProtocol {
     struct State: Equatable {
-        var visibleViewType: Tab = .standby
+        @BindingState var visibleTab: Tab = .standby
         var confirmedTab = ConfirmedListFeature.State()
         var standbyTab = StandbyListFeature.State()
         
@@ -24,22 +24,20 @@ struct PromiseManagement: ReducerProtocol {
         }
     }
     
-    enum Action: Equatable {
+    enum Action: BindableAction {
         case onAppear
-        case selectedIndexChanged(Tab)
         case standbyTab(StandbyListFeature.Action)
         case confirmedTab(ConfirmedListFeature.Action)
+        case binding(BindingAction<State>)
     }
     
     var body: some ReducerProtocol<State, Action> {
+        BindingReducer()
+        
         Reduce { state, action in
             switch action {
             case .onAppear:
                 state = .init(standbyRows: .mock, confirmedRows: .mock)
-                return .none
-                
-            case let .selectedIndexChanged(tab):
-                state.visibleViewType = tab
                 return .none
                 
             default:
@@ -69,16 +67,14 @@ struct ManagementView: View {
                 GeometryReader { geo in
                     VStack {
                         HeaderTabView(
-                            activeTab: viewStore.binding(
-                                get: \.visibleViewType,
-                                send: PromiseManagement.Action.selectedIndexChanged),
+                            activeTab:
+                                viewStore.binding(\.$visibleTab),
                             tabs: Tab.allCases,
                             fullWidth: geo.size.width - 40
                         )
                         
-                        TabView(selection: viewStore.binding(
-                            get: \.visibleViewType,
-                            send: PromiseManagement.Action.selectedIndexChanged)
+                        TabView(selection:
+                                    viewStore.binding(\.$visibleTab)
                         ) {
                             StandbyListView(store: self.store.scope(
                                 state: \.standbyTab,
@@ -91,7 +87,7 @@ struct ManagementView: View {
                                 action: PromiseManagement.Action.confirmedTab))
                             .tag(Tab.confirmed)
                         }
-                        .animation(.default, value: viewStore.visibleViewType.rawValue)
+                        .animation(.default, value: viewStore.visibleTab.rawValue)
                         .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 200)
                         .tabViewStyle(.page(indexDisplayMode: .never))
                     }
