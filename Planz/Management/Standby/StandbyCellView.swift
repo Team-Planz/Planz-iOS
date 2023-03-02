@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import SwiftUI
+import DesignSystem
 
 struct StandbyCell: ReducerProtocol {
     struct State: Equatable, Identifiable {
@@ -61,15 +62,15 @@ struct StandbyCellView: View {
                 )
                 
                 Text(viewStore.namesText)
-                    .foregroundColor(.gray)
+                    .foregroundColor(PColor.gray5.scale)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding()
-            .background(.gray.opacity(0.2))
+            .background(Color(hex: "FBFCFF"))
         }
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.gray, lineWidth: 1)
+                .stroke(PColor.gray3.scale, lineWidth: 1)
         )
         .cornerRadius(12)
         .listRowSeparator(.hidden)

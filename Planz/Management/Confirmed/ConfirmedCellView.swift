@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import SwiftUI
+import DesignSystem
 
 struct ConfirmedCell: ReducerProtocol {
     struct State: Equatable, Identifiable {
@@ -43,26 +44,28 @@ struct ConfirmedCellView: View {
                             title: viewStore.title,
                             role: viewStore.role
                         )
-                        
                         HStack {
                             Text(viewStore.leaderName)
+                                .foregroundColor(PColor.gray5.scale)
                             Rectangle()
                                 .frame(width: 1, height: 12)
+                                .foregroundColor(PColor.gray5.scale)
                             Text("\(viewStore.replyPeopleCount)명 응답완료")
+                                .foregroundColor(PColor.gray5.scale)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     Image(systemName: "chevron.forward")
                         .frame(width: 32, height: 32)
-                        .foregroundColor(.gray)
+                        .foregroundColor(PColor.gray5.scale)
                     
                 }
                 .padding()
-                .background(.gray.opacity(0.2))
+                .background(Color(hex: "FBFCFF"))
             }
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.gray, lineWidth: 1)
+                    .stroke(PColor.gray3.scale, lineWidth: 1)
             )
             .cornerRadius(12)
             .listRowSeparator(.hidden)

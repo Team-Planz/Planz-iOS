@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import DesignSystem
 
 enum RoleType: String {
     case leader
@@ -24,18 +25,18 @@ enum RoleType: String {
     var textColor: Color {
         switch self {
         case .leader:
-            return .blue
+            return PColor.purple9.scale
         case .general:
-            return .red
+            return PColor.scarlet1.scale
         }
     }
     
     var bgColor: Color {
         switch self {
         case .leader:
-            return .blue.opacity(0.4)
+            return PColor.purple1.scale
         case .general:
-            return .red.opacity(0.4)
+            return PColor.scarlet0.scale
         }
     }
 }

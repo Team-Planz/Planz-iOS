@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import DesignSystem
 
 struct ManagementTitleCellView: View {
     let title: String
@@ -18,6 +19,7 @@ struct ManagementTitleCellView: View {
                 .lineLimit(1)
                 .font(.title3)
                 .bold()
+                .foregroundColor(PColor.gray8.scale)
             RoleMarkView(role: role)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
