@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 
 struct MonthView: View {
@@ -53,7 +54,7 @@ struct MonthView: View {
                             case .clear:
                                 Color.clear
                             case .painted:
-                                Color(hex: "6671F6")
+                                PDS.COLOR.purple9.scale
                                     .cornerRadius(11)
                                     .frame(width: 32, height: 30)
                             }
@@ -134,9 +135,9 @@ private extension Date {
 
 private extension Color {
     static func dayColor(date: Date, isFaded: Bool) -> Self {
-        guard !isFaded else { return .grayg3 }
+        guard !isFaded else { return PDS.COLOR.gray3.scale }
         return calendar.component(.weekday, from: date) == 1
-            ? .scarlet1
-            : .cggraycg2
+            ? PDS.COLOR.scarlet1.scale
+            : PDS.COLOR.cGray2.scale
     }
 }

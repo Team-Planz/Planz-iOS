@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import DesignSystem
 import Introspect
 import SwiftUI
 
@@ -51,7 +52,7 @@ public struct CalendarView: View {
                         VStack(spacing: .zero) {
                             HStack(spacing: .zero) {
                                 Text(viewStore.selectedMonth.yearMonthString)
-                                    .foregroundColor(.grayg8)
+                                    .foregroundColor(PDS.COLOR.gray8.scale)
                                     .font(.system(size: 18))
                                     .padding(.trailing, 11)
 
@@ -109,7 +110,7 @@ public struct CalendarView: View {
 
                         Text(viewStore.selectedMonth.yearMonthString)
                             .font(.system(size: 18))
-                            .foregroundColor(.grayg8)
+                            .foregroundColor(PDS.COLOR.gray8.scale)
                             .padding(.trailing, 16)
 
                         Button(action: { viewStore.send(.rightSideButtonTapped) }) {
@@ -249,10 +250,10 @@ enum WeekDay: CaseIterable, CustomStringConvertible {
     var color: Color {
         switch self {
         case .sunday:
-            return Color.scarlet1
+            return PDS.COLOR.scarlet1.scale
 
         default:
-            return Color.cggraycg2
+            return PDS.COLOR.cGray2.scale
         }
     }
 
@@ -289,15 +290,6 @@ private extension Image {
     static let list = Self(uiImage: .init(named: "list", in: .module, with: nil)!)
 }
 
-private extension Color {
-    static func dayColor(date: Date, isFaded: Bool) -> Self {
-        guard !isFaded else { return .grayg3 }
-        return calendar.component(.weekday, from: date) == 1
-            ? .scarlet1
-            : .cggraycg2
-    }
-}
-
 private struct ScrollViewOffset: PreferenceKey {
     static var defaultValue: CGFloat = .zero
 
@@ -332,36 +324,3 @@ private struct ScrollViewOffset: PreferenceKey {
         }
     }
 #endif
-
-// MARK: Must be removed when design system module created.
-
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let alpha, red, green, blue: UInt64
-        switch hex.count {
-        case 3:
-            (alpha, red, green, blue) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6:
-            (alpha, red, green, blue) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8:
-            (alpha, red, green, blue) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (alpha, red, green, blue) = (1, 1, 1, 0)
-        }
-        self.init(
-            .sRGB,
-            red: Double(red) / 255,
-            green: Double(green) / 255,
-            blue: Double(blue) / 255,
-            opacity: Double(alpha) / 255
-        )
-    }
-
-    static let scarlet1: Color = .init(hex: "FF7F77")
-    static let cggraycg2: Color = .init(hex: "5B687A")
-    static let grayg3: Color = .init(hex: "E8EAED")
-    static let grayg8: Color = .init(hex: "020202")
-}
