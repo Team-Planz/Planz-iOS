@@ -8,8 +8,10 @@ public struct CalendarView: View {
             .init(
                 rowHeight: dayRowHeight,
                 weekDayListCount: weekDayListCout,
-                horizontalPadding: contentHorizontalPadding)
+                horizontalPadding: contentHorizontalPadding
+            )
         }
+
         let currentMonthInfoBottomPadding: CGFloat
         let directionButtonSize: CGSize
         let listButtonSize: CGSize = .init(width: 22, height: 22)
@@ -143,9 +145,8 @@ public struct CalendarView: View {
                                     .scope(
                                         state: \.monthList,
                                         action: CalendarCore.Action.monthAction(id:action:)
-                                )
+                                    )
                             ) {
-                                
                                 MonthView(
                                     layoutConstarint: layoutConstraint.monthView,
                                     geometryWidth: geometryProxy.size.width,
@@ -188,13 +189,13 @@ public struct CalendarView: View {
         .onAppear { viewStore.send(.onAppear) }
         .onDisappear { viewStore.send(.onDisAppear) }
     }
-    
+
     private func transformToIndex(point: CGPoint, viewWidth: CGFloat) -> Int {
         let rowWidth = Int(viewWidth) / layoutConstraint.weekDayListCout
         let rowHeight = Int(layoutConstraint.dayRowHeight)
         let xLocation = Int(point.x) / rowWidth
         let yLocation = Int(point.y) / rowHeight * 7
-        
+
         return xLocation + yLocation
     }
 }

@@ -7,21 +7,21 @@ struct MonthView: View {
         let weekDayListCount: Int
         let horizontalPadding: CGFloat
     }
-    
+
     let layoutConstraint: LayoutConstraint
     let geometryWidth: CGFloat
     let store: StoreOf<MonthCore>
     @ObservedObject private var viewStore: ViewStore<ViewState, ViewAction>
-    
+
     init(
         layoutConstarint: LayoutConstraint,
         geometryWidth: CGFloat,
         store: StoreOf<MonthCore>
     ) {
-        self.layoutConstraint = layoutConstarint
+        layoutConstraint = layoutConstarint
         self.geometryWidth = geometryWidth
         self.store = store
-        self.viewStore = ViewStore(
+        viewStore = ViewStore(
             store
                 .scope(
                     state: \.viewState,
@@ -29,7 +29,7 @@ struct MonthView: View {
                 )
         )
     }
-    
+
     var body: some View {
         let horziontalPadding = layoutConstraint.horizontalPadding * 2
         let scrollViewWidth = geometryWidth - horziontalPadding
@@ -84,13 +84,13 @@ struct MonthView: View {
                 }
         )
     }
-    
+
     private func transformToIndex(point: CGPoint, viewWidth: CGFloat) -> Int {
         let rowWidth = Int(viewWidth) / layoutConstraint.weekDayListCount
         let rowHeight = Int(layoutConstraint.rowHeight)
         let xLocation = Int(point.x) / rowWidth
         let yLocation = Int(point.y) / rowHeight * layoutConstraint.weekDayListCount
-        
+
         return xLocation + yLocation
     }
 }
@@ -100,18 +100,18 @@ private extension MonthView {
         let id: Date
         let days: [Day]
     }
-    
+
     enum ViewAction: Equatable {
         var reducerAction: MonthCore.Action {
             switch self {
             case let .drag(startIndex: startIndex, endIndex: endIndex):
                 return .drag(startIndex: startIndex, endIndex: endIndex)
-                
+
             case let .dragEnded(startIndex: startIndex):
                 return .dragEnded(startIndex: startIndex)
             }
         }
-        
+
         case drag(startIndex: Int, endIndex: Int)
         case dragEnded(startIndex: Int)
     }
@@ -135,8 +135,8 @@ private extension Date {
 private extension Color {
     static func dayColor(date: Date, isFaded: Bool) -> Self {
         guard !isFaded else { return .grayg3 }
-        return  calendar.component(.weekday, from: date) == 1
-        ? .scarlet1
-        : .cggraycg2
+        return calendar.component(.weekday, from: date) == 1
+            ? .scarlet1
+            : .cggraycg2
     }
 }

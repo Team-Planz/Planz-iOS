@@ -4,7 +4,7 @@ extension Set {
     mutating
     func insert(item: Element) {
         guard !contains(item) else { return }
-        self.insert(item)
+        insert(item)
     }
 }
 
@@ -22,13 +22,13 @@ extension Array where Element == ClosedRange<Int> {
         }
         insert(item, at: slice.startIndex)
     }
-    
+
     mutating
     func appendSorted(contentsOf items: [Element]) {
         items
             .forEach { appendSorted(item: $0) }
     }
-    
+
     mutating
     func overwrite(items: Self) {
         if self != items {
@@ -42,7 +42,7 @@ extension CollectionDifference where ChangeElement == ClosedRange<Int>.Element {
         case insert(element: Int)
         case remove(element: Int)
     }
-    
+
     var elements: [CustomChange] {
         map {
             switch $0 {

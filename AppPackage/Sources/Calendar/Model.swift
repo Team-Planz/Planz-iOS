@@ -29,7 +29,7 @@ public enum GestureType {
 
 public struct Month: Hashable {
     let date: Date
-    
+
     init(date: Date) {
         self.date = date.month
     }
@@ -38,15 +38,16 @@ public struct Month: Hashable {
 public struct MonthState: Identifiable, Hashable {
     public let id: Month
     var days: [Day] = []
-    
+
     var previousRange: ClosedRange<Int> {
         0 ... 6
     }
+
     var nextRange: ClosedRange<Int> {
         let count = days.count / 7
-        return (7 * count - 7)  ... (7 * count - 1)
+        return (7 * count - 7) ... (7 * count - 1)
     }
-    
+
     public init(
         id: Date,
         days: [Day]

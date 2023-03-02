@@ -12,7 +12,7 @@ extension ClosedRange where Bound == Int {
             result.insert(item)
         }
     }
-    
+
     func intersection(_ other: Self) -> Self? {
         let intersection = set.intersection(other.set)
         let item = IndexSet(intersection)
@@ -20,17 +20,17 @@ extension ClosedRange where Bound == Int {
             .map(\.closedRange)
             .first
         guard let result = item else { return nil }
-        
+
         return result
     }
-    
+
     func subtracting(_ other: Self) -> [Self] {
         let subtracting = set.subtracting(other)
         return IndexSet(subtracting)
             .rangeView
             .map(\.closedRange)
     }
-    
+
     func union(_ other: Self) -> Self? {
         let union = set.union(other)
         let item = IndexSet(union)
@@ -38,7 +38,7 @@ extension ClosedRange where Bound == Int {
             .map(\.closedRange)
             .first
         guard let result = item else { return nil }
-        
+
         return result
     }
 }

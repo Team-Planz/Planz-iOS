@@ -46,8 +46,8 @@ extension CalendarClient: DependencyKey {
                     .compactMap { calendar.date(byAdding: .day, value: $0, to: month) }
                     .map {
                         let isFaded = type == .home ?
-                        !calendar.isDate($0, equalTo: month, toGranularity: .month)
-                        : !calendar.isDate($0, equalTo: month, toGranularity: .month) || .today > $0
+                            !calendar.isDate($0, equalTo: month, toGranularity: .month)
+                            : !calendar.isDate($0, equalTo: month, toGranularity: .month) || $0 < .today
                         return Day(
                             date: $0,
                             isFaded: isFaded,

@@ -6,20 +6,22 @@ public struct MonthCore: ReducerProtocol {
         public var id: Date {
             monthState.id.date
         }
+
         var selectedDates: [Date] {
             gesture.rangeList
                 .flatMap { $0 }
                 .map { monthState.days[$0].id }
         }
+
         var monthState: MonthState
         var gesture: GestureState
-        
+
         init(monthState: MonthState, gesture: GestureState = .init()) {
             self.monthState = monthState
             self.gesture = gesture
         }
     }
-    
+
     public enum Action: Equatable {
         case drag(startIndex: Int, endIndex: Int)
         case dragFiltered(startIndex: Int, currentRange: ClosedRange<Int>)
@@ -33,7 +35,7 @@ public struct MonthCore: ReducerProtocol {
         case resetGesture
         case cleanUp
     }
-    
+
     public func reduce(
         into state: inout State,
         action: Action
@@ -44,19 +46,19 @@ public struct MonthCore: ReducerProtocol {
                 endIndex < state.monthState.days.count,
                 endIndex >= .zero
             else { return .none }
-            
+
             guard
                 !state.monthState.days[startIndex].isFaded,
                 !state.monthState.days[endIndex].isFaded
             else { return .none }
             return .none
-            
+
         case let .dragFiltered(
             startIndex: startIndex,
             currentRange: currentRange
         ):
             defer { state.gesture.range = currentRange }
-            
+
             guard
                 let storedRange = state.gesture.range
             else {
@@ -67,19 +69,19 @@ public struct MonthCore: ReducerProtocol {
                         else {
                             state.gesture.tempElements.insert(item: $0)
                             state.monthState.days[$0].selectionType = .painted
-                            
+
                             return
                         }
                         state.monthState.days[$0].selectionType = .clear
                     }
-                
+
                 return .none
             }
             let overlapsList = state.gesture.rangeList
                 .filter { $0.overlaps(currentRange) }
             let diff = storedRange
                 .difference(from: currentRange)
-            
+
             guard
                 !overlapsList.isEmpty
             else {
@@ -88,8 +90,8 @@ public struct MonthCore: ReducerProtocol {
                         switch $0 {
                         case let .insert(element: index):
                             let isRemoved = state.gesture.removableElements.contains(index)
-                            || state.gesture.tempElements.contains(index)
-                            if  isRemoved {
+                                || state.gesture.tempElements.contains(index)
+                            if isRemoved {
                                 state.gesture.removableElements.remove(index)
                                 state.gesture.tempElements.remove(index)
                                 state.monthState.days[index].selectionType = .clear
@@ -99,10 +101,10 @@ public struct MonthCore: ReducerProtocol {
                             state.gesture.tempElements.insert(item: index)
                         }
                     }
-                
+
                 return .none
             }
-            
+
             guard
                 !state.gesture.rangeList.contains(where: { $0.contains(startIndex) })
             else {
@@ -114,9 +116,9 @@ public struct MonthCore: ReducerProtocol {
                                 state.gesture.removableElements.remove(index)
                                 state.monthState.days[index].selectionType = .painted
                             }
-                            
+
                         case let .remove(element: index):
-                            if overlapsList.contains(where: { $0.contains(index)}) {
+                            if overlapsList.contains(where: { $0.contains(index) }) {
                                 state.gesture.removableElements.insert(item: index)
                                 state.monthState.days[index].selectionType = .clear
                             }
@@ -129,22 +131,22 @@ public struct MonthCore: ReducerProtocol {
                     switch $0 {
                     case let .insert(element: index):
                         let isRemoved = state.gesture.removableElements.contains(index)
-                        || state.gesture.tempElements.contains(index)
+                            || state.gesture.tempElements.contains(index)
                         if isRemoved {
                             state.gesture.tempElements.remove(index)
                             state.gesture.removableElements.remove(index)
                             state.monthState.days[index].selectionType = .clear
                         }
                     case let .remove(element: index):
-                        if !state.gesture.rangeList.contains(where: { $0.contains(index)}) {
+                        if !state.gesture.rangeList.contains(where: { $0.contains(index) }) {
                             state.monthState.days[index].selectionType = .painted
                             state.gesture.removableElements.insert(item: index)
                         }
                     }
                 }
-            
+
             return .none
-            
+
         case let .dragEnded(startIndex: startIndex):
             guard
                 let currentRange = state.gesture.range
@@ -161,22 +163,24 @@ public struct MonthCore: ReducerProtocol {
                         state.gesture.rangeList.remove(at: index)
                         state.gesture.rangeList
                             .appendSorted(contentsOf: range.subtracting(currentRange))
-                        
+
                         let removable = state.monthState.days[interection].map(\.id)
                         let effect = EffectTask<Action>(value: .removeSelectedDates(items: removable))
                         if
                             range.overlaps(state.monthState.previousRange),
                             let intersection = range.intersection(state.monthState.previousRange),
-                            let targetRange = intersection.intersection(currentRange) {
+                            let targetRange = intersection.intersection(currentRange)
+                        {
                             return .merge(
                                 effect,
                                 EffectTask(value: .firstWeekDraged(.remove, targetRange))
                             )
-                            
+
                         } else if
                             range.overlaps(state.monthState.nextRange),
                             let intersection = range.intersection(state.monthState.nextRange),
-                            let targetRange = intersection.intersection(currentRange) {
+                            let targetRange = intersection.intersection(currentRange)
+                        {
                             return .merge(
                                 effect,
                                 EffectTask(value: .lastWeekDraged(.remove, targetRange))
@@ -185,7 +189,7 @@ public struct MonthCore: ReducerProtocol {
                         return effect
                     }
                 return .merge(effects)
-                
+
             } else {
                 let range = groupOverlappingRanges(
                     range: currentRange,
@@ -198,9 +202,9 @@ public struct MonthCore: ReducerProtocol {
                     return .send(.lastWeekDraged(.insert, intersection))
                 }
             }
-            
+
             return .send(.cleanUp)
-            
+
         case let .selectRelatedDays(relatedRange):
             relatedRange
                 .forEach { state.monthState.days[$0].selectionType = .painted }
@@ -210,9 +214,9 @@ public struct MonthCore: ReducerProtocol {
             )
             state.gesture.rangeList
                 .appendSorted(item: range)
-            
+
             return .send(.cleanUp)
-            
+
         case let .deSelectRelatedDays(range):
             state.gesture.rangeList
                 .filter { $0.overlaps(range) }
@@ -226,9 +230,9 @@ public struct MonthCore: ReducerProtocol {
                     $0.intersection(range)?
                         .forEach { state.monthState.days[$0].selectionType = .clear }
                 }
-            
+
             return .send(.resetGesture)
-            
+
         case .groupContiguousRanges:
             let item = state.gesture.rangeList
                 .flatMap { $0 }
@@ -237,21 +241,21 @@ public struct MonthCore: ReducerProtocol {
                 .map(\.closedRange)
             state.gesture.rangeList
                 .overwrite(items: comparedList)
-            
+
             return .none
-            
+
         case .resetGesture:
             state.gesture.range = nil
             state.gesture.tempElements = []
             state.gesture.removableElements = []
             return .none
-            
+
         case .cleanUp:
             return .merge(
                 .send(.groupContiguousRanges),
                 .send(.resetGesture)
             )
-            
+
         case .removeSelectedDates, .firstWeekDraged, .lastWeekDraged:
             return .send(.cleanUp)
         }
