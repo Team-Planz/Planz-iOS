@@ -46,7 +46,7 @@ struct StandbyListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
                 if viewStore.rows.isEmpty {
-                    NoDataView()
+                    ManagementNoDataView()
                 } else {
                     List {
                         ForEachStore(self.store.scope(

@@ -8,12 +8,6 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct NoDataView: View {
-    var body: some View {
-        Text("No data")
-    }
-}
-
 struct ConfirmedListFeature: ReducerProtocol {
     struct State: Equatable {
         var rows: IdentifiedArrayOf<ConfirmedCell.State>
@@ -52,7 +46,7 @@ struct ConfirmedListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
                 if viewStore.rows.isEmpty {
-                    NoDataView()
+                    ManagementNoDataView()
                 } else {
                     List {
                         ForEachStore(self.store.scope(
