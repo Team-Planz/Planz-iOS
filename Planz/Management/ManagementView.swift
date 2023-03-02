@@ -35,17 +35,7 @@ struct PromiseManagement: ReducerProtocol {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                let standbyRows: IdentifiedArrayOf<StandbyCell.State> = [
-                    .init(title: "약속1", role: .general, names: ["여윤정", "한지희", "김세현", "조하은", "일리윤", "이은정", "강빛나"]),
-                    .init(title: "약속2", role: .leader, names: ["여윤정", "한지희", "김세현", "조하은"]),
-                    .init(title: "약속3", role: .general, names: [ "한지희", "김세현", "이은정", "강빛나"])
-                ]
-                let confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = [
-                    .init(title: "확정 약속1", role: .general, leaderName: "김세현", replyPeopleCount: 3),
-                    .init(title: "확정 약속2", role: .leader, leaderName: "강빛나", replyPeopleCount: 5),
-                    .init(title: "확정 약속3", role: .general, leaderName: "한지희", replyPeopleCount: 8)
-                ]
-                state = .init(standbyRows: standbyRows, confirmedRows: confirmedRows)
+                state = .init(standbyRows: .mock, confirmedRows: .mock)
                 return .none
                 
             case let .selectedIndexChanged(index):
