@@ -15,17 +15,17 @@ struct HeaderTabView: View {
     private let buttonWidth: CGFloat
     @State private var barX: CGFloat = 0
     
-    let menus: [String]
-    @Binding var activeIndex: Int
+    let tabs: [Tab]
+    @Binding var activeTab: Tab
     
     init(
-        activeIndex: Binding<Int>,
-        menus: [String],
+        activeTab: Binding<Tab>,
+        tabs: [Tab],
         fullWidth: CGFloat
     ) {
-        self.menus = menus
-        self._activeIndex = activeIndex
-        self.buttonWidth = (fullWidth-spacing)/CGFloat(menus.count)
+        self.tabs = tabs
+        self._activeTab = activeTab
+        self.buttonWidth = (fullWidth-spacing)/CGFloat(tabs.count)
         self.barWidth = buttonWidth
         self.buttonLeadings = [0, barWidth+spacing]
     }
@@ -33,14 +33,15 @@ struct HeaderTabView: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: spacing) {
-                ForEach(0..<menus.count, id: \.self) { row in
+                
+                ForEach(tabs, id: \.self) { tab in
                     Button {
-                        activeIndex = row
+                        activeTab = tab
                         withAnimation {
-                            barX = buttonLeadings[row]
+                            barX = buttonLeadings[tab.rawValue]
                         }
                     } label: {
-                        Text(menus[row])
+                        Text(tab.title)
                             .frame(width: buttonWidth)
                             .foregroundColor(.black)
                             .bold()
@@ -53,9 +54,9 @@ struct HeaderTabView: View {
                 .alignmentGuide(.leading) { $0[.leading] }
                 .offset(.init(width: barX, height: 0))
         }
-        .onChange(of: activeIndex) { selectedRow in
+        .onChange(of: activeTab) { selectedTab in
             withAnimation {
-                barX = buttonLeadings[selectedRow]
+                barX = buttonLeadings[selectedTab.rawValue]
             }
         }
     }
@@ -64,8 +65,8 @@ struct HeaderTabView: View {
 struct HeaderTabView_Previews: PreviewProvider {
     static var previews: some View {
         HeaderTabView(
-            activeIndex: .constant(0),
-            menus: ["AA", "BB"],
+            activeTab: .constant(Tab.standby),
+            tabs: Tab.allCases,
             fullWidth: 400)
         .padding(.horizontal)
     }

@@ -11,7 +11,7 @@ import SwiftUI
 
 struct PromiseManagement: ReducerProtocol {
     struct State: Equatable {
-        var visibleViewType: ManagementView.ViewType = .standby
+        var visibleViewType: Tab = .standby
         var confirmedTab = ConfirmedListFeature.State()
         var standbyTab = StandbyListFeature.State()
         
@@ -26,7 +26,7 @@ struct PromiseManagement: ReducerProtocol {
     
     enum Action: Equatable {
         case onAppear
-        case selectedIndexChanged(Int)
+        case selectedIndexChanged(Tab)
         case standbyTab(StandbyListFeature.Action)
         case confirmedTab(ConfirmedListFeature.Action)
     }
@@ -38,8 +38,8 @@ struct PromiseManagement: ReducerProtocol {
                 state = .init(standbyRows: .mock, confirmedRows: .mock)
                 return .none
                 
-            case let .selectedIndexChanged(index):
-                state.visibleViewType = ManagementView.ViewType(rawValue: index) ?? .standby
+            case let .selectedIndexChanged(tab):
+                state.visibleViewType = tab
                 return .none
                 
             default:
@@ -58,83 +58,57 @@ struct PromiseManagement: ReducerProtocol {
 struct ManagementView: View {
     
     private let store: StoreOf<PromiseManagement>
-    @ObservedObject var viewStore: ViewStore<ViewState, PromiseManagement.Action>
     
     init(store: StoreOf<PromiseManagement>) {
         self.store = store
-        self.viewStore = ViewStore(self.store.scope(state: ViewState.init(state:)))
-    }
-    
-    struct ViewState: Equatable {
-        let visibleViewType: ViewType
-        let menuTitle: String
-        let menus: [String]
-        
-        init(state: PromiseManagement.State) {
-            self.visibleViewType = state.visibleViewType
-            self.menuTitle = state.visibleViewType.title
-            self.menus = ViewType.allCases.map({ $0.title })
-        }
-    }
-    
-    enum ViewType: Int, CaseIterable {
-        case standby
-        case confirmed
-        
-        var title: String {
-            switch self {
-            case .standby:
-                return "대기중인 약속"
-            case .confirmed:
-                return "확정된 약속"
-            }
-        }
     }
     
     var body: some View {
-        NavigationView {
-            GeometryReader { geo in
-                VStack {
-                    HeaderTabView(
-                        activeIndex: viewStore.binding(
-                            get: \.visibleViewType.rawValue,
-                            send: PromiseManagement.Action.selectedIndexChanged),
-                        menus: viewStore.menus,
-                        fullWidth: geo.size.width - 40
-                    )
-                    
-                    TabView(selection: viewStore.binding(
-                        get: \.visibleViewType.rawValue,
-                        send: PromiseManagement.Action.selectedIndexChanged)
-                    ) {
-                        StandbyListView(store: self.store.scope(
-                            state: \.standbyTab,
-                            action: PromiseManagement.Action.standbyTab)
+        WithViewStore(self.store) { viewStore in
+            NavigationView {
+                GeometryReader { geo in
+                    VStack {
+                        HeaderTabView(
+                            activeTab: viewStore.binding(
+                                get: \.visibleViewType,
+                                send: PromiseManagement.Action.selectedIndexChanged),
+                            tabs: Tab.allCases,
+                            fullWidth: geo.size.width - 40
                         )
-                        .tag(ViewType.standby.rawValue)
                         
-                        ConfirmedListView(store: store.scope(
-                            state: \.confirmedTab,
-                            action: PromiseManagement.Action.confirmedTab))
-                        .tag(ViewType.confirmed.rawValue)
+                        TabView(selection: viewStore.binding(
+                            get: \.visibleViewType,
+                            send: PromiseManagement.Action.selectedIndexChanged)
+                        ) {
+                            StandbyListView(store: self.store.scope(
+                                state: \.standbyTab,
+                                action: PromiseManagement.Action.standbyTab)
+                            )
+                            .tag(Tab.standby)
+                            
+                            ConfirmedListView(store: store.scope(
+                                state: \.confirmedTab,
+                                action: PromiseManagement.Action.confirmedTab))
+                            .tag(Tab.confirmed)
+                        }
+                        .animation(.default, value: viewStore.visibleViewType.rawValue)
+                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 200)
+                        .tabViewStyle(.page(indexDisplayMode: .never))
                     }
-                    .animation(.default, value: viewStore.visibleViewType.rawValue)
-                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 200)
-                    .tabViewStyle(.page(indexDisplayMode: .never))
-                }
-                .navigationTitle("약속 관리")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            print("Add Item")
-                        } label: {
-                            Image(systemName: "plus")
-                                .foregroundColor(.black)
+                    .navigationTitle("약속 관리")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                print("Add Item")
+                            } label: {
+                                Image(systemName: "plus")
+                                    .foregroundColor(.black)
+                            }
                         }
                     }
+                    .onAppear { viewStore.send(.onAppear) }
                 }
-                .onAppear { viewStore.send(.onAppear) }
             }
         }
     }

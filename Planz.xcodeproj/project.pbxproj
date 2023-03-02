@@ -27,6 +27,7 @@
 		9865783729ACCE5400BB1BDA /* StandbyCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865783629ACCE5400BB1BDA /* StandbyCellView.swift */; };
 		9865783A29ACD9F500BB1BDA /* ManagementTitleCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865783929ACD9F500BB1BDA /* ManagementTitleCellView.swift */; };
 		9865784E29B0478D00BB1BDA /* ManagementNoDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865784D29B0478D00BB1BDA /* ManagementNoDataView.swift */; };
+		9865785129B0ABAD00BB1BDA /* Tab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865785029B0ABAD00BB1BDA /* Tab.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 		9865783629ACCE5400BB1BDA /* StandbyCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandbyCellView.swift; sourceTree = "<group>"; };
 		9865783929ACD9F500BB1BDA /* ManagementTitleCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagementTitleCellView.swift; sourceTree = "<group>"; };
 		9865784D29B0478D00BB1BDA /* ManagementNoDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagementNoDataView.swift; sourceTree = "<group>"; };
+		9865785029B0ABAD00BB1BDA /* Tab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tab.swift; sourceTree = "<group>"; };
 		AE79C84329863F400098BA28 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -172,11 +174,11 @@
 		9865782829AC919A00BB1BDA /* Management */ = {
 			isa = PBXGroup;
 			children = (
+				9865784F29B0AB9200BB1BDA /* HeaderTab */,
 				9865783829ACD8E300BB1BDA /* CommonView */,
 				9865783029ACCA2C00BB1BDA /* Confirmed */,
 				9865782929ACB31700BB1BDA /* Standby */,
 				986577DE29A9B0E300BB1BDA /* ManagementView.swift */,
-				986577E029A9F9E100BB1BDA /* HeaderTabView.swift */,
 			);
 			path = Management;
 			sourceTree = "<group>";
@@ -207,6 +209,15 @@
 				9865784D29B0478D00BB1BDA /* ManagementNoDataView.swift */,
 			);
 			path = CommonView;
+			sourceTree = "<group>";
+		};
+		9865784F29B0AB9200BB1BDA /* HeaderTab */ = {
+			isa = PBXGroup;
+			children = (
+				986577E029A9F9E100BB1BDA /* HeaderTabView.swift */,
+				9865785029B0ABAD00BB1BDA /* Tab.swift */,
+			);
+			path = HeaderTab;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -390,6 +401,7 @@
 				986577E329A9FBF300BB1BDA /* ConfirmedListView.swift in Sources */,
 				6F4759C628D9D146005CC91B /* AppView.swift in Sources */,
 				9865783A29ACD9F500BB1BDA /* ManagementTitleCellView.swift in Sources */,
+				9865785129B0ABAD00BB1BDA /* Tab.swift in Sources */,
 				986577E129A9F9E100BB1BDA /* HeaderTabView.swift in Sources */,
 				6F47599A28D9D0CE005CC91B /* PlanzApp.swift in Sources */,
 				9865784E29B0478D00BB1BDA /* ManagementNoDataView.swift in Sources */,
