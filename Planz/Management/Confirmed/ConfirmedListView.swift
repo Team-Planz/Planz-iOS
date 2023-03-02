@@ -14,21 +14,50 @@ struct NoDataView: View {
     }
 }
 
+struct ConfirmedListFeature: ReducerProtocol {
+    struct State: Equatable {
+        var rows: IdentifiedArrayOf<ConfirmedCell.State>
+        
+        init(rows: IdentifiedArrayOf<ConfirmedCell.State> = []) {
+            self.rows = rows
+        }
+    }
+    
+    enum Action: Equatable {
+        case pushDetailView(id: ConfirmedCell.State.ID, action: ConfirmedCell.Action)
+    }
+    
+    var body: some ReducerProtocol<State, Action> {
+        Reduce { state, action in
+            switch action {
+            case .pushDetailView(id: let id, action: .touched):
+                if let selectedData = state.rows[id: id] {
+                    print(selectedData.title)
+                }
+                return .none
+            }
+        }
+        .forEach(\.rows, action: /Action.pushDetailView(id:action:)) {
+            ConfirmedCell()
+        }
+    }
+}
+
 // MARK: - PromiseListView
 struct ConfirmedListView: View {
     
-    let store: StoreOf<PromiseManagement>
+    let store: StoreOf<ConfirmedListFeature>
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
-                if viewStore.confirmedData.isEmpty {
+                if viewStore.rows.isEmpty {
                     NoDataView()
                 } else {
                     List {
                         ForEachStore(self.store.scope(
-                            state: \.confirmedData,
-                            action: PromiseManagement.Action.goConfirmedDetailView(id: action:))) {
+                            state: \.rows,
+                            action: ConfirmedListFeature.Action.pushDetailView(id: action:))) {
                                 ConfirmedCellView(store: $0)
                             }
                     }
@@ -41,8 +70,9 @@ struct ConfirmedListView: View {
 
 struct ConfirmedListView_Previews: PreviewProvider {
     static var previews: some View {
-        ConfirmedListView(store: StoreOf<PromiseManagement>(
-            initialState: PromiseManagement.State(),
-            reducer: PromiseManagement()))
+        ConfirmedListView(store: StoreOf<ConfirmedListFeature>(
+            initialState: ConfirmedListFeature.State(),
+            reducer: ConfirmedListFeature())
+        )
     }
 }

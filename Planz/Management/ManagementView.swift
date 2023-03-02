@@ -12,63 +12,55 @@ import SwiftUI
 struct PromiseManagement: ReducerProtocol {
     struct State: Equatable {
         var visibleViewType: ManagementView.ViewType = .standby
-        var standbyData: IdentifiedArrayOf<StandbyCell.State> = [
-            .init(title: "약속1", role: .general, names: ["여윤정", "한지희", "김세현", "조하은", "일리윤", "이은정", "강빛나"]),
-            .init(title: "약속2", role: .leader, names: ["여윤정", "한지희", "김세현", "조하은"]),
-            .init(title: "약속3", role: .general, names: [ "한지희", "김세현", "이은정", "강빛나"])
-        ]
-        var confirmedData: IdentifiedArrayOf<ConfirmedCell.State> = [
-            .init(title: "확정 약속1", role: .general, leaderName: "김세현", replyPeopleCount: 3),
-            .init(title: "확정 약속2", role: .leader, leaderName: "강빛나", replyPeopleCount: 5),
-            .init(title: "확정 약속3", role: .general, leaderName: "한지희", replyPeopleCount: 8)
-        ]
+        var confirmedTab = ConfirmedListFeature.State()
+        var standbyTab = StandbyListFeature.State()
+        
+        init(
+            standbyRows: IdentifiedArrayOf<StandbyCell.State> = [],
+            confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = []
+        ) {
+            standbyTab = StandbyListFeature.State(rows: standbyRows)
+            confirmedTab = ConfirmedListFeature.State(rows: confirmedRows)
+        }
     }
     
     enum Action: Equatable {
         case onAppear
         case selectedIndexChanged(Int)
-        case goConfirmedDetailView(id: ConfirmedCell.State.ID, action: ConfirmedCell.Action)
-        case goStandbyDetailView(id: StandbyCell.State.ID, action: StandbyCell.Action)
+        case standbyTab(StandbyListFeature.Action)
+        case confirmedTab(ConfirmedListFeature.Action)
     }
     
     var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                state = .init()
-                
-                state.standbyData = [
+                let standbyRows: IdentifiedArrayOf<StandbyCell.State> = [
                     .init(title: "약속1", role: .general, names: ["여윤정", "한지희", "김세현", "조하은", "일리윤", "이은정", "강빛나"]),
                     .init(title: "약속2", role: .leader, names: ["여윤정", "한지희", "김세현", "조하은"]),
                     .init(title: "약속3", role: .general, names: [ "한지희", "김세현", "이은정", "강빛나"])
                 ]
-                state.confirmedData = [
+                let confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = [
                     .init(title: "확정 약속1", role: .general, leaderName: "김세현", replyPeopleCount: 3),
                     .init(title: "확정 약속2", role: .leader, leaderName: "강빛나", replyPeopleCount: 5),
                     .init(title: "확정 약속3", role: .general, leaderName: "한지희", replyPeopleCount: 8)
                 ]
-                
+                state = .init(standbyRows: standbyRows, confirmedRows: confirmedRows)
                 return .none
+                
             case let .selectedIndexChanged(index):
                 state.visibleViewType = ManagementView.ViewType(rawValue: index) ?? .standby
                 return .none
-            case .goConfirmedDetailView(id: let id, action: .touched):
-                if let selectedData = state.confirmedData[id: id] {
-                    print(selectedData.title)
-                }
-                return .none
-            case .goStandbyDetailView(id: let id, action: .touched):
-                if let selectedData = state.confirmedData[id: id] {
-                    print(selectedData.title)
-                }
+                
+            default:
                 return .none
             }
         }
-        .forEach(\.confirmedData, action: /Action.goConfirmedDetailView(id:action:)) {
-            ConfirmedCell()
+        Scope(state: \.standbyTab, action: /Action.standbyTab) {
+            StandbyListFeature()
         }
-        .forEach(\.standbyData, action: /Action.goStandbyDetailView(id:action:)) {
-            StandbyCell()
+        Scope(state: \.confirmedTab, action: /Action.confirmedTab) {
+            ConfirmedListFeature()
         }
     }
 }
@@ -108,7 +100,6 @@ struct ManagementView: View {
             case .confirmed:
                 return "확정된 약속"
             }
-            
         }
     }
     
@@ -128,11 +119,16 @@ struct ManagementView: View {
                         get: \.visibleViewType.rawValue,
                         send: PromiseManagement.Action.selectedIndexChanged)
                     ) {
-                        StandbyListView(store: store)
-                            .tag(ViewType.standby.rawValue)
+                        StandbyListView(store: self.store.scope(
+                            state: \.standbyTab,
+                            action: PromiseManagement.Action.standbyTab)
+                        )
+                        .tag(ViewType.standby.rawValue)
                         
-                        ConfirmedListView(store: store)
-                            .tag(ViewType.confirmed.rawValue)
+                        ConfirmedListView(store: store.scope(
+                            state: \.confirmedTab,
+                            action: PromiseManagement.Action.confirmedTab))
+                        .tag(ViewType.confirmed.rawValue)
                     }
                     .animation(.default, value: viewStore.visibleViewType.rawValue)
                     .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 200)
