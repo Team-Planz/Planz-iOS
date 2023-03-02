@@ -11,7 +11,7 @@ import DesignSystem
 
 struct StandbyCell: ReducerProtocol {
     struct State: Equatable, Identifiable {
-        var id = UUID().uuidString
+        let id: UUID
         let title: String
         let role: RoleType
         let names: [String]
@@ -85,6 +85,7 @@ struct StandbyCellView_Previews: PreviewProvider {
         StandbyCellView(store: Store(
             initialState:
                 StandbyCell.State(
+                    id: UUID(),
                     title: "가나다라마바사아자차카파타하이",
                     role: .leader,
                     names: ["김세현", "한지희", "여윤정", "조하은", "이은희"]),

@@ -65,13 +65,13 @@ struct ConfirmedListView: View {
 extension IdentifiedArray where ID == ConfirmedCell.State.ID, Element == ConfirmedCell.State {
   static let mock: Self = [
     ConfirmedCell.State(
-        title: "확정 약속1", role: .general, leaderName: "김세현", replyPeopleCount: 3
+        id: UUID(), title: "확정 약속1", role: .general, leaderName: "김세현", replyPeopleCount: 3
     ),
     ConfirmedCell.State(
-        title: "확정 약속2", role: .leader, leaderName: "강빛나", replyPeopleCount: 5
+        id: UUID(), title: "확정 약속2", role: .leader, leaderName: "강빛나", replyPeopleCount: 5
     ),
     ConfirmedCell.State(
-        title: "확정 약속3", role: .general, leaderName: "한지희", replyPeopleCount: 8
+        id: UUID(), title: "확정 약속3", role: .general, leaderName: "한지희", replyPeopleCount: 8
     )
   ]
 }

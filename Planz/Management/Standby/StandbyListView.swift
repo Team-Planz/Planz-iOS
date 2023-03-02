@@ -65,13 +65,13 @@ struct StandbyListView: View {
 extension IdentifiedArray where ID == StandbyCell.State.ID, Element == StandbyCell.State {
   static let mock: Self = [
     StandbyCell.State(
-        title: "약속1", role: .general, names: ["여윤정", "한지희", "김세현", "조하은", "일리윤", "이은정", "강빛나"]
+        id: UUID(), title: "약속1", role: .general, names: ["여윤정", "한지희", "김세현", "조하은", "일리윤", "이은정", "강빛나"]
     ),
     StandbyCell.State(
-        title: "약속2", role: .leader, names: ["여윤정", "한지희", "김세현", "조하은"]
+        id: UUID(), title: "약속2", role: .leader, names: ["여윤정", "한지희", "김세현", "조하은"]
     ),
     StandbyCell.State(
-        title: "약속3", role: .general, names: [ "한지희", "김세현", "이은정", "강빛나"]
+        id: UUID(), title: "약속3", role: .general, names: [ "한지희", "김세현", "이은정", "강빛나"]
     )
   ]
 }

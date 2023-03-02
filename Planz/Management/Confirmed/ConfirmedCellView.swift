@@ -12,7 +12,7 @@ import DesignSystem
 
 struct ConfirmedCell: ReducerProtocol {
     struct State: Equatable, Identifiable {
-        var id = UUID().uuidString
+        let id: UUID
         let title: String
         let role: RoleType
         let leaderName: String
@@ -81,6 +81,7 @@ struct ConfirmedCellView_Previews: PreviewProvider {
         ConfirmedCellView(store: Store(
             initialState:
                 ConfirmedCell.State(
+                    id: UUID(),
                     title: "가나다라마바사아자차카파타하이",
                     role: .leader,
                     leaderName: "LeaderName",
