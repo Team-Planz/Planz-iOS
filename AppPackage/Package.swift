@@ -9,7 +9,8 @@ let package = Package(
             name: "AppPackage",
             targets: [
                 "TimeTableFeature",
-                "MakePromise"
+                "MakePromise",
+                "LoginFeature"
             ]
         ),
         .library(
@@ -48,6 +49,15 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .target(
+            name: "LoginFeature",
+            dependencies: [
+                "DesignSystem"
+            ],
+            resources: [
+                .process("Resources/Assets.xcassets")
             ]
         )
     ]
