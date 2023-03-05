@@ -189,7 +189,7 @@ public struct CalendarCore: ReducerProtocol {
                     let monthState = state.monthList[id: id]
                 else { return .none }
                 monthState.selectedDates
-                    .forEach { state.selectedDates.insert(item: $0) }
+                    .forEach { state.selectedDates.insert($0) }
                 print("🐶", state.selectedDates.sorted())
                 return .none
 

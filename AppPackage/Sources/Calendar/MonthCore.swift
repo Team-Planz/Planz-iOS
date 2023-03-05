@@ -67,7 +67,7 @@ public struct MonthCore: ReducerProtocol {
                         guard
                             state.gesture.rangeList.contains(where: { $0.contains(startIndex) })
                         else {
-                            state.gesture.tempElements.insert(item: $0)
+                            state.gesture.tempElements.insert($0)
                             state.monthState.days[$0].selectionType = .painted
 
                             return
@@ -98,7 +98,7 @@ public struct MonthCore: ReducerProtocol {
                             }
                         case let .remove(element: index):
                             state.monthState.days[index].selectionType = .painted
-                            state.gesture.tempElements.insert(item: index)
+                            state.gesture.tempElements.insert(index)
                         }
                     }
 
@@ -119,7 +119,7 @@ public struct MonthCore: ReducerProtocol {
 
                         case let .remove(element: index):
                             if overlapsList.contains(where: { $0.contains(index) }) {
-                                state.gesture.removableElements.insert(item: index)
+                                state.gesture.removableElements.insert(index)
                                 state.monthState.days[index].selectionType = .clear
                             }
                         }
@@ -140,7 +140,7 @@ public struct MonthCore: ReducerProtocol {
                     case let .remove(element: index):
                         if !state.gesture.rangeList.contains(where: { $0.contains(index) }) {
                             state.monthState.days[index].selectionType = .painted
-                            state.gesture.removableElements.insert(item: index)
+                            state.gesture.removableElements.insert(index)
                         }
                     }
                 }

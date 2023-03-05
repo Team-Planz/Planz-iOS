@@ -1,13 +1,5 @@
 import Foundation
 
-extension Set {
-    mutating
-    func insert(item: Element) {
-        guard !contains(item) else { return }
-        insert(item)
-    }
-}
-
 extension Array where Element == ClosedRange<Int> {
     mutating
     func appendSorted(item: Element) {
