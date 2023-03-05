@@ -19,6 +19,7 @@ public struct Login: ReducerProtocol {
 
     public enum Action: Equatable {
         case kakaoButtonTapped
+        case browsingTapped
         case authorizeResponse(TaskResult<String>)
     }
 
@@ -35,6 +36,8 @@ public struct Login: ReducerProtocol {
                         }
                     )
                 }
+            case .browsingTapped:
+                return .none
             case .authorizeResponse(.success):
                 return .none
             case .authorizeResponse(.failure):
