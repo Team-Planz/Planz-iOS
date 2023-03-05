@@ -153,7 +153,7 @@ public struct CalendarCore: ReducerProtocol {
 
             case let .monthAction(
                 id: id,
-                action: .firstWeekDraged(type, range)
+                action: .firstWeekDragged(type, range)
             ):
                 guard
                     let count = state.monthList[id: id.previousMonth]?.monthState.days.count
@@ -171,7 +171,7 @@ public struct CalendarCore: ReducerProtocol {
 
             case let .monthAction(
                 id: id,
-                action: .lastWeekDraged(type, range)
+                action: .lastWeekDragged(type, range)
             ):
                 let relatedRange = (range.lowerBound % 7) ... (range.upperBound % 7)
 

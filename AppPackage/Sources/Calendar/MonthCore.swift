@@ -27,11 +27,11 @@ public struct MonthCore: ReducerProtocol {
         case dragFiltered(startIndex: Int, currentRange: ClosedRange<Int>)
         case dragEnded(startIndex: Int)
         case removeSelectedDates(items: [Date])
-        case firstWeekDraged(GestureType, ClosedRange<Int>)
-        case lastWeekDraged(GestureType, ClosedRange<Int>)
+        case firstWeekDragged(GestureType, ClosedRange<Int>)
+        case lastWeekDragged(GestureType, ClosedRange<Int>)
         case selectRelatedDays(ClosedRange<Int>)
         case deSelectRelatedDays(ClosedRange<Int>)
-        case groupContiguousRanges
+        case groupContinuousRanges
         case resetGesture
         case cleanUp
     }
@@ -173,7 +173,7 @@ public struct MonthCore: ReducerProtocol {
                         {
                             return .merge(
                                 effect,
-                                EffectTask(value: .firstWeekDraged(.remove, targetRange))
+                                EffectTask(value: .firstWeekDragged(.remove, targetRange))
                             )
 
                         } else if
@@ -183,7 +183,7 @@ public struct MonthCore: ReducerProtocol {
                         {
                             return .merge(
                                 effect,
-                                EffectTask(value: .lastWeekDraged(.remove, targetRange))
+                                EffectTask(value: .lastWeekDragged(.remove, targetRange))
                             )
                         }
                         return effect
@@ -197,9 +197,9 @@ public struct MonthCore: ReducerProtocol {
                 )
                 state.gesture.rangeList.appendSorted(item: range)
                 if let intersection = state.monthState.previousRange.intersection(range) {
-                    return .send(.firstWeekDraged(.insert, intersection))
+                    return .send(.firstWeekDragged(.insert, intersection))
                 } else if let intersection = state.monthState.nextRange.intersection(range) {
-                    return .send(.lastWeekDraged(.insert, intersection))
+                    return .send(.lastWeekDragged(.insert, intersection))
                 }
             }
 
@@ -233,7 +233,7 @@ public struct MonthCore: ReducerProtocol {
 
             return .send(.resetGesture)
 
-        case .groupContiguousRanges:
+        case .groupContinuousRanges:
             let item = state.gesture.rangeList
                 .flatMap { $0 }
             let comparedList = IndexSet(item)
@@ -252,11 +252,11 @@ public struct MonthCore: ReducerProtocol {
 
         case .cleanUp:
             return .merge(
-                .send(.groupContiguousRanges),
+                .send(.groupContinuousRanges),
                 .send(.resetGesture)
             )
 
-        case .removeSelectedDates, .firstWeekDraged, .lastWeekDraged:
+        case .removeSelectedDates, .firstWeekDragged, .lastWeekDragged:
             return .send(.cleanUp)
         }
     }
