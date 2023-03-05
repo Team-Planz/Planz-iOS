@@ -60,7 +60,7 @@ public struct LoginView: View {
                     Image(Resource.Image.planz, bundle: Bundle.module)
                     Text(Resource.String.planz)
                         .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(Color(hex: "8886FF"))
+                        .foregroundColor(Color(hex: Resource.HexColor.planz))
 
                     Spacer()
                 }
@@ -81,7 +81,7 @@ public struct LoginView: View {
                 Text(Resource.String.browsing)
                     .underline()
                     .font(.system(size: 14))
-                    .foregroundColor(Color(hex: "707070"))
+                    .foregroundColor(Color(hex: Resource.HexColor.browsing))
                     .onTapGesture {}
             }
             .padding(.top, 12)
@@ -133,6 +133,11 @@ private enum Resource {
         static let planz = "planz"
         static let kakao = "Kakao"
         static let mail = "mailIllustration"
+    }
+    
+    enum HexColor {
+        static let planz = "8886FF"
+        static let browsing = "707070"
     }
 }
 
