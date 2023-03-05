@@ -9,7 +9,7 @@ import DesignSystem
 import SwiftUI
 
 public struct ShareView: View {
-    static let mailImage: String = "mailIllustration"
+    let mailImage: String = "mailIllustration"
     public init() {}
 
     public var body: some View {
@@ -44,7 +44,7 @@ public struct ShareView: View {
                     }
                     .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
                 }
-                Image(ShareView.mailImage, bundle: Bundle.module)
+                Image(mailImage, bundle: Bundle.module)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             }
