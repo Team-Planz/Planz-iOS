@@ -6,10 +6,53 @@
 //  Copyright © 2023 Team-Planz. All rights reserved.
 //
 
+import APIClient
+import APIClientLive
+import ComposableArchitecture
 import DesignSystem
 import SwiftUI
 
+public struct Login: ReducerProtocol {
+    public struct State: Equatable {
+        public init() {}
+    }
+
+    public enum Action: Equatable {
+        case kakaoButtonTapped
+        case authorizeResponse(TaskResult<String>)
+    }
+
+    public init() {}
+
+    public var body: some ReducerProtocol<State, Action> {
+        Reduce { _, action in
+            switch action {
+            case .kakaoButtonTapped:
+                return .task {
+                    await .authorizeResponse(
+                        TaskResult {
+                            try await APIClient.liveValue.authenticate()
+                        }
+                    )
+                }
+            case .authorizeResponse(.success):
+                return .none
+            case .authorizeResponse(.failure):
+                return .none
+            }
+        }
+    }
+}
+
 public struct LoginView: View {
+    let store: StoreOf<Login>
+    @ObservedObject var viewStore: ViewStoreOf<Login>
+
+    public init(store: StoreOf<Login>) {
+        self.store = store
+        viewStore = ViewStore(store)
+    }
+
     public var body: some View {
         VStack {
             HStack {
@@ -46,7 +89,9 @@ public struct LoginView: View {
 
             Spacer()
 
-            Button {} label: {
+            Button {
+                viewStore.send(.kakaoButtonTapped)
+            } label: {
                 HStack(alignment: .center) {
                     Image(Resource.Image.kakao, bundle: Bundle.module)
                     Text(Resource.String.kakaoLogin)
@@ -94,7 +139,12 @@ private enum Resource {
 #if DEBUG
     struct LoginView_Previews: PreviewProvider {
         static var previews: some View {
-            LoginView()
+            LoginView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: Login()
+                )
+            )
         }
     }
 #endif
