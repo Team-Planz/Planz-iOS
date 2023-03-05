@@ -1,38 +1,18 @@
 import ComposableArchitecture
+import DesignSystem
 import Introspect
 import SwiftUI
 
 public struct CalendarView: View {
-    public enum Style {
-        var layoutConstraint: LayoutConstraint {
-            switch self {
-            case .home:
-                return .init(
-                    currentMonthInfoBottomPadding: 16,
-                    directionButtonSize: .init(width: 20, height: 20),
-                    contentHorizontalPadding: 19.5,
-                    contentTopPadding: 20,
-                    contentBottomPadding: 24,
-                    contentBackgroundCornerRadius: 16
-                )
-
-            case .promise:
-                return .init(
-                    currentMonthInfoBottomPadding: 20,
-                    directionButtonSize: .init(width: 24, height: 24),
-                    contentHorizontalPadding: .zero,
-                    contentTopPadding: .zero,
-                    contentBottomPadding: .zero,
-                    contentBackgroundCornerRadius: .zero
-                )
-            }
+    struct LayoutConstraint {
+        var monthView: MonthView.LayoutConstraint {
+            .init(
+                rowHeight: dayRowHeight,
+                weekDayListCount: weekDayListCout,
+                horizontalPadding: contentHorizontalPadding
+            )
         }
 
-        case home
-        case promise
-    }
-
-    struct LayoutConstraint {
         let currentMonthInfoBottomPadding: CGFloat
         let directionButtonSize: CGSize
         let listButtonSize: CGSize = .init(width: 22, height: 22)
@@ -48,17 +28,17 @@ public struct CalendarView: View {
     }
 
     @Namespace var coordinateSpace
-    let style: Style
+    let type: CalendarType
     let layoutConstraint: LayoutConstraint
     let store: StoreOf<CalendarCore>
     @ObservedObject var viewStore: ViewStoreOf<CalendarCore>
 
     public init(
-        style: Style,
+        type: CalendarType,
         store: StoreOf<CalendarCore>
     ) {
-        self.style = style
-        layoutConstraint = style.layoutConstraint
+        self.type = type
+        layoutConstraint = type.layoutConstraint
         self.store = store
         viewStore = ViewStore(store)
     }
@@ -67,12 +47,12 @@ public struct CalendarView: View {
         GeometryReader { geometryProxy in
             VStack(spacing: .zero) {
                 HStack(spacing: .zero) {
-                    switch style {
+                    switch type {
                     case .home:
                         VStack(spacing: .zero) {
                             HStack(spacing: .zero) {
                                 Text(viewStore.selectedMonth.yearMonthString)
-                                    .foregroundColor(.grayg8)
+                                    .foregroundColor(PDS.COLOR.gray8.scale)
                                     .font(.system(size: 18))
                                     .padding(.trailing, 11)
 
@@ -116,7 +96,7 @@ public struct CalendarView: View {
                                 .frame(height: 1)
                         }
 
-                    case .promise:
+                    case .appointment:
                         Button(action: { viewStore.send(.leftSideButtonTapped) }) {
                             Image.left
                                 .resizable()
@@ -130,7 +110,7 @@ public struct CalendarView: View {
 
                         Text(viewStore.selectedMonth.yearMonthString)
                             .font(.system(size: 18))
-                            .foregroundColor(.grayg8)
+                            .foregroundColor(PDS.COLOR.gray8.scale)
                             .padding(.trailing, 16)
 
                         Button(action: { viewStore.send(.rightSideButtonTapped) }) {
@@ -161,27 +141,18 @@ public struct CalendarView: View {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(alignment: .top, spacing: .zero) {
-                            ForEach(viewStore.monthStateList) { month in
-                                let horizontalPadding = (layoutConstraint.contentHorizontalPadding) * 2
-                                let scrollViewWidth = geometryProxy.size.width - horizontalPadding
-                                let rowWidth = scrollViewWidth / CGFloat(layoutConstraint.weekDayListCout)
-                                let columns: [GridItem] = .init(
-                                    repeating: .init(.fixed(rowWidth), spacing: .zero),
-                                    count: layoutConstraint.weekDayListCout
+                            ForEachStore(
+                                store
+                                    .scope(
+                                        state: \.monthList,
+                                        action: CalendarCore.Action.monthAction(id:action:)
+                                    )
+                            ) {
+                                MonthView(
+                                    layoutConstarint: layoutConstraint.monthView,
+                                    geometryWidth: geometryProxy.size.width,
+                                    store: $0
                                 )
-                                LazyVGrid(
-                                    columns: columns,
-                                    spacing: .zero
-                                ) {
-                                    ForEach(month.days) { day in
-                                        Text(day.date.dayString)
-                                            .bold(day.isToday)
-                                            .foregroundColor(.dayColor(date: day.date, isFaded: day.isFaded))
-                                            .frame(height: layoutConstraint.dayRowHeight)
-                                            .frame(maxWidth: .infinity)
-                                    }
-                                }
-                                .id(month.id)
                             }
                         }
                         .frame(height: layoutConstraint.scrollViewHeight)
@@ -219,9 +190,44 @@ public struct CalendarView: View {
         .onAppear { viewStore.send(.onAppear) }
         .onDisappear { viewStore.send(.onDisAppear) }
     }
+
+    private func transformToIndex(point: CGPoint, viewWidth: CGFloat) -> Int {
+        let rowWidth = Int(viewWidth) / layoutConstraint.weekDayListCout
+        let rowHeight = Int(layoutConstraint.dayRowHeight)
+        let xLocation = Int(point.x) / rowWidth
+        let yLocation = Int(point.y) / rowHeight * 7
+
+        return xLocation + yLocation
+    }
 }
 
-private enum WeekDay: CaseIterable, CustomStringConvertible {
+private extension CalendarType {
+    var layoutConstraint: CalendarView.LayoutConstraint {
+        switch self {
+        case .home:
+            return .init(
+                currentMonthInfoBottomPadding: 16,
+                directionButtonSize: .init(width: 20, height: 20),
+                contentHorizontalPadding: 19.5,
+                contentTopPadding: 20,
+                contentBottomPadding: 24,
+                contentBackgroundCornerRadius: 16
+            )
+
+        case .appointment:
+            return .init(
+                currentMonthInfoBottomPadding: 20,
+                directionButtonSize: .init(width: 24, height: 24),
+                contentHorizontalPadding: .zero,
+                contentTopPadding: .zero,
+                contentBottomPadding: .zero,
+                contentBackgroundCornerRadius: .zero
+            )
+        }
+    }
+}
+
+enum WeekDay: CaseIterable, CustomStringConvertible {
     var description: String {
         switch self {
         case .sunday:
@@ -244,10 +250,10 @@ private enum WeekDay: CaseIterable, CustomStringConvertible {
     var color: Color {
         switch self {
         case .sunday:
-            return Color.scarlet1
+            return PDS.COLOR.scarlet1.scale
 
         default:
-            return Color.cggraycg2
+            return PDS.COLOR.cGray2.scale
         }
     }
 
@@ -284,15 +290,6 @@ private extension Image {
     static let list = Self(uiImage: .init(named: "list", in: .module, with: nil)!)
 }
 
-private extension Color {
-    static func dayColor(date: Date, isFaded: Bool) -> Self {
-        guard !isFaded else { return .grayg3 }
-        return calendar.component(.weekday, from: date) == 1
-            ? .scarlet1
-            : .cggraycg2
-    }
-}
-
 private struct ScrollViewOffset: PreferenceKey {
     static var defaultValue: CGFloat = .zero
 
@@ -309,54 +306,21 @@ private struct ScrollViewOffset: PreferenceKey {
         static var previews: some View {
             Group {
                 CalendarView(
-                    style: .home,
+                    type: .home,
                     store: .init(
                         initialState: .init(),
-                        reducer: CalendarCore()
+                        reducer: CalendarCore(type: .home)
                     )
                 )
 
                 CalendarView(
-                    style: .promise,
+                    type: .appointment,
                     store: .init(
                         initialState: .init(),
-                        reducer: CalendarCore()
+                        reducer: CalendarCore(type: .appointment)
                     )
                 )
             }
         }
     }
 #endif
-
-// MARK: Must be removed when design system module created.
-
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let alpha, red, green, blue: UInt64
-        switch hex.count {
-        case 3:
-            (alpha, red, green, blue) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6:
-            (alpha, red, green, blue) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8:
-            (alpha, red, green, blue) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (alpha, red, green, blue) = (1, 1, 1, 0)
-        }
-        self.init(
-            .sRGB,
-            red: Double(red) / 255,
-            green: Double(green) / 255,
-            blue: Double(blue) / 255,
-            opacity: Double(alpha) / 255
-        )
-    }
-
-    static let scarlet1: Color = .init(hex: "FF7F77")
-    static let cggraycg2: Color = .init(hex: "5B687A")
-    static let grayg3: Color = .init(hex: "E8EAED")
-    static let grayg8: Color = .init(hex: "020202")
-}
