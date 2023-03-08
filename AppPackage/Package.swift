@@ -94,6 +94,7 @@ let package = Package(
         .target(
             name: "HomeContainerFeature",
             dependencies: [
+                "MakePromise",
                 "DesignSystem",
                 "MakePromise",
                 "CalendarFeature",
