@@ -6,13 +6,13 @@
 //  Copyright © 2023 Team-Planz. All rights reserved.
 //
 
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 enum RoleType: String {
     case leader
     case general
-    
+
     var title: String {
         switch self {
         case .leader:
@@ -21,7 +21,7 @@ enum RoleType: String {
             return "파티원"
         }
     }
-    
+
     var textColor: Color {
         switch self {
         case .leader:
@@ -30,7 +30,7 @@ enum RoleType: String {
             return PColor.scarlet1.scale
         }
     }
-    
+
     var bgColor: Color {
         switch self {
         case .leader:
