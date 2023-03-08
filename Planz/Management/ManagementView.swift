@@ -14,7 +14,7 @@ struct PromiseManagement: ReducerProtocol {
         @BindingState var visibleTab: Tab = .standby
         var confirmedTab = ConfirmedListFeature.State()
         var standbyTab = StandbyListFeature.State()
-        
+
         init(
             standbyRows: IdentifiedArrayOf<StandbyCell.State> = [],
             confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = []
@@ -23,23 +23,23 @@ struct PromiseManagement: ReducerProtocol {
             confirmedTab = ConfirmedListFeature.State(rows: confirmedRows)
         }
     }
-    
+
     enum Action: BindableAction {
         case onAppear
         case standbyTab(StandbyListFeature.Action)
         case confirmedTab(ConfirmedListFeature.Action)
         case binding(BindingAction<State>)
     }
-    
+
     var body: some ReducerProtocol<State, Action> {
         BindingReducer()
-        
+
         Reduce { state, action in
             switch action {
             case .onAppear:
                 state = .init(standbyRows: .mock, confirmedRows: .mock)
                 return .none
-                
+
             default:
                 return .none
             }
@@ -54,13 +54,12 @@ struct PromiseManagement: ReducerProtocol {
 }
 
 struct ManagementView: View {
-    
     private let store: StoreOf<PromiseManagement>
-    
+
     init(store: StoreOf<PromiseManagement>) {
         self.store = store
     }
-    
+
     var body: some View {
         WithViewStore(self.store) { viewStore in
             NavigationView {
@@ -68,23 +67,25 @@ struct ManagementView: View {
                     VStack {
                         HeaderTabView(
                             activeTab:
-                                viewStore.binding(\.$visibleTab),
+                            viewStore.binding(\.$visibleTab),
                             tabs: Tab.allCases,
                             fullWidth: geo.size.width - 40
                         )
-                        
+
                         TabView(selection:
-                                    viewStore.binding(\.$visibleTab)
+                            viewStore.binding(\.$visibleTab)
                         ) {
                             StandbyListView(store: self.store.scope(
                                 state: \.standbyTab,
-                                action: PromiseManagement.Action.standbyTab)
+                                action: PromiseManagement.Action.standbyTab
+                            )
                             )
                             .tag(Tab.standby)
-                            
+
                             ConfirmedListView(store: store.scope(
                                 state: \.confirmedTab,
-                                action: PromiseManagement.Action.confirmedTab))
+                                action: PromiseManagement.Action.confirmedTab
+                            ))
                             .tag(Tab.confirmed)
                         }
                         .animation(.default, value: viewStore.visibleTab.rawValue)
@@ -114,6 +115,7 @@ struct ManagementView_Previews: PreviewProvider {
     static var previews: some View {
         ManagementView(store: StoreOf<PromiseManagement>(
             initialState: PromiseManagement.State(),
-            reducer: PromiseManagement()._printChanges()))
+            reducer: PromiseManagement()._printChanges()
+        ))
     }
 }

@@ -1,6 +1,4 @@
 // swift-tools-version: 5.7
-// The swift-tools-version declares the minimum version of Swift required to build this package.
-
 import PackageDescription
 
 let package = Package(
@@ -10,11 +8,13 @@ let package = Package(
         .library(
             name: "AppPackage",
             targets: [
-                "AppPackage",
                 "TimeTableFeature",
-                "Calendar",
                 "MakePromise"
             ]
+        ),
+        .library(
+            name: "CalendarFeature",
+            targets: ["CalendarFeature"]
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"])
     ],
@@ -25,14 +25,6 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "AppPackage",
-            dependencies: [
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "Introspect", package: "SwiftUI-Introspect"),
-                .product(name: "Then", package: "Then")
-            ]
-        ),
-        .target(
             name: "TimeTableFeature",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
@@ -42,7 +34,7 @@ let package = Package(
             name: "DesignSystem"
         ),
         .target(
-            name: "Calendar",
+            name: "CalendarFeature",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")

@@ -6,13 +6,13 @@
 //  Copyright © 2023 Team-Planz. All rights reserved.
 //
 
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct ManagementTitleCellView: View {
     let title: String
     let role: RoleType
-    
+
     var body: some View {
         HStack {
             Text(title)
@@ -27,9 +27,10 @@ struct ManagementTitleCellView: View {
 }
 
 // MARK: - RoleMarkView
+
 struct RoleMarkView: View {
     let role: RoleType
-    
+
     var body: some View {
         Text(role.title)
             .padding(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))

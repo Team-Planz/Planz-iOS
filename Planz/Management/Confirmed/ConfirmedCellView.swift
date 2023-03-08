@@ -7,8 +7,8 @@
 //
 
 import ComposableArchitecture
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct ConfirmedCell: ReducerProtocol {
     struct State: Equatable, Identifiable {
@@ -18,12 +18,12 @@ struct ConfirmedCell: ReducerProtocol {
         let leaderName: String
         let replyPeopleCount: Int
     }
-    
+
     enum Action: Equatable {
         case touched
     }
-    
-    func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
+
+    func reduce(into _: inout State, action: Action) -> EffectTask<Action> {
         switch action {
         case .touched:
             return .none
@@ -32,9 +32,8 @@ struct ConfirmedCell: ReducerProtocol {
 }
 
 struct ConfirmedCellView: View {
-    
     let store: StoreOf<ConfirmedCell>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
@@ -58,7 +57,6 @@ struct ConfirmedCellView: View {
                     Image(systemName: "chevron.forward")
                         .frame(width: 32, height: 32)
                         .foregroundColor(PColor.gray5.scale)
-                    
                 }
                 .padding()
                 .background(Color(hex: "FBFCFF"))
@@ -80,12 +78,14 @@ struct ConfirmedCellView_Previews: PreviewProvider {
     static var previews: some View {
         ConfirmedCellView(store: Store(
             initialState:
-                ConfirmedCell.State(
-                    id: UUID(),
-                    title: "가나다라마바사아자차카파타하이",
-                    role: .leader,
-                    leaderName: "LeaderName",
-                    replyPeopleCount: 10),
-            reducer: ConfirmedCell()._printChanges()))
+            ConfirmedCell.State(
+                id: UUID(),
+                title: "가나다라마바사아자차카파타하이",
+                role: .leader,
+                leaderName: "LeaderName",
+                replyPeopleCount: 10
+            ),
+            reducer: ConfirmedCell()._printChanges()
+        ))
     }
 }
