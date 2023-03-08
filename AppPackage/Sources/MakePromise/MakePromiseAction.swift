@@ -8,6 +8,7 @@
 import Foundation
 
 public enum MakePromiseAction: Equatable {
+    case dismiss
     case nextButtonTapped
     case backButtonTapped
 
