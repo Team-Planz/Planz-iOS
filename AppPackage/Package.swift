@@ -29,6 +29,7 @@ let package = Package(
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
         .package(url: "https://github.com/Team-Planz/Planz-iOS-APIClient.git", branch: "main")
+        .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "0.6.1")
     ],
     targets: [
         .target(
@@ -84,7 +85,9 @@ let package = Package(
         .target(
             name: "HomeFeature",
             dependencies: [
+                "MakePromise",
                 "DesignSystem",
+                .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
             resources: [
