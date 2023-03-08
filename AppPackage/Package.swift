@@ -18,7 +18,11 @@ let package = Package(
             name: "CalendarFeature",
             targets: ["CalendarFeature"]
         ),
-        .library(name: "DesignSystem", targets: ["DesignSystem"])
+        .library(name: "DesignSystem", targets: ["DesignSystem"]),
+        .library(
+            name: "HomeFeature",
+            targets: ["HomeFeature"]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.50.0"),
@@ -75,6 +79,16 @@ let package = Package(
             ],
             resources: [
                 .process("Resources/Assets.xcassets")
+            ]
+        ),
+        .target(
+            name: "HomeFeature",
+            dependencies: [
+                "DesignSystem",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ],
+            resources: [
+                .process("Resources")
             ]
         )
     ]
