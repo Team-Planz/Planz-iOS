@@ -1,4 +1,3 @@
-import CasePaths
 import ComposableArchitecture
 import DesignSystem
 import MakePromise
@@ -8,12 +7,12 @@ import SwiftUINavigation
 public struct HomeView: View {
     let store: StoreOf<HomeCore>
     @ObservedObject var viewStore: ViewStoreOf<HomeCore>
-    
+
     public init(store: StoreOf<HomeCore>) {
         self.store = store
         viewStore = ViewStore(store)
     }
-    
+
     public var body: some View {
         TabView(
             selection: viewStore
@@ -29,7 +28,7 @@ public struct HomeView: View {
                             tab.image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                            
+
                             Text(tab.description)
                         }
                     }
@@ -55,17 +54,17 @@ public struct HomeView: View {
             )
         }
     }
-    
+
     @ViewBuilder
     private func contents(_ item: Tab) -> some View {
         Group {
             switch item {
             case .mainView:
                 Text("MainView")
-                
+
             case .makePromise:
                 Color.clear
-                
+
             case .promiseManagement:
                 Text("Promise")
             }
@@ -84,7 +83,7 @@ extension Tab: CustomStringConvertible {
             return "약속 관리"
         }
     }
-    
+
     var image: Image {
         switch self {
         case .mainView:
@@ -104,17 +103,16 @@ private extension Image {
 }
 
 #if DEBUG
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView(
-            store: .init(
-                initialState: .init(
-                    destination: .makePromise(.init())
-                ),
-                reducer: HomeCore()
+    struct HomeView_Previews: PreviewProvider {
+        static var previews: some View {
+            HomeView(
+                store: .init(
+                    initialState: .init(
+                        destination: .makePromise(.init())
+                    ),
+                    reducer: HomeCore()
+                )
             )
-        )
+        }
     }
-}
 #endif
-

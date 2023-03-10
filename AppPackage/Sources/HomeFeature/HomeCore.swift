@@ -1,7 +1,6 @@
 import ComposableArchitecture
 import Foundation
 import MakePromise
-import CasePaths
 
 public enum Tab: CaseIterable, Equatable {
     case mainView
@@ -21,10 +20,10 @@ public struct HomeCore: ReducerProtocol {
                 destination = .makePromise(newValue)
             }
         }
-        
+
         var selectedTab: Tab
         @BindingState var destination: Destination?
-        
+
         public init(
             selectedTab: Tab = .mainView,
             destination: Destination? = nil
@@ -41,23 +40,23 @@ public struct HomeCore: ReducerProtocol {
             }
         }
     }
-    
+
     public enum Action: BindableAction {
         case selectedTabChanged(tab: Tab)
         case makePromiseAction(action: MakePromiseAction)
         case binding(BindingAction<State>)
     }
-    
+
     public enum Destination: Equatable {
         case makePromise(MakePromiseState)
         case promiseManagement
     }
-    
+
     public init() {}
-    
+
     public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
-        
+
         Reduce { state, action in
             switch action {
             case let .selectedTabChanged(tab: tab):
@@ -68,14 +67,14 @@ public struct HomeCore: ReducerProtocol {
                 default:
                     break
                 }
-                
+
                 return .none
-                
+
             case .makePromiseAction(action: .dismiss):
                 state.selectedTab = .mainView
                 state.destination = nil
                 return .none
-                
+
             case .makePromiseAction, .binding:
                 return .none
             }
