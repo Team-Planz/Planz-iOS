@@ -14,7 +14,7 @@ public struct SetNameAndPlaceState: Equatable {
     var promiseName: String = ""
     var promisePlace: String = ""
 
-    var nameTextDisplayCount: Int {
+    var numberOfCharacterInNameText: Int {
         if promiseName.count <= maxCharacter {
             return promiseName.count
         } else {
@@ -22,7 +22,7 @@ public struct SetNameAndPlaceState: Equatable {
         }
     }
 
-    var placeTextDisplayCount: Int {
+    var numberOfCharacterInPlaceText: Int {
         if promisePlace.count <= maxCharacter {
             return promisePlace.count
         } else {
@@ -39,7 +39,7 @@ public struct SetNameAndPlaceState: Equatable {
     }
 
     var isNextButtonEnable: Bool {
-        (nameTextDisplayCount > 0 && !shouldShowNameTextCountWarning) && (placeTextDisplayCount > 0 && !shouldShowPlaceTextCountWarning)
+        (numberOfCharacterInNameText > 0 && !shouldShowNameTextCountWarning) && (numberOfCharacterInPlaceText > 0 && !shouldShowPlaceTextCountWarning)
     }
 
     public init() {}

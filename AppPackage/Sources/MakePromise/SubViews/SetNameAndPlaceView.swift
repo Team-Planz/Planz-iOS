@@ -54,67 +54,84 @@ public struct TextFieldWithTitleView: View {
     var type: SetNameAndPlaceView.TextFieldType
     var store: Store<SetNameAndPlaceState, SetNameAndPlaceAction>
 
+    @ObservedObject var viewStore: ViewStore<ViewState, SetNameAndPlaceAction>
+    init(type: SetNameAndPlaceView.TextFieldType, store: Store<SetNameAndPlaceState, SetNameAndPlaceAction>) {
+        self.type = type
+        self.store = store
+        viewStore = ViewStore(
+            self.store.scope { state in
+                ViewState(type, state: state)
+            }
+        )
+    }
+
+    struct ViewState: Equatable {
+        let showWarningMessage: Bool
+        let textFieldText: String
+        let numberOfCharacter: Int
+        let maxNumberOfCharacter: Int
+
+        init(_ type: SetNameAndPlaceView.TextFieldType, state: SetNameAndPlaceState) {
+            switch type {
+            case .name:
+                showWarningMessage = state.shouldShowNameTextCountWarning
+                textFieldText = state.promiseName
+                numberOfCharacter = state.numberOfCharacterInNameText
+            case .place:
+                showWarningMessage = state.shouldShowPlaceTextCountWarning
+                textFieldText = state.promisePlace
+                numberOfCharacter = state.numberOfCharacterInPlaceText
+            }
+
+            maxNumberOfCharacter = state.maxCharacter
+        }
+    }
+
     typealias SetNameAndPlaceStore = ViewStore<SetNameAndPlaceState, SetNameAndPlaceAction>
     public var body: some View {
-        WithViewStore(self.store) { viewStore in
-            HStack {
-                Spacer(minLength: 20)
-                VStack {
-                    HStack {
-                        Text(type.title).bold()
-                        Spacer()
-                    }
-                    TextField(
-                        type.placeHolder,
-                        text: viewStore.binding(
-                            get: { type == .name ? $0.promiseName : $0.promisePlace },
-                            send: { type == .name ? .filledPromiseName($0) : .filledPromisePlace($0) }
-                        )
-                    )
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .strokeBorder(
-                                getBorderColor(viewStore, type: type),
-                                style: StrokeStyle(lineWidth: 1.0)
-                            )
-                    )
-                    HStack {
-                        if type == .name && viewStore.shouldShowNameTextCountWarning {
-                            Text("10글자를 초과했습니다")
-                                .foregroundColor(PDS.COLOR.scarlet1.scale)
-                        } else if type == .place && viewStore.shouldShowPlaceTextCountWarning {
-                            Text("10글자를 초과했습니다")
-                                .foregroundColor(PDS.COLOR.scarlet1.scale)
-                        }
-
-                        Spacer()
-                        Text("\(type == .name ? viewStore.nameTextDisplayCount : viewStore.placeTextDisplayCount)/\(viewStore.maxCharacter)")
-                            .foregroundColor(getTextCountColor(viewStore, type: type))
-                    }
+        HStack {
+            Spacer(minLength: 20)
+            VStack {
+                HStack {
+                    Text(type.title).bold()
+                    Spacer()
                 }
-                Spacer(minLength: 20)
+                TextField(
+                    type.placeHolder,
+                    text: viewStore.binding(
+                        get: { $0.textFieldText },
+                        send: { type == .name ? .filledPromiseName($0) : .filledPromisePlace($0) }
+                    )
+                )
+                .padding()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .strokeBorder(
+                            getBorderColor(viewStore, type: type),
+                            style: StrokeStyle(lineWidth: 1.0)
+                        )
+                )
+                HStack {
+                    if viewStore.showWarningMessage {
+                        Text("10글자를 초과했습니다")
+                            .foregroundColor(PDS.COLOR.scarlet1.scale)
+                    }
+                    Spacer()
+                    Text("\(viewStore.numberOfCharacter)/\(viewStore.maxNumberOfCharacter)")
+                        .foregroundColor(getTextCountColor(viewStore, type: type))
+                }
             }
+            Spacer(minLength: 20)
         }
     }
 
-    func getBorderColor(_ viewStore: SetNameAndPlaceStore, type: SetNameAndPlaceView.TextFieldType) -> Color {
-        if type == .name {
-            return viewStore.shouldShowNameTextCountWarning ? PDS.COLOR.scarlet1.scale :
-                PDS.COLOR.purple9.scale
-        } else {
-            return viewStore.shouldShowPlaceTextCountWarning ? PDS.COLOR.scarlet1.scale :
-                PDS.COLOR.purple9.scale
-        }
+    func getBorderColor(_ viewStore: ViewStore<ViewState, SetNameAndPlaceAction>, type _: SetNameAndPlaceView.TextFieldType) -> Color {
+        return viewStore.showWarningMessage ? PDS.COLOR.scarlet1.scale :
+            PDS.COLOR.purple9.scale
     }
 
-    func getTextCountColor(_ viewStore: SetNameAndPlaceStore, type: SetNameAndPlaceView.TextFieldType) -> Color {
-        if type == .name {
-            return viewStore.shouldShowNameTextCountWarning ? PDS.COLOR.scarlet1.scale :
-                PDS.COLOR.gray4.scale
-        } else {
-            return viewStore.shouldShowPlaceTextCountWarning ? PDS.COLOR.scarlet1.scale :
-                PDS.COLOR.gray4.scale
-        }
+    func getTextCountColor(_ viewStore: ViewStore<ViewState, SetNameAndPlaceAction>, type _: SetNameAndPlaceView.TextFieldType) -> Color {
+        return viewStore.showWarningMessage ? PDS.COLOR.scarlet1.scale :
+            PDS.COLOR.gray4.scale
     }
 }
