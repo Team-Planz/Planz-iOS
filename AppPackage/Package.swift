@@ -9,7 +9,8 @@ let package = Package(
             name: "AppPackage",
             targets: [
                 "TimeTableFeature",
-                "MakePromise"
+                "MakePromise",
+                "LoginFeature"
             ]
         ),
         .library(
@@ -21,7 +22,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.50.0"),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
-        .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0")
+        .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
+        .package(url: "https://github.com/Team-Planz/Planz-iOS-APIClient.git", branch: "main")
     ],
     targets: [
         .target(
@@ -48,6 +50,17 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .target(
+            name: "LoginFeature",
+            dependencies: [
+                "DesignSystem",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "APIClient", package: "Planz-iOS-APIClient")
+            ],
+            resources: [
+                .process("Resources/Assets.xcassets")
             ]
         )
     ]

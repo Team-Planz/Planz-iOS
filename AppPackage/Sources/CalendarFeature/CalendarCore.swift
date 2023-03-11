@@ -200,7 +200,7 @@ public struct CalendarCore: ReducerProtocol {
         .forEach(
             \.monthList,
             action: /Action.monthAction(id:action:),
-            element: MonthCore.init
+            MonthCore.init
         )
     }
 }
