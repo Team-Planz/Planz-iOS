@@ -13,7 +13,7 @@ let package = Package(
                 "AppPackage",
                 "TimeTableFeature",
                 "Share",
-                "MakePromise"
+                "MakePromise",
                 "LoginFeature"
             ]
         ),
