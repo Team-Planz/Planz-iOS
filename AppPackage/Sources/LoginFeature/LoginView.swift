@@ -13,9 +13,7 @@ import DesignSystem
 import SwiftUI
 
 public struct Login: ReducerProtocol {
-    public struct State: Equatable {
-        public init() {}
-    }
+    public typealias State = Void
 
     public enum Action: Equatable {
         case kakaoButtonTapped
@@ -137,7 +135,7 @@ private enum Resource {
         static let kakao = "Kakao"
         static let mail = "mailIllustration"
     }
-    
+
     enum HexColor {
         static let planz = "8886FF"
         static let browsing = "707070"
@@ -149,7 +147,7 @@ private enum Resource {
         static var previews: some View {
             LoginView(
                 store: .init(
-                    initialState: .init(),
+                    initialState: (),
                     reducer: Login()
                 )
             )
