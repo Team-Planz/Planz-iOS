@@ -11,7 +11,7 @@ import Foundation
 enum Tab: Int, CaseIterable {
     case standby = 0
     case confirmed
-    
+
     var title: String {
         switch self {
         case .standby:

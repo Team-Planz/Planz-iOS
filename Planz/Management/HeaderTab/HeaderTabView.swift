@@ -14,26 +14,25 @@ struct HeaderTabView: View {
     private let barWidth: CGFloat
     private let buttonWidth: CGFloat
     @State private var barX: CGFloat = 0
-    
+
     let tabs: [Tab]
     @Binding var activeTab: Tab
-    
+
     init(
         activeTab: Binding<Tab>,
         tabs: [Tab],
         fullWidth: CGFloat
     ) {
         self.tabs = tabs
-        self._activeTab = activeTab
-        self.buttonWidth = (fullWidth-spacing)/CGFloat(tabs.count)
-        self.barWidth = buttonWidth
-        self.buttonLeadings = [0, barWidth+spacing]
+        _activeTab = activeTab
+        buttonWidth = (fullWidth - spacing) / CGFloat(tabs.count)
+        barWidth = buttonWidth
+        buttonLeadings = [0, barWidth + spacing]
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: spacing) {
-                
                 ForEach(tabs, id: \.self) { tab in
                     Button {
                         activeTab = tab
@@ -48,7 +47,7 @@ struct HeaderTabView: View {
                     }
                 }
             }
-            
+
             Rectangle()
                 .frame(width: barWidth, height: 2)
                 .alignmentGuide(.leading) { $0[.leading] }
@@ -67,7 +66,8 @@ struct HeaderTabView_Previews: PreviewProvider {
         HeaderTabView(
             activeTab: .constant(Tab.standby),
             tabs: Tab.allCases,
-            fullWidth: 400)
+            fullWidth: 400
+        )
         .padding(.horizontal)
     }
 }
