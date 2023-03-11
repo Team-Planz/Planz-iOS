@@ -10,7 +10,7 @@ let package = Package(
             targets: [
                 "TimeTableFeature",
                 "Share",
-                "MakePromise"
+                "MakePromise",
                 "LoginFeature"
             ]
         ),
