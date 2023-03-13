@@ -11,6 +11,7 @@ let package = Package(
                 "TimeTableFeature",
                 "Share",
                 "MakePromise",
+                "PromiseManagement",
                 "LoginFeature"
             ]
         ),
@@ -61,6 +62,13 @@ let package = Package(
         ),
         .target(
             name: "MakePromise",
+            dependencies: [
+                "DesignSystem",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .target(
+            name: "PromiseManagement",
             dependencies: [
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")

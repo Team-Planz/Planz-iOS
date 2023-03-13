@@ -9,13 +9,15 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct PromiseManagement: ReducerProtocol {
-    struct State: Equatable {
+public struct PromiseManagement: ReducerProtocol {
+    public init() {}
+
+    public struct State: Equatable {
         @BindingState var visibleTab: Tab = .standby
         var confirmedTab = ConfirmedListFeature.State()
         var standbyTab = StandbyListFeature.State()
 
-        init(
+        public init(
             standbyRows: IdentifiedArrayOf<StandbyCell.State> = [],
             confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = []
         ) {
@@ -24,14 +26,14 @@ struct PromiseManagement: ReducerProtocol {
         }
     }
 
-    enum Action: BindableAction {
+    public enum Action: BindableAction {
         case onAppear
         case standbyTab(StandbyListFeature.Action)
         case confirmedTab(ConfirmedListFeature.Action)
         case binding(BindingAction<State>)
     }
 
-    var body: some ReducerProtocol<State, Action> {
+    public var body: some ReducerProtocol<State, Action> {
         BindingReducer()
 
         Reduce { state, action in
@@ -53,14 +55,14 @@ struct PromiseManagement: ReducerProtocol {
     }
 }
 
-struct ManagementView: View {
+public struct ManagementView: View {
     private let store: StoreOf<PromiseManagement>
 
-    init(store: StoreOf<PromiseManagement>) {
+    public init(store: StoreOf<PromiseManagement>) {
         self.store = store
     }
 
-    var body: some View {
+    public var body: some View {
         WithViewStore(self.store) { viewStore in
             NavigationView {
                 GeometryReader { geo in

@@ -9,19 +9,19 @@ import ComposableArchitecture
 import DesignSystem
 import SwiftUI
 
-struct StandbyCell: ReducerProtocol {
-    struct State: Equatable, Identifiable {
-        let id: UUID
+public struct StandbyCell: ReducerProtocol {
+    public struct State: Equatable, Identifiable {
+        public let id: UUID
         let title: String
         let role: RoleType
         let names: [String]
     }
 
-    enum Action: Equatable {
+    public enum Action: Equatable {
         case touched
     }
 
-    func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
+    public func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
         switch action {
         case .touched:
             print("Cell Action:", state.title)
