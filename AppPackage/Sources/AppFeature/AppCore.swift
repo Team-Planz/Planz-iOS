@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import Foundation
-import HomeConatinerFeature
+import HomeContainerFeature
 import LoginFeature
 
 public struct AppCore: ReducerProtocol {
