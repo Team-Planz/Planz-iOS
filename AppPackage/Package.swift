@@ -22,7 +22,7 @@ let package = Package(
         .library(
             name: "HomeConatinerFeature",
             targets: ["HomeConatinerFeature"]
-        ),
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.50.0"),
