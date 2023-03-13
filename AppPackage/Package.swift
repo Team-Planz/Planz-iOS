@@ -23,6 +23,10 @@ let package = Package(
         .library(
             name: "HomeContainerFeature",
             targets: ["HomeContainerFeature"]
+        ),
+        .library(
+            name: "AppFeature",
+            targets: ["AppFeature"]
         )
     ],
     dependencies: [
@@ -97,6 +101,19 @@ let package = Package(
                 "DesignSystem",
                 "MakePromise",
                 "CalendarFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "SwiftUINavigation", package: "swiftui-navigation")
+            ],
+            resources: [
+                .process("Resources")
+            ]
+        ),
+        .target(
+            name: "AppFeature",
+            dependencies: [
+                "DesignSystem",
+                "HomeContainerFeature",
+                "LoginFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation")
             ],

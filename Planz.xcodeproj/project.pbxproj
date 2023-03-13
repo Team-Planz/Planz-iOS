@@ -31,6 +31,7 @@
 		AE3E344629B72741003E9005 /* CalendarFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE3E344529B72741003E9005 /* CalendarFeature */; };
 		AE3E344829B72744003E9005 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = AE3E344729B72744003E9005 /* DesignSystem */; };
 		AE4313C329C1582E00E399AD /* HomeContainerFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE4313C229C1582E00E399AD /* HomeContainerFeature */; };
+		AEC4817829BEEBC600724A0B /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AEC4817729BEEBC600724A0B /* AppFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,7 @@
 			files = (
 				AE4313C329C1582E00E399AD /* HomeContainerFeature in Frameworks */,
 				AE3E344829B72744003E9005 /* DesignSystem in Frameworks */,
+				AEC4817829BEEBC600724A0B /* AppFeature in Frameworks */,
 				6F81F3D028EE78550005BAAA /* AppPackage in Frameworks */,
 				AE3E344629B72741003E9005 /* CalendarFeature in Frameworks */,
 			);
@@ -189,6 +191,7 @@
 				AE3E344529B72741003E9005 /* CalendarFeature */,
 				AE3E344729B72744003E9005 /* DesignSystem */,
 				AE4313C229C1582E00E399AD /* HomeContainerFeature */,
+				AEC4817729BEEBC600724A0B /* AppFeature */,
 			);
 			productName = Planz;
 			productReference = 6F47599628D9D0CE005CC91B /* Planz.app */;
@@ -690,6 +693,10 @@
 		AE4313C229C1582E00E399AD /* HomeContainerFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HomeContainerFeature;
+		};
+		AEC4817729BEEBC600724A0B /* AppFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
