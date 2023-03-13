@@ -107,7 +107,7 @@ private extension Image {
         static var previews: some View {
             HomeContainerView(
                 store: .init(
-                    initialState: .init(destination: .makePromise(.init())),
+                    initialState: .init(destinationState: .makePromise(.init())),
                     reducer: HomeContainerCore()
                 )
             )

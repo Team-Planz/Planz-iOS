@@ -16,10 +16,10 @@ public struct HomeContainerCore: ReducerProtocol {
 
         public init(
             selectedTab: Tab = .mainView,
-            destination _: DestinationState? = nil
+            destinationState: DestinationState? = nil
         ) {
             self.selectedTab = selectedTab
-            destinationState = destinationState
+            self.destinationState = destinationState
         }
     }
 
