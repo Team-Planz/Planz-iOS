@@ -10,20 +10,24 @@ import ComposableArchitecture
 import DesignSystem
 import SwiftUI
 
-struct ConfirmedCell: ReducerProtocol {
-    struct State: Equatable, Identifiable {
-        let id: UUID
+public struct ConfirmedCell: ReducerProtocol {
+    public struct State: Equatable, Identifiable {
+        public let id: UUID
         let title: String
         let role: RoleType
         let leaderName: String
         let replyPeopleCount: Int
+        let theme: String
+        let date: String
+        let place: String
+        let participants: [String]
     }
 
-    enum Action: Equatable {
+    public enum Action: Equatable {
         case touched
     }
 
-    func reduce(into _: inout State, action: Action) -> EffectTask<Action> {
+    public func reduce(into _: inout State, action: Action) -> EffectTask<Action> {
         switch action {
         case .touched:
             return .none
@@ -83,7 +87,11 @@ struct ConfirmedCellView_Previews: PreviewProvider {
                 title: "가나다라마바사아자차카파타하이",
                 role: .leader,
                 leaderName: "LeaderName",
-                replyPeopleCount: 10
+                replyPeopleCount: 10,
+                theme: "미팅 약속",
+                date: "",
+                place: "강남",
+                participants: []
             ),
             reducer: ConfirmedCell()._printChanges()
         ))

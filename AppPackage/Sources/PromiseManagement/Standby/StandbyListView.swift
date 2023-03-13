@@ -8,8 +8,8 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct StandbyListFeature: ReducerProtocol {
-    struct State: Equatable {
+public struct StandbyListFeature: ReducerProtocol {
+    public struct State: Equatable {
         var rows: IdentifiedArrayOf<StandbyCell.State>
 
         init(rows: IdentifiedArrayOf<StandbyCell.State> = []) {
@@ -17,11 +17,11 @@ struct StandbyListFeature: ReducerProtocol {
         }
     }
 
-    enum Action: Equatable {
+    public enum Action: Equatable {
         case pushDetailView(id: StandbyCell.State.ID, action: StandbyCell.Action)
     }
 
-    var body: some ReducerProtocol<State, Action> {
+    public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
             case .pushDetailView(id: let id, action: .touched):

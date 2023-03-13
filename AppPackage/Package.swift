@@ -14,6 +14,7 @@ let package = Package(
                 "TimeTableFeature",
                 "Share",
                 "MakePromise",
+                "PromiseManagement",
                 "LoginFeature"
             ]
         ),
@@ -70,6 +71,24 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .target(
+            name: "PromiseManagement",
+            dependencies: [
+                "DesignSystem",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .target(
+            name: "LoginFeature",
+            dependencies: [
+                "DesignSystem",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "APIClient", package: "Planz-iOS-APIClient")
+            ],
+            resources: [
+                .process("Resources/Assets.xcassets")
             ]
         )
     ]
