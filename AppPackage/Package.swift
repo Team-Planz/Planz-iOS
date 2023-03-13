@@ -12,8 +12,9 @@ let package = Package(
             targets: [
                 "AppPackage",
                 "TimeTableFeature",
-                "Calendar",
+                "Share",
                 "MakePromise"
+                "LoginFeature"
             ]
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"])
@@ -39,7 +40,10 @@ let package = Package(
             ]
         ),
         .target(
-            name: "DesignSystem"
+            name: "DesignSystem",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .target(
             name: "Calendar",
@@ -49,6 +53,16 @@ let package = Package(
             ],
             resources: [
                 .process("Resources")
+            ]
+        ),
+        .target(
+            name: "Share",
+            dependencies: [
+                "DesignSystem",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ],
+            resources: [
+                .process("Resources/Assets.xcassets")
             ]
         ),
         .target(
