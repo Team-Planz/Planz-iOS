@@ -10,7 +10,7 @@ import SwiftUI
 
 struct HeaderTabView: View {
     private let spacing: CGFloat = 60
-    private let buttonLeadings: [CGFloat]
+    private let startXPointForButtons: [CGFloat]
     private let barWidth: CGFloat
     private let buttonWidth: CGFloat
     @State private var barX: CGFloat = 0
@@ -27,7 +27,12 @@ struct HeaderTabView: View {
         _activeTab = activeTab
         buttonWidth = (fullWidth - spacing) / CGFloat(tabs.count)
         barWidth = buttonWidth
-        buttonLeadings = [0, barWidth + spacing]
+
+        var xPoints = [CGFloat](repeating: 0, count: tabs.count)
+        for index in 0 ..< tabs.count {
+            xPoints[index] = (barWidth + spacing) * CGFloat(index)
+        }
+        startXPointForButtons = xPoints
     }
 
     var body: some View {
@@ -37,7 +42,7 @@ struct HeaderTabView: View {
                     Button {
                         activeTab = tab
                         withAnimation {
-                            barX = buttonLeadings[tab.rawValue]
+                            barX = startXPointForButtons[tab.rawValue]
                         }
                     } label: {
                         Text(tab.title)
@@ -55,19 +60,21 @@ struct HeaderTabView: View {
         }
         .onChange(of: activeTab) { selectedTab in
             withAnimation {
-                barX = buttonLeadings[selectedTab.rawValue]
+                barX = startXPointForButtons[selectedTab.rawValue]
             }
         }
     }
 }
 
-struct HeaderTabView_Previews: PreviewProvider {
-    static var previews: some View {
-        HeaderTabView(
-            activeTab: .constant(Tab.standby),
-            tabs: Tab.allCases,
-            fullWidth: 400
-        )
-        .padding(.horizontal)
+#if DEBUG
+    struct HeaderTabView_Previews: PreviewProvider {
+        static var previews: some View {
+            HeaderTabView(
+                activeTab: .constant(Tab.standby),
+                tabs: Tab.allCases,
+                fullWidth: 400
+            )
+            .padding(.horizontal)
+        }
     }
-}
+#endif
