@@ -45,15 +45,15 @@ public struct ConfirmedDetailFeature: ReducerProtocol {
 // MARK: - ConfirmedDetailView
 
 public struct ConfirmedDetailView: View {
-    private let illustImage = "illustDetail"
-    private let closeImage = "iconClose"
+    private let illustImageName = "illustDetail"
+    private let closeImageName = "iconClose"
     let store: StoreOf<ConfirmedDetailFeature>
 
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             NavigationView {
                 VStack {
-                    Image(illustImage, bundle: Bundle.module)
+                    Image(illustImageName, bundle: Bundle.module)
                         .zIndex(1)
                         .offset(y: 32)
 
@@ -105,7 +105,7 @@ public struct ConfirmedDetailView: View {
                             Button {
                                 viewStore.send(.dismissed)
                             } label: {
-                                Image(closeImage, bundle: Bundle.module)
+                                Image(closeImageName, bundle: Bundle.module)
                             }
                         }
                     }
