@@ -23,7 +23,6 @@ public struct MonthCore: ReducerProtocol {
     }
 
     public enum Action: Equatable {
-        
         public enum Delegate: Equatable {
             case rowTapped(Date)
             case drag(startIndex: Int, endIndex: Int)
@@ -31,7 +30,7 @@ public struct MonthCore: ReducerProtocol {
             case firstWeekDragged(GestureType, ClosedRange<Int>)
             case lastWeekDragged(GestureType, ClosedRange<Int>)
         }
-        
+
         case delegate(action: Delegate)
         case dragFiltered(startIndex: Int, currentRange: ClosedRange<Int>)
         case dragEnded(startIndex: Int)
@@ -54,7 +53,7 @@ public struct MonthCore: ReducerProtocol {
                 !state.monthState.days[startIndex].isFaded,
                 !state.monthState.days[endIndex].isFaded
             else { return .none }
-            
+
             return .none
 
         case let .dragFiltered(
@@ -259,7 +258,7 @@ public struct MonthCore: ReducerProtocol {
                 .send(.groupContinuousRanges),
                 .send(.resetGesture)
             )
-            
+
         case .delegate:
             return .send(.cleanUp)
         }

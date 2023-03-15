@@ -69,25 +69,32 @@ struct MonthView: View {
         }
         .id(viewStore.id)
         .gesture(
-            DragGesture(minimumDistance: .zero)
-                .onChanged {
-                    let startIndex = transformToIndex(
-                        point: $0.startLocation,
-                        viewWidth: geometryWidth
-                    )
-                    let endIndex = transformToIndex(
-                        point: $0.location,
-                        viewWidth: geometryWidth
-                    )
-                    viewStore.send(.drag(startIndex: startIndex, endIndex: endIndex))
-                }
-                .onEnded {
-                    let startIndex = transformToIndex(
-                        point: $0.startLocation,
-                        viewWidth: geometryWidth
-                    )
-                    viewStore.send(.dragEnded(startIndex: startIndex))
-                }
+            DragGesture(
+                minimumDistance: .zero,
+                coordinateSpace: type == .appointment
+                    ? .local
+                    : .global
+            )
+            .onChanged {
+                guard type == .appointment else { return }
+                let startIndex = transformToIndex(
+                    point: $0.startLocation,
+                    viewWidth: geometryWidth
+                )
+                let endIndex = transformToIndex(
+                    point: $0.location,
+                    viewWidth: geometryWidth
+                )
+                viewStore.send(.drag(startIndex: startIndex, endIndex: endIndex))
+            }
+            .onEnded {
+                guard type == .appointment else { return }
+                let startIndex = transformToIndex(
+                    point: $0.startLocation,
+                    viewWidth: geometryWidth
+                )
+                viewStore.send(.dragEnded(startIndex: startIndex))
+            }
         )
     }
 
@@ -112,7 +119,7 @@ private extension MonthView {
             switch self {
             case let .rowTapped(date):
                 return .delegate(action: .rowTapped(date))
-                
+
             case let .drag(startIndex: startIndex, endIndex: endIndex):
                 return .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex))
 

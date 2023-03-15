@@ -149,7 +149,7 @@ public struct CalendarCore: ReducerProtocol {
 
             case let .monthAction(
                 id: _,
-                action: .delegate(action: (.removeSelectedDates(items: dates)))
+                action: .delegate(action: .removeSelectedDates(items: dates))
             ):
                 dates
                     .forEach { state.selectedDates.remove($0) }
