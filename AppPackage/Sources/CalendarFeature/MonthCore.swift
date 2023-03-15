@@ -25,6 +25,7 @@ public struct MonthCore: ReducerProtocol {
     public enum Action: Equatable {
         
         public enum Delegate: Equatable {
+            case rowTapped(Date)
             case drag(startIndex: Int, endIndex: Int)
             case removeSelectedDates(items: [Date])
             case firstWeekDragged(GestureType, ClosedRange<Int>)

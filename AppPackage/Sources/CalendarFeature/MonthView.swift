@@ -9,17 +9,20 @@ struct MonthView: View {
         let horizontalPadding: CGFloat
     }
 
+    let type: CalendarType
     let layoutConstraint: LayoutConstraint
     let geometryWidth: CGFloat
     let store: StoreOf<MonthCore>
     @ObservedObject private var viewStore: ViewStore<ViewState, ViewAction>
 
     init(
-        layoutConstarint: LayoutConstraint,
+        type: CalendarType,
+        layoutConstraint: LayoutConstraint,
         geometryWidth: CGFloat,
         store: StoreOf<MonthCore>
     ) {
-        layoutConstraint = layoutConstarint
+        self.type = type
+        self.layoutConstraint = layoutConstraint
         self.geometryWidth = geometryWidth
         self.store = store
         viewStore = ViewStore(
@@ -60,6 +63,8 @@ struct MonthView: View {
                             }
                         }
                     }
+                    .onTapGesture { viewStore.send(.rowTapped(day.date)) }
+                    .disabled(type == .appointment)
             }
         }
         .id(viewStore.id)
@@ -105,6 +110,9 @@ private extension MonthView {
     enum ViewAction: Equatable {
         var reducerAction: MonthCore.Action {
             switch self {
+            case let .rowTapped(date):
+                return .delegate(action: .rowTapped(date))
+                
             case let .drag(startIndex: startIndex, endIndex: endIndex):
                 return .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex))
 
@@ -113,6 +121,7 @@ private extension MonthView {
             }
         }
 
+        case rowTapped(Date)
         case drag(startIndex: Int, endIndex: Int)
         case dragEnded(startIndex: Int)
     }

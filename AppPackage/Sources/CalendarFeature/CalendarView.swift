@@ -149,7 +149,8 @@ public struct CalendarView: View {
                                     )
                             ) {
                                 MonthView(
-                                    layoutConstarint: layoutConstraint.monthView,
+                                    type: type,
+                                    layoutConstraint: layoutConstraint.monthView,
                                     geometryWidth: geometryProxy.size.width,
                                     store: $0
                                 )
