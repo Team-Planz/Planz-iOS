@@ -45,5 +45,6 @@ struct PromiseContentView: View {
             }
             .frame(alignment: .top)
         }
+        .navigationBarBackButtonHidden()
     }
 }

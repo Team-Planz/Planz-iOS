@@ -30,6 +30,9 @@ public let makePromiseReducer = Reducer<MakePromiseState, MakePromiseAction, Mak
         ),
     Reducer { state, action, _ in
         switch action {
+        case .dismiss:
+            return .none
+
         case .nextButtonTapped:
             if state.isNextButtonEnable() {
                 state.moveNextStep()

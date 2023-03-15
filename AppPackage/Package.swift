@@ -19,13 +19,18 @@ let package = Package(
             name: "CalendarFeature",
             targets: ["CalendarFeature"]
         ),
-        .library(name: "DesignSystem", targets: ["DesignSystem"])
+        .library(name: "DesignSystem", targets: ["DesignSystem"]),
+        .library(
+            name: "HomeContainerFeature",
+            targets: ["HomeContainerFeature"]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.50.0"),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
-        .package(url: "https://github.com/Team-Planz/Planz-iOS-APIClient.git", branch: "main")
+        .package(url: "https://github.com/Team-Planz/Planz-iOS-APIClient.git", branch: "main"),
+        .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "0.6.1")
     ],
     targets: [
         .target(
@@ -43,6 +48,7 @@ let package = Package(
         .target(
             name: "CalendarFeature",
             dependencies: [
+                "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
             ],
@@ -83,6 +89,19 @@ let package = Package(
             ],
             resources: [
                 .process("Resources/Assets.xcassets")
+            ]
+        ),
+        .target(
+            name: "HomeContainerFeature",
+            dependencies: [
+                "DesignSystem",
+                "MakePromise",
+                "CalendarFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "SwiftUINavigation", package: "swiftui-navigation")
+            ],
+            resources: [
+                .process("Resources")
             ]
         )
     ]
