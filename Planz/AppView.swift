@@ -6,16 +6,11 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
-import CalendarFeature
-import ComposableArchitecture
-import HomeContainerFeature
 import SwiftUI
 
 struct AppView: View {
     var body: some View {
-        ZStack {
-            CalendarView(type: .home, store: .init(initialState: .init(), reducer: CalendarCore(type: .home)))
-        }
+        Text("Text")
     }
 }
 

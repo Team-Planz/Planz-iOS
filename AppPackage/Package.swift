@@ -20,8 +20,8 @@ let package = Package(
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"]),
         .library(
-            name: "HomeConatinerFeature",
-            targets: ["HomeConatinerFeature"]
+            name: "HomeContainerFeature",
+            targets: ["HomeContainerFeature"]
         )
     ],
     dependencies: [
@@ -84,7 +84,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "HomeConatinerFeature",
+            name: "HomeContainerFeature",
             dependencies: [
                 "DesignSystem",
                 "MakePromise",
