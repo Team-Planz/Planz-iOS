@@ -46,139 +46,9 @@ public struct CalendarView: View {
     public var body: some View {
         GeometryReader { geometryProxy in
             VStack(spacing: .zero) {
-                HStack(spacing: .zero) {
-                    switch type {
-                    case .home:
-                        VStack(spacing: .zero) {
-                            HStack(spacing: .zero) {
-                                Text(viewStore.selectedMonth.yearMonthString)
-                                    .foregroundColor(PDS.COLOR.gray8.scale)
-                                    .font(.system(size: 18))
-                                    .padding(.trailing, 11)
-
-                                Button(action: { viewStore.send(.leftSideButtonTapped) }) {
-                                    Image.left
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(
-                                            width: layoutConstraint.directionButtonSize.width,
-                                            height: layoutConstraint.directionButtonSize.height
-                                        )
-                                }
-                                .padding(.trailing, 6)
-
-                                Button(action: { viewStore.send(.rightSideButtonTapped) }) {
-                                    Image.right
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(
-                                            width: layoutConstraint.directionButtonSize.width,
-                                            height: layoutConstraint.directionButtonSize.height
-                                        )
-                                }
-
-                                Spacer()
-
-                                Button(action: {}) {
-                                    Image.list
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(
-                                            width: layoutConstraint.listButtonSize.width,
-                                            height: layoutConstraint.listButtonSize.height
-                                        )
-                                }
-                            }
-                            .padding(.bottom, 12)
-
-                            Divider()
-                                .foregroundColor(.gray)
-                                .frame(height: 1)
-                        }
-
-                    case .appointment:
-                        Button(action: { viewStore.send(.leftSideButtonTapped) }) {
-                            Image.left
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(
-                                    width: layoutConstraint.directionButtonSize.width,
-                                    height: layoutConstraint.directionButtonSize.height
-                                )
-                        }
-                        .padding(.trailing, 16)
-
-                        Text(viewStore.selectedMonth.yearMonthString)
-                            .font(.system(size: 18))
-                            .foregroundColor(PDS.COLOR.gray8.scale)
-                            .padding(.trailing, 16)
-
-                        Button(action: { viewStore.send(.rightSideButtonTapped) }) {
-                            Image.right
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(
-                                    width: layoutConstraint.directionButtonSize.width,
-                                    height: layoutConstraint.directionButtonSize.height
-                                )
-                        }
-                    }
-                }
-                .padding(.bottom, layoutConstraint.currentMonthInfoBottomPadding)
-
-                HStack(spacing: .zero) {
-                    ForEach(WeekDay.allCases, id: \.self) { weekDay in
-                        Text(weekDay.description)
-                            .foregroundColor(weekDay.color)
-                            .frame(
-                                maxWidth: .infinity,
-                                maxHeight: layoutConstraint.weekDayRowHeight
-                            )
-                    }
-                }
-                .padding(.bottom, layoutConstraint.weekDayListBottomPadding)
-
-                ScrollViewReader { scrollViewProxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(alignment: .top, spacing: .zero) {
-                            ForEachStore(
-                                store
-                                    .scope(
-                                        state: \.monthList,
-                                        action: CalendarCore.Action.monthAction(id:action:)
-                                    )
-                            ) {
-                                MonthView(
-                                    type: type,
-                                    layoutConstraint: layoutConstraint.monthView,
-                                    geometryWidth: geometryProxy.size.width,
-                                    store: $0
-                                )
-                            }
-                        }
-                        .frame(height: layoutConstraint.scrollViewHeight)
-                        .background {
-                            GeometryReader { proxy in
-                                Color.clear
-                                    .preference(
-                                        key: ScrollViewOffset.self,
-                                        value: -proxy.frame(in: .named(coordinateSpace)).minX
-                                    )
-                            }
-                        }
-                    }
-                    .introspectScrollView { $0.isPagingEnabled = true }
-                    .onReceive(viewStore.publisher.selectedMonth) { id in
-                        scrollViewProxy.scrollTo(id)
-                    }
-                    .coordinateSpace(name: coordinateSpace)
-                    .onPreferenceChange(ScrollViewOffset.self) { offset in
-                        let horizontalPadding = (layoutConstraint.contentHorizontalPadding) * 2
-                        let scrollViewWidth = geometryProxy.size.width - horizontalPadding
-                        let index = (offset / scrollViewWidth).rounded(.down)
-                        viewStore.send(.scrollViewOffsetChanged(type: type, index: Int(index)))
-                    }
-                }
+                headerView
+                weekDayListView
+                scrollView(width: geometryProxy.size.width)
             }
             .padding(.top, layoutConstraint.contentTopPadding)
             .padding(.horizontal, layoutConstraint.contentHorizontalPadding)
@@ -190,6 +60,147 @@ public struct CalendarView: View {
         }
         .onAppear { viewStore.send(.onAppear(type: type)) }
         .onDisappear { viewStore.send(.onDisAppear) }
+    }
+
+    var headerView: some View {
+        HStack(spacing: .zero) {
+            switch type {
+            case .home:
+                VStack(spacing: .zero) {
+                    HStack(spacing: .zero) {
+                        Text(viewStore.selectedMonth.yearMonthString)
+                            .foregroundColor(PDS.COLOR.gray8.scale)
+                            .font(.system(size: 18))
+                            .padding(.trailing, 11)
+
+                        Button(action: { viewStore.send(.leftSideButtonTapped) }) {
+                            Image.left
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(
+                                    width: layoutConstraint.directionButtonSize.width,
+                                    height: layoutConstraint.directionButtonSize.height
+                                )
+                        }
+                        .padding(.trailing, 6)
+
+                        Button(action: { viewStore.send(.rightSideButtonTapped) }) {
+                            Image.right
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(
+                                    width: layoutConstraint.directionButtonSize.width,
+                                    height: layoutConstraint.directionButtonSize.height
+                                )
+                        }
+
+                        Spacer()
+
+                        Button(action: {}) {
+                            Image.list
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(
+                                    width: layoutConstraint.listButtonSize.width,
+                                    height: layoutConstraint.listButtonSize.height
+                                )
+                        }
+                    }
+                    .padding(.bottom, 12)
+
+                    Divider()
+                        .foregroundColor(.gray)
+                        .frame(height: 1)
+                }
+
+            case .appointment:
+                Button(action: { viewStore.send(.leftSideButtonTapped) }) {
+                    Image.left
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(
+                            width: layoutConstraint.directionButtonSize.width,
+                            height: layoutConstraint.directionButtonSize.height
+                        )
+                }
+                .padding(.trailing, 16)
+
+                Text(viewStore.selectedMonth.yearMonthString)
+                    .font(.system(size: 18))
+                    .foregroundColor(PDS.COLOR.gray8.scale)
+                    .padding(.trailing, 16)
+
+                Button(action: { viewStore.send(.rightSideButtonTapped) }) {
+                    Image.right
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(
+                            width: layoutConstraint.directionButtonSize.width,
+                            height: layoutConstraint.directionButtonSize.height
+                        )
+                }
+            }
+        }
+        .padding(.bottom, layoutConstraint.currentMonthInfoBottomPadding)
+    }
+
+    var weekDayListView: some View {
+        HStack(spacing: .zero) {
+            ForEach(WeekDay.allCases, id: \.self) { weekDay in
+                Text(weekDay.description)
+                    .foregroundColor(weekDay.color)
+                    .frame(
+                        maxWidth: .infinity,
+                        maxHeight: layoutConstraint.weekDayRowHeight
+                    )
+            }
+        }
+        .padding(.bottom, layoutConstraint.weekDayListBottomPadding)
+    }
+
+    @ViewBuilder
+    func scrollView(width: CGFloat) -> some View {
+        ScrollViewReader { scrollViewProxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(alignment: .top, spacing: .zero) {
+                    ForEachStore(
+                        store
+                            .scope(
+                                state: \.monthList,
+                                action: CalendarCore.Action.monthAction(id:action:)
+                            )
+                    ) {
+                        MonthView(
+                            type: type,
+                            layoutConstraint: layoutConstraint.monthView,
+                            geometryWidth: width,
+                            store: $0
+                        )
+                    }
+                }
+                .frame(height: layoutConstraint.scrollViewHeight)
+                .background {
+                    GeometryReader { proxy in
+                        Color.clear
+                            .preference(
+                                key: ScrollViewOffset.self,
+                                value: -proxy.frame(in: .named(coordinateSpace)).minX
+                            )
+                    }
+                }
+            }
+            .introspectScrollView { $0.isPagingEnabled = true }
+            .onReceive(viewStore.publisher.selectedMonth) { id in
+                scrollViewProxy.scrollTo(id)
+            }
+            .coordinateSpace(name: coordinateSpace)
+            .onPreferenceChange(ScrollViewOffset.self) { offset in
+                let horizontalPadding = (layoutConstraint.contentHorizontalPadding) * 2
+                let scrollViewWidth = width - horizontalPadding
+                let index = (offset / scrollViewWidth).rounded(.down)
+                viewStore.send(.scrollViewOffsetChanged(type: type, index: Int(index)))
+            }
+        }
     }
 
     private func transformToIndex(point: CGPoint, viewWidth: CGFloat) -> Int {
