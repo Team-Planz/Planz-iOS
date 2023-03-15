@@ -87,7 +87,9 @@ public struct ConfirmedDetailView: View {
 
                                 makeContentView(
                                     title: "참여자",
-                                    content: viewStore.participants.joined(separator: ", ")
+                                    content: viewStore.participants
+                                        .sorted(by: <)
+                                        .joinedNames(separator: ", ")
                                 )
                             }
                             .padding(.top)

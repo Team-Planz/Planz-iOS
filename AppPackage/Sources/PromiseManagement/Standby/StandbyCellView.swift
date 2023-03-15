@@ -47,8 +47,10 @@ struct StandbyCellView: View {
 
         init(state: StandbyCell.State) {
             title = state.title
-            namesText = state.names.joined(separator: ", ")
             role = state.role
+            namesText = state.names
+                .sorted(by: <)
+                .joinedNames(separator: ", ")
         }
     }
 
@@ -87,7 +89,7 @@ struct StandbyCellView_Previews: PreviewProvider {
                 id: UUID(),
                 title: "가나다라마바사아자차카파타하이",
                 role: .leader,
-                names: ["김세현", "한지희", "여윤정", "조하은", "이은희"]
+                names: ["김세현", "한지희", "여윤정", "조하은", "이은희", "조운", "나세리", "도진우", "민지혜"]
             ),
             reducer: StandbyCell()._printChanges()
         ))
