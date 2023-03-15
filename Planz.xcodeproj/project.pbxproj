@@ -30,6 +30,7 @@
 		9865785129B0ABAD00BB1BDA /* Tab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865785029B0ABAD00BB1BDA /* Tab.swift */; };
 		AE3E344629B72741003E9005 /* CalendarFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE3E344529B72741003E9005 /* CalendarFeature */; };
 		AE3E344829B72744003E9005 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = AE3E344729B72744003E9005 /* DesignSystem */; };
+		AE4313C329C1582E00E399AD /* HomeContainerFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE4313C229C1582E00E399AD /* HomeContainerFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AE4313C329C1582E00E399AD /* HomeContainerFeature in Frameworks */,
 				AE3E344829B72744003E9005 /* DesignSystem in Frameworks */,
 				6F81F3D028EE78550005BAAA /* AppPackage in Frameworks */,
 				AE3E344629B72741003E9005 /* CalendarFeature in Frameworks */,
@@ -186,6 +188,7 @@
 				6F81F3CF28EE78550005BAAA /* AppPackage */,
 				AE3E344529B72741003E9005 /* CalendarFeature */,
 				AE3E344729B72744003E9005 /* DesignSystem */,
+				AE4313C229C1582E00E399AD /* HomeContainerFeature */,
 			);
 			productName = Planz;
 			productReference = 6F47599628D9D0CE005CC91B /* Planz.app */;
@@ -504,6 +507,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Planz/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Planz/Info.plist;
@@ -533,6 +537,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Planz/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Planz/Info.plist;
@@ -681,6 +686,10 @@
 		AE3E344729B72744003E9005 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DesignSystem;
+		};
+		AE4313C229C1582E00E399AD /* HomeContainerFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HomeContainerFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
