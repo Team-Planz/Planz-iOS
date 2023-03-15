@@ -108,7 +108,7 @@ public struct CalendarCore: ReducerProtocol {
 
             case let .monthAction(
                 id: id,
-                action: .drag(startIndex: startIndex, endIndex: endIndex)
+                action: .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex))
             ):
                 guard let item = state.monthList[id: id] else { return .none }
                 let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
@@ -147,7 +147,10 @@ public struct CalendarCore: ReducerProtocol {
                     )
                 )
 
-            case let .monthAction(id: _, action: .removeSelectedDates(items: dates)):
+            case let .monthAction(
+                id: _,
+                action: .delegate(action: (.removeSelectedDates(items: dates)))
+            ):
                 dates
                     .forEach { state.selectedDates.remove($0) }
 
@@ -155,7 +158,7 @@ public struct CalendarCore: ReducerProtocol {
 
             case let .monthAction(
                 id: id,
-                action: .firstWeekDragged(type, range)
+                action: .delegate(action: .firstWeekDragged(type, range))
             ):
                 guard
                     let count = state.monthList[id: id.previousMonth]?.monthState.days.count
@@ -173,7 +176,7 @@ public struct CalendarCore: ReducerProtocol {
 
             case let .monthAction(
                 id: id,
-                action: .lastWeekDragged(type, range)
+                action: .delegate(action: .lastWeekDragged(type, range))
             ):
                 let relatedRange = (range.lowerBound % 7) ... (range.upperBound % 7)
 

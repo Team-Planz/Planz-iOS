@@ -106,7 +106,7 @@ private extension MonthView {
         var reducerAction: MonthCore.Action {
             switch self {
             case let .drag(startIndex: startIndex, endIndex: endIndex):
-                return .drag(startIndex: startIndex, endIndex: endIndex)
+                return .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex))
 
             case let .dragEnded(startIndex: startIndex):
                 return .dragEnded(startIndex: startIndex)

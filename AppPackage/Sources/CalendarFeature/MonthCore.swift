@@ -23,12 +23,17 @@ public struct MonthCore: ReducerProtocol {
     }
 
     public enum Action: Equatable {
-        case drag(startIndex: Int, endIndex: Int)
+        
+        public enum Delegate: Equatable {
+            case drag(startIndex: Int, endIndex: Int)
+            case removeSelectedDates(items: [Date])
+            case firstWeekDragged(GestureType, ClosedRange<Int>)
+            case lastWeekDragged(GestureType, ClosedRange<Int>)
+        }
+        
+        case delegate(action: Delegate)
         case dragFiltered(startIndex: Int, currentRange: ClosedRange<Int>)
         case dragEnded(startIndex: Int)
-        case removeSelectedDates(items: [Date])
-        case firstWeekDragged(GestureType, ClosedRange<Int>)
-        case lastWeekDragged(GestureType, ClosedRange<Int>)
         case selectRelatedDays(ClosedRange<Int>)
         case deSelectRelatedDays(ClosedRange<Int>)
         case groupContinuousRanges
@@ -41,16 +46,14 @@ public struct MonthCore: ReducerProtocol {
         action: Action
     ) -> EffectTask<Action> {
         switch action {
-        case let .drag(startIndex: startIndex, endIndex: endIndex):
+        case let .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex)):
             guard
                 endIndex < state.monthState.days.count,
-                endIndex >= .zero
-            else { return .none }
-
-            guard
+                endIndex >= .zero,
                 !state.monthState.days[startIndex].isFaded,
                 !state.monthState.days[endIndex].isFaded
             else { return .none }
+            
             return .none
 
         case let .dragFiltered(
@@ -165,7 +168,7 @@ public struct MonthCore: ReducerProtocol {
                             .appendSorted(contentsOf: range.subtracting(currentRange))
 
                         let removable = state.monthState.days[interection].map(\.id)
-                        let effect = EffectTask<Action>(value: .removeSelectedDates(items: removable))
+                        let effect = EffectTask<Action>(value: .delegate(action: .removeSelectedDates(items: removable)))
                         if
                             range.overlaps(state.monthState.previousRange),
                             let intersection = range.intersection(state.monthState.previousRange),
@@ -173,7 +176,7 @@ public struct MonthCore: ReducerProtocol {
                         {
                             return .merge(
                                 effect,
-                                EffectTask(value: .firstWeekDragged(.remove, targetRange))
+                                EffectTask(value: .delegate(action: .firstWeekDragged(.remove, targetRange)))
                             )
 
                         } else if
@@ -183,7 +186,7 @@ public struct MonthCore: ReducerProtocol {
                         {
                             return .merge(
                                 effect,
-                                EffectTask(value: .lastWeekDragged(.remove, targetRange))
+                                EffectTask(value: .delegate(action: .lastWeekDragged(.remove, targetRange)))
                             )
                         }
                         return effect
@@ -197,9 +200,9 @@ public struct MonthCore: ReducerProtocol {
                 )
                 state.gesture.rangeList.appendSorted(item: range)
                 if let intersection = state.monthState.previousRange.intersection(range) {
-                    return .send(.firstWeekDragged(.insert, intersection))
+                    return .send(.delegate(action: .firstWeekDragged(.insert, intersection)))
                 } else if let intersection = state.monthState.nextRange.intersection(range) {
-                    return .send(.lastWeekDragged(.insert, intersection))
+                    return .send(.delegate(action: .lastWeekDragged(.insert, intersection)))
                 }
             }
 
@@ -255,8 +258,8 @@ public struct MonthCore: ReducerProtocol {
                 .send(.groupContinuousRanges),
                 .send(.resetGesture)
             )
-
-        case .removeSelectedDates, .firstWeekDragged, .lastWeekDragged:
+            
+        case .delegate:
             return .send(.cleanUp)
         }
     }
