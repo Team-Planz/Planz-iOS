@@ -11,13 +11,13 @@ public struct CalendarCore: ReducerProtocol {
     }
 
     public enum Action: Equatable {
-        case onAppear
+        case onAppear(type: CalendarType)
         case onDisAppear
-        case scrollViewOffsetChanged(Int)
-        case pageIndexChanged(Int)
+        case scrollViewOffsetChanged(type: CalendarType, index: Int)
+        case pageIndexChanged(type: CalendarType, index: Int)
         case leftSideButtonTapped
         case rightSideButtonTapped
-        case createMonthStateList(CalendarClient.DateRange)
+        case createMonthStateList(type: CalendarType, range: CalendarClient.DateRange)
         case updateMonthStateList(CalendarClient.DateRange, TaskResult<[MonthState]>)
         case monthAction(id: MonthCore.State.ID, action: MonthCore.Action)
         case overSelection
@@ -25,11 +25,8 @@ public struct CalendarCore: ReducerProtocol {
 
     @Dependency(\.calendarClient) var calendarClient
     @Dependency(\.mainQueue) var mainQueue
-    let type: CalendarType
 
-    public init(type: CalendarType) {
-        self.type = type
-    }
+    public init() {}
 
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
@@ -37,8 +34,8 @@ public struct CalendarCore: ReducerProtocol {
             struct OverSelectionID {}
 
             switch action {
-            case .onAppear:
-                return .send(.createMonthStateList(.default))
+            case let .onAppear(type: calendarType):
+                return .send(.createMonthStateList(type: calendarType, range: .default))
 
             case .onDisAppear:
                 return .merge(
@@ -46,21 +43,26 @@ public struct CalendarCore: ReducerProtocol {
                     .cancel(id: OverSelectionID.self)
                 )
 
-            case let .scrollViewOffsetChanged(index):
-                return .send(.pageIndexChanged(index))
+            case let .scrollViewOffsetChanged(type: calendarType, index: index):
+                return .send(.pageIndexChanged(type: calendarType, index: index))
                     .debounce(
                         id: UpdateScrollViewOffsetID.self,
                         for: .seconds(0.2),
                         scheduler: mainQueue
                     )
 
-            case let .pageIndexChanged(index):
+            case let .pageIndexChanged(type: calendarType, index: index):
                 state.selectedMonth = state.monthList[index].id
                 let isFirstIndex = index == .zero
                 let isEdgeIndex = isFirstIndex || index == (state.monthList.count - 1)
                 guard isEdgeIndex else { return .none }
 
-                return .send(.createMonthStateList(isFirstIndex ? .lower : .upper))
+                return .send(
+                    .createMonthStateList(
+                        type: calendarType,
+                        range: isFirstIndex ? .lower : .upper
+                    )
+                )
 
             case .leftSideButtonTapped:
                 let previousMonth = calendar
@@ -78,10 +80,10 @@ public struct CalendarCore: ReducerProtocol {
 
                 return .none
 
-            case let .createMonthStateList(range):
+            case let .createMonthStateList(type: calendarType, range: range):
                 do {
                     let itemList = try calendarClient
-                        .createMonthStateList(type, range, state.selectedMonth)
+                        .createMonthStateList(calendarType, range, state.selectedMonth)
                     return .send(.updateMonthStateList(range, .success(itemList)))
                 } catch {
                     return .send(.updateMonthStateList(range, .failure(error)))

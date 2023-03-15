@@ -175,7 +175,7 @@ public struct CalendarView: View {
                         let horizontalPadding = (layoutConstraint.contentHorizontalPadding) * 2
                         let scrollViewWidth = geometryProxy.size.width - horizontalPadding
                         let index = (offset / scrollViewWidth).rounded(.down)
-                        viewStore.send(.scrollViewOffsetChanged(Int(index)))
+                        viewStore.send(.scrollViewOffsetChanged(type: type, index: Int(index)))
                     }
                 }
             }
@@ -187,7 +187,7 @@ public struct CalendarView: View {
                     .cornerRadius(layoutConstraint.contentBackgroundCornerRadius)
             }
         }
-        .onAppear { viewStore.send(.onAppear) }
+        .onAppear { viewStore.send(.onAppear(type: type)) }
         .onDisappear { viewStore.send(.onDisAppear) }
     }
 
@@ -309,7 +309,7 @@ private struct ScrollViewOffset: PreferenceKey {
                     type: .home,
                     store: .init(
                         initialState: .init(),
-                        reducer: CalendarCore(type: .home)
+                        reducer: CalendarCore()
                     )
                 )
 
@@ -317,7 +317,7 @@ private struct ScrollViewOffset: PreferenceKey {
                     type: .appointment,
                     store: .init(
                         initialState: .init(),
-                        reducer: CalendarCore(type: .appointment)
+                        reducer: CalendarCore()
                     )
                 )
             }
