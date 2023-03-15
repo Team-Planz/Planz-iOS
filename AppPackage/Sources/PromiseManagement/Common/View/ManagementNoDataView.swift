@@ -47,8 +47,10 @@ private struct RoundCornerButtonStyle: ButtonStyle {
     }
 }
 
-struct ManagementNoDataView_Previews: PreviewProvider {
-    static var previews: some View {
-        ManagementNoDataView()
+#if DEBUG
+    struct ManagementNoDataView_Previews: PreviewProvider {
+        static var previews: some View {
+            ManagementNoDataView()
+        }
     }
-}
+#endif
