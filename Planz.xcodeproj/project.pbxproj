@@ -18,19 +18,10 @@
 		6F4759B728D9D0CF005CC91B /* PlanzUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4759B628D9D0CF005CC91B /* PlanzUITestsLaunchTests.swift */; };
 		6F4759C628D9D146005CC91B /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4759C528D9D146005CC91B /* AppView.swift */; };
 		6F81F3D028EE78550005BAAA /* AppPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 6F81F3CF28EE78550005BAAA /* AppPackage */; };
-		986577DF29A9B0E300BB1BDA /* ManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 986577DE29A9B0E300BB1BDA /* ManagementView.swift */; };
-		986577E129A9F9E100BB1BDA /* HeaderTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 986577E029A9F9E100BB1BDA /* HeaderTabView.swift */; };
-		986577E329A9FBF300BB1BDA /* ConfirmedListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 986577E229A9FBF300BB1BDA /* ConfirmedListView.swift */; };
-		9865782B29ACB32700BB1BDA /* StandbyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865782A29ACB32700BB1BDA /* StandbyListView.swift */; };
-		9865782D29ACC86F00BB1BDA /* RoleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865782C29ACC86F00BB1BDA /* RoleType.swift */; };
-		9865783529ACCD1300BB1BDA /* ConfirmedCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865783429ACCD1300BB1BDA /* ConfirmedCellView.swift */; };
-		9865783729ACCE5400BB1BDA /* StandbyCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865783629ACCE5400BB1BDA /* StandbyCellView.swift */; };
-		9865783A29ACD9F500BB1BDA /* ManagementTitleCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865783929ACD9F500BB1BDA /* ManagementTitleCellView.swift */; };
-		9865784E29B0478D00BB1BDA /* ManagementNoDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865784D29B0478D00BB1BDA /* ManagementNoDataView.swift */; };
-		9865785129B0ABAD00BB1BDA /* Tab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9865785029B0ABAD00BB1BDA /* Tab.swift */; };
 		AE3E344629B72741003E9005 /* CalendarFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE3E344529B72741003E9005 /* CalendarFeature */; };
 		AE3E344829B72744003E9005 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = AE3E344729B72744003E9005 /* DesignSystem */; };
 		AE4313C329C1582E00E399AD /* HomeContainerFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE4313C229C1582E00E399AD /* HomeContainerFeature */; };
+		AE4640FF29C18CD000CCB602 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE4640FE29C18CD000CCB602 /* AppFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +66,7 @@
 			files = (
 				AE4313C329C1582E00E399AD /* HomeContainerFeature in Frameworks */,
 				AE3E344829B72744003E9005 /* DesignSystem in Frameworks */,
+				AE4640FF29C18CD000CCB602 /* AppFeature in Frameworks */,
 				6F81F3D028EE78550005BAAA /* AppPackage in Frameworks */,
 				AE3E344629B72741003E9005 /* CalendarFeature in Frameworks */,
 			);
@@ -189,6 +181,7 @@
 				AE3E344529B72741003E9005 /* CalendarFeature */,
 				AE3E344729B72744003E9005 /* DesignSystem */,
 				AE4313C229C1582E00E399AD /* HomeContainerFeature */,
+				AE4640FE29C18CD000CCB602 /* AppFeature */,
 			);
 			productName = Planz;
 			productReference = 6F47599628D9D0CE005CC91B /* Planz.app */;
@@ -690,6 +683,10 @@
 		AE4313C229C1582E00E399AD /* HomeContainerFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HomeContainerFeature;
+		};
+		AE4640FE29C18CD000CCB602 /* AppFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -16,6 +16,10 @@ let package = Package(
             ]
         ),
         .library(
+            name: "AppFeature",
+            targets: ["AppFeature"]
+        ),
+        .library(
             name: "CalendarFeature",
             targets: ["CalendarFeature"]
         ),
@@ -33,6 +37,16 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "0.6.1")
     ],
     targets: [
+        .target(
+            name: "AppFeature",
+            dependencies: [
+                "DesignSystem",
+                "HomeContainerFeature",
+                "LoginFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "SwiftUINavigation", package: "swiftui-navigation")
+            ]
+        ),
         .target(
             name: "TimeTableFeature",
             dependencies: [
