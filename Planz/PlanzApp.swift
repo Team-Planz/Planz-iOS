@@ -5,7 +5,7 @@ import SwiftUI
 @main
 struct PlanzApp: App {
     let store: StoreOf<AppCore> = .init(
-        initialState: .init(),
+        initialState: .launchScreen,
         reducer: AppCore()
     )
 

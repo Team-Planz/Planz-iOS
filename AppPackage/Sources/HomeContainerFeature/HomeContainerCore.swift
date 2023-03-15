@@ -23,7 +23,7 @@ public struct HomeContainerCore: ReducerProtocol {
         }
     }
 
-    public enum Action: BindableAction {
+    public enum Action: BindableAction, Equatable {
         case selectedTabChanged(tab: Tab)
         case destination(DestinationAction)
         case binding(BindingAction<State>)
