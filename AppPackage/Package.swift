@@ -45,6 +45,9 @@ let package = Package(
                 "LoginFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation")
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
         .target(
