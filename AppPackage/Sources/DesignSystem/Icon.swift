@@ -15,6 +15,15 @@ public extension PDS {
         case makePromiseTab
         case promiseManagementTab
 
+        case planzLogoHome
+
+        case meeting
+        case meal
+        case etc
+        case trip
+
+        case profile
+
         case kakao
         case mailIllustration
         case planzLogoPurpleBackground
