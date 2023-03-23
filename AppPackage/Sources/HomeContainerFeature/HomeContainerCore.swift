@@ -1,10 +1,12 @@
+import CalendarFeature
 import CasePaths
 import ComposableArchitecture
 import Foundation
+import HomeFeature
 import MakePromise
 
 public enum Tab: CaseIterable, Equatable {
-    case mainView
+    case home
     case makePromise
     case promiseManagement
 }
@@ -13,12 +15,15 @@ public struct HomeContainerCore: ReducerProtocol {
     public struct State: Equatable {
         var selectedTab: Tab
         @PresentationState var destinationState: DestinationState?
+        var homeState: HomeCore.State
 
         public init(
-            selectedTab: Tab = .mainView,
+            selectedTab: Tab = .home,
+            homeState: HomeCore.State = .init(),
             destinationState: DestinationState? = nil
         ) {
             self.selectedTab = selectedTab
+            self.homeState = homeState
             self.destinationState = destinationState
         }
     }
@@ -26,6 +31,7 @@ public struct HomeContainerCore: ReducerProtocol {
     public enum Action: Equatable {
         case selectedTabChanged(tab: Tab)
         case destination(PresentationAction<DestinationAction>)
+        case home(action: HomeCore.Action)
     }
 
     public enum DestinationState: Equatable {
@@ -39,15 +45,24 @@ public struct HomeContainerCore: ReducerProtocol {
     public init() {}
 
     public var body: some ReducerProtocol<State, Action> {
+        Scope(
+            state: \.homeState,
+            action: /HomeContainerCore.Action.home,
+            child: HomeCore.init
+        )
+
         Reduce { state, action in
             switch action {
             case let .selectedTabChanged(tab: tab):
-                switch tab {
-                case .makePromise:
+                if case .makePromise = tab {
                     state.destinationState = .makePromise(.init())
-                default:
+                } else {
                     state.selectedTab = tab
                 }
+
+                return .none
+
+            case .home:
                 return .none
 
             case .destination(.presented(.makePromise(.dismiss))):

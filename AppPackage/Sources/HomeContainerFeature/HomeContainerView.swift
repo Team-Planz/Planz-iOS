@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import DesignSystem
+import HomeFeature
 import MakePromise
 import SwiftUI
 import SwiftUINavigation
@@ -52,17 +53,21 @@ public struct HomeContainerView: View {
 
     @ViewBuilder
     private func contents(_ item: Tab) -> some View {
-        Group {
-            switch item {
-            case .mainView:
-                Text("MainView")
+        switch item {
+        case .home:
+            HomeView(
+                store: store
+                    .scope(
+                        state: \.homeState,
+                        action: HomeContainerCore.Action.home
+                    )
+            )
 
-            case .makePromise:
-                Color.clear
+        case .makePromise:
+            Color.clear
 
-            case .promiseManagement:
-                Text("Promise")
-            }
+        case .promiseManagement:
+            Text("Promise")
         }
     }
 }
@@ -70,8 +75,8 @@ public struct HomeContainerView: View {
 extension Tab: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .mainView:
-            return "메인 홈"
+        case .home:
+            return "홈"
         case .makePromise:
             return "약속 잡기"
         case .promiseManagement:
@@ -81,7 +86,7 @@ extension Tab: CustomStringConvertible {
 
     var image: Image {
         switch self {
-        case .mainView:
+        case .home:
             return PDS.Icon.homeTab.image
         case .makePromise:
             return PDS.Icon.makePromiseTab.image
@@ -96,7 +101,7 @@ extension Tab: CustomStringConvertible {
         static var previews: some View {
             HomeContainerView(
                 store: .init(
-                    initialState: .init(destinationState: .makePromise(.init())),
+                    initialState: .init(homeState: .init(calendar: .init(monthList: mock))),
                     reducer: HomeContainerCore()
                 )
             )
