@@ -9,7 +9,7 @@
 import DesignSystem
 import SwiftUI
 
-struct ManagementNoDataView: View {
+struct ManagementEmptyDataView: View {
     private let imageName = "illustNodata"
 
     var body: some View {
@@ -50,7 +50,7 @@ private struct RoundCornerButtonStyle: ButtonStyle {
 #if DEBUG
     struct ManagementNoDataView_Previews: PreviewProvider {
         static var previews: some View {
-            ManagementNoDataView()
+            ManagementEmptyDataView()
         }
     }
 #endif

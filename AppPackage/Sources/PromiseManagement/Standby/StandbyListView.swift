@@ -26,7 +26,7 @@ public struct StandbyListFeature: ReducerProtocol {
             switch action {
             case .pushDetailView(id: let id, action: .touched):
                 if let selectedData = state.rows[id: id] {
-                    print(selectedData.title)
+                    print("StandbyListFeature event:", selectedData.title)
                 }
                 return .none
             }
@@ -44,7 +44,7 @@ struct StandbyListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
                 if viewStore.rows.isEmpty {
-                    ManagementNoDataView()
+                    ManagementEmptyDataView()
                 } else {
                     List {
                         ForEachStore(self.store.scope(

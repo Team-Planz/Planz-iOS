@@ -11,8 +11,6 @@ import SwiftUI
 public struct ConfirmedListFeature: ReducerProtocol {
     public struct State: Equatable {
         var rows: IdentifiedArrayOf<ConfirmedCell.State>
-        var selectedRow: ConfirmedCell.State?
-        var isViewPresented: Bool { selectedRow != nil }
 
         init(rows: IdentifiedArrayOf<ConfirmedCell.State> = []) {
             self.rows = rows
@@ -20,33 +18,28 @@ public struct ConfirmedListFeature: ReducerProtocol {
     }
 
     public enum Action: Equatable {
-        case presentDetailView(id: ConfirmedCell.State.ID, action: ConfirmedCell.Action)
-        case setScreenCover(isPresented: Bool)
-        case detailView(ConfirmedDetailFeature.Action)
+        case touchedRow(id: ConfirmedCell.State.ID, action: ConfirmedCell.Action)
+        case delegate(Delegate)
+
+        public enum Delegate: Equatable {
+            case showDetailView(ConfirmedCell.State)
+        }
     }
 
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
-            case .presentDetailView(id: let id, action: .touched):
+            case .touchedRow(id: let id, action: .touched):
                 if let selectedData = state.rows[id: id] {
-                    state.selectedRow = selectedData
+                    return .send(.delegate(.showDetailView(selectedData)))
                 }
                 return .none
 
-            case .setScreenCover(isPresented: true):
-                return .none
-
-            case .setScreenCover(isPresented: false):
-                state.selectedRow = nil
-                return .none
-
-            case .detailView(.dismissed):
-                state.selectedRow = nil
+            case .delegate:
                 return .none
             }
         }
-        .forEach(\.rows, action: /Action.presentDetailView(id:action:)) {
+        .forEach(\.rows, action: /Action.touchedRow(id:action:)) {
             ConfirmedCell()
         }
     }
@@ -61,32 +54,17 @@ struct ConfirmedListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
                 if viewStore.rows.isEmpty {
-                    ManagementNoDataView()
+                    ManagementEmptyDataView()
                 } else {
                     List {
                         ForEachStore(self.store.scope(
                             state: \.rows,
-                            action: ConfirmedListFeature.Action.presentDetailView(id: action:)
+                            action: ConfirmedListFeature.Action.touchedRow(id: action:)
                         )) {
                             ConfirmedCellView(store: $0)
                         }
                     }
                     .listStyle(.plain)
-                }
-            }
-            .fullScreenCover(isPresented: viewStore.binding(
-                get: \.isViewPresented,
-                send: ConfirmedListFeature.Action.setScreenCover(isPresented:)
-            )) {
-                IfLetStore(self.store.scope(
-                    state: \.selectedRow,
-                    action: ConfirmedListFeature.Action.detailView
-                )) {
-                    ConfirmedDetailView(
-                        store: $0.scope {
-                            ConfirmedDetailFeature.State($0)
-                        }
-                    )
                 }
             }
         }

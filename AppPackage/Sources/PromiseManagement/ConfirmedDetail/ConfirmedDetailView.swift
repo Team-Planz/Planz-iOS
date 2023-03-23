@@ -10,35 +10,19 @@ import DesignSystem
 import SwiftUI
 
 public struct ConfirmedDetailFeature: ReducerProtocol {
-    public struct State: Equatable {
+    public struct State: Equatable, Identifiable {
         public let id: UUID
         let title: String
         let theme: String
         let date: String
         let place: String
         let participants: [String]
-
-        init(_ cellState: ConfirmedCell.State) {
-            id = cellState.id
-            title = cellState.title
-            theme = cellState.theme
-            date = cellState.date
-            place = cellState.place
-            participants = cellState.participants
-        }
     }
 
-    public enum Action: Equatable {
-        case dismissed
-    }
+    public enum Action: Equatable {}
 
     public var body: some ReducerProtocol<State, Action> {
-        Reduce { _, action in
-            switch action {
-            case .dismissed:
-                return .none
-            }
-        }
+        EmptyReducer()
     }
 }
 
@@ -101,17 +85,6 @@ public struct ConfirmedDetailView: View {
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(PColor.gray3.scale, lineWidth: 1)
                         )
-                        .navigationTitle("약속 상세보기")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem {
-                                Button {
-                                    viewStore.send(.dismissed)
-                                } label: {
-                                    PDS.Icon.close.image
-                                }
-                            }
-                        }
                     }
                     .offset(y: -proxy.size.height * 0.1)
                 }
@@ -137,17 +110,12 @@ public struct ConfirmedDetailView: View {
                 .init(
                     initialState:
                     ConfirmedDetailFeature.State(
-                        ConfirmedCell.State(
-                            id: UUID(),
-                            title: "약속명",
-                            role: .leader,
-                            leaderName: "파티장이름",
-                            replyPeopleCount: 6,
-                            theme: "여행",
-                            date: "2023",
-                            place: "강남",
-                            participants: ["정인혜", "이은영"]
-                        )
+                        id: UUID(),
+                        title: "약속명",
+                        theme: "여행",
+                        date: "2023",
+                        place: "강남",
+                        participants: ["정인혜", "이은영"]
                     ),
                     reducer: ConfirmedDetailFeature()._printChanges()
                 )
