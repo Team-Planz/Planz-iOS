@@ -79,8 +79,11 @@ public struct HomeView: View {
                 )
                 .onTapGesture { viewStore.send(.rowTapped(promise.date)) }
             }
-            .frame(height: viewStore.todPromiseListHeight)
-            .padding(.bottom, 38)
+            .frame(height: viewStore.todayPromiseListHeight)
+            .padding(
+                .bottom,
+                viewStore.todayPromiseListBottomPadding
+            )
         }
         .background(.white)
         .cornerRadius(12)
@@ -90,7 +93,7 @@ public struct HomeView: View {
 
 extension HomeView {
     struct ViewState: Equatable {
-        var todPromiseListHeight: CGFloat {
+        var todayPromiseListHeight: CGFloat {
             switch todayPromiseList.count {
             case .zero:
                 return .zero
@@ -99,6 +102,12 @@ extension HomeView {
             default:
                 return 112
             }
+        }
+
+        var todayPromiseListBottomPadding: CGFloat {
+            todayPromiseList.count == .zero
+                ? .zero
+                : 38
         }
 
         let todayPromiseList: [Promise]
