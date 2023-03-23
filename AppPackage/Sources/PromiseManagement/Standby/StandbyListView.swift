@@ -19,15 +19,23 @@ public struct StandbyListFeature: ReducerProtocol {
 
     public enum Action: Equatable {
         case pushDetailView(id: StandbyCell.State.ID, action: StandbyCell.Action)
+        case delegate(Delegate)
+
+        public enum Delegate: Equatable {
+            case showDetailView(StandbyCell.State)
+        }
     }
 
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
             case .pushDetailView(id: let id, action: .touched):
-                if let selectedData = state.rows[id: id] {
-                    print("StandbyListFeature event:", selectedData.title)
+                guard let selectedData = state.rows[id: id] else {
+                    return .none
                 }
+                return .send(.delegate(.showDetailView(selectedData)))
+
+            case .delegate:
                 return .none
             }
         }

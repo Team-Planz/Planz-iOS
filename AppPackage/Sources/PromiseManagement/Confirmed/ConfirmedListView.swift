@@ -30,10 +30,10 @@ public struct ConfirmedListFeature: ReducerProtocol {
         Reduce { state, action in
             switch action {
             case .touchedRow(id: let id, action: .touched):
-                if let selectedData = state.rows[id: id] {
-                    return .send(.delegate(.showDetailView(selectedData)))
+                guard let selectedData = state.rows[id: id] else {
+                    return .none
                 }
-                return .none
+                return .send(.delegate(.showDetailView(selectedData)))
 
             case .delegate:
                 return .none

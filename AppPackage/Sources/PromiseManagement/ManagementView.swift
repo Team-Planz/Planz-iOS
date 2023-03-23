@@ -78,8 +78,19 @@ public struct PromiseManagement: ReducerProtocol {
                 state.detailItem = nil
                 return .none
 
-            case let .standbyTab(action):
-                return .none
+            case let .standbyTab(.delegate(action)):
+                switch action {
+                case let .showDetailView(item):
+                    state.detailItem = ConfirmedDetailFeature.State(
+                        id: item.id,
+                        title: item.title,
+                        theme: "테마",
+                        date: "5월 1일 오후 3시",
+                        place: "강남역",
+                        participants: item.names
+                    )
+                    return .none
+                }
 
             case let .detailItem(action):
                 return .none
