@@ -87,19 +87,13 @@ extension Tab: CustomStringConvertible {
     var image: Image {
         switch self {
         case .mainView:
-            return .home
+            return PDS.Icon.homeTab.image
         case .makePromise:
-            return .handShake
+            return PDS.Icon.makePromiseTab.image
         case .promiseManagement:
-            return .letter
+            return PDS.Icon.promiseManagementTab.image
         }
     }
-}
-
-private extension Image {
-    static let home = Self(uiImage: .init(named: "home", in: .module, with: nil)!)
-    static let letter = Self(uiImage: .init(named: "letter", in: .module, with: nil)!)
-    static let handShake = Self(uiImage: .init(named: "handShake", in: .module, with: nil)!)
 }
 
 #if DEBUG

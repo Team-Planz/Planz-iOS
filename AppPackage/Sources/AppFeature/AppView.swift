@@ -42,16 +42,11 @@ public struct AppView: View {
     var launchScreen: some View {
         ZStack {
             PDS.COLOR.purple9.scale
-
-            Image.logo
+            PDS.Icon.planzLogo.image
         }
         .ignoresSafeArea()
         .onAppear { viewStore.send(.onAppear) }
     }
-}
-
-extension Image {
-    static let logo = Self(uiImage: .init(named: "logo", in: .module, with: nil)!)
 }
 
 extension AppView {
