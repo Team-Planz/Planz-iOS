@@ -45,8 +45,6 @@ public struct ConfirmedDetailFeature: ReducerProtocol {
 // MARK: - ConfirmedDetailView
 
 public struct ConfirmedDetailView: View {
-    private let illustImageName = "illustDetail"
-    private let closeImageName = "iconClose"
     let store: StoreOf<ConfirmedDetailFeature>
 
     public var body: some View {
@@ -54,7 +52,7 @@ public struct ConfirmedDetailView: View {
             GeometryReader { proxy in
                 NavigationView {
                     VStack {
-                        Image(illustImageName, bundle: Bundle.module)
+                        PDS.Icon.illustDetail.image
                             .resizable()
                             .zIndex(1)
                             .offset(y: 32)
@@ -108,7 +106,7 @@ public struct ConfirmedDetailView: View {
                                 Button {
                                     viewStore.send(.dismissed)
                                 } label: {
-                                    Image(closeImageName, bundle: Bundle.module)
+                                    PDS.Icon.close.image
                                 }
                             }
                         }
