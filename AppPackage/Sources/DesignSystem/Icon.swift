@@ -9,7 +9,22 @@ import SwiftUI
 
 public extension PDS {
     enum Icon: String, CaseIterable {
+        case planzLogo
+
+        case homeTab
+        case makePromiseTab
+        case promiseManagementTab
+
         case kakao
+        case mailIllustration
+        case planzLogoPurpleBackground
+
+        case calendarHeaderList
+        case calendarHeaderRight
+        case calendarHeaderLeft
+
+        case close
+        case illustDetail
 
         public var image: Image {
             return Image(rawValue, bundle: Bundle.module)

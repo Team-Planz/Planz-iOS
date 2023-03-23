@@ -45,9 +45,6 @@ let package = Package(
                 "LoginFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation")
-            ],
-            resources: [
-                .process("Resources")
             ]
         ),
         .target(
@@ -68,9 +65,6 @@ let package = Package(
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
-            ],
-            resources: [
-                .process("Resources")
             ]
         ),
         .target(
@@ -78,9 +72,6 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ],
-            resources: [
-                .process("Resources/Assets.xcassets")
             ]
         ),
         .target(
@@ -103,9 +94,6 @@ let package = Package(
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "APIClient", package: "Planz-iOS-APIClient")
-            ],
-            resources: [
-                .process("Resources/Assets.xcassets")
             ]
         ),
         .target(
@@ -116,10 +104,7 @@ let package = Package(
                 "CalendarFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation")
-            ],
-            resources: [
-                .process("Resources")
             ]
-        )
+        ),
     ]
 )

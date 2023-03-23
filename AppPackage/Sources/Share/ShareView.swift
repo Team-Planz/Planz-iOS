@@ -44,7 +44,7 @@ public struct ShareView: View {
                     }
                     .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
                 }
-                Image(mailImage, bundle: Bundle.module)
+                PDS.Icon.mailIllustration.image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             }

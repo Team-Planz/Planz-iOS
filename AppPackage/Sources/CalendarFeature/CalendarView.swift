@@ -74,7 +74,7 @@ public struct CalendarView: View {
                             .padding(.trailing, 11)
 
                         Button(action: { viewStore.send(.leftSideButtonTapped) }) {
-                            Image.left
+                            PDS.Icon.calendarHeaderLeft.image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(
@@ -85,7 +85,7 @@ public struct CalendarView: View {
                         .padding(.trailing, 6)
 
                         Button(action: { viewStore.send(.rightSideButtonTapped) }) {
-                            Image.right
+                            PDS.Icon.calendarHeaderRight.image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(
@@ -97,7 +97,7 @@ public struct CalendarView: View {
                         Spacer()
 
                         Button(action: {}) {
-                            Image.list
+                            PDS.Icon.calendarHeaderList.image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(
@@ -115,7 +115,7 @@ public struct CalendarView: View {
 
             case .appointment:
                 Button(action: { viewStore.send(.leftSideButtonTapped) }) {
-                    Image.left
+                    PDS.Icon.calendarHeaderLeft.image
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(
@@ -131,7 +131,7 @@ public struct CalendarView: View {
                     .padding(.trailing, 16)
 
                 Button(action: { viewStore.send(.rightSideButtonTapped) }) {
-                    Image.right
+                    PDS.Icon.calendarHeaderRight.image
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(
@@ -294,12 +294,6 @@ private extension Date {
                 .locale(.init(identifier: "ko_KR"))
         )
     }
-}
-
-private extension Image {
-    static let left = Self(uiImage: .init(named: "left", in: .module, with: nil)!)
-    static let right = Self(uiImage: .init(named: "right", in: .module, with: nil)!)
-    static let list = Self(uiImage: .init(named: "list", in: .module, with: nil)!)
 }
 
 private struct ScrollViewOffset: PreferenceKey {

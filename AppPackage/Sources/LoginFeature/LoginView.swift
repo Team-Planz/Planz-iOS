@@ -60,7 +60,7 @@ public struct LoginView: View {
         VStack {
             HStack {
                 HStack {
-                    Image(Resource.Image.planz, bundle: Bundle.module)
+                    PDS.Icon.planzLogoPurpleBackground.image
                     Text(Resource.String.planz)
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(Color(hex: Resource.HexColor.planz))
@@ -96,7 +96,7 @@ public struct LoginView: View {
                 viewStore.send(.kakaoButtonTapped)
             } label: {
                 HStack(alignment: .center) {
-                    Image(Resource.Image.kakao, bundle: Bundle.module)
+                    PDS.Icon.kakao.image
                     Text(Resource.String.kakaoLogin)
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(PDS.COLOR.gray7.scale)
@@ -114,7 +114,7 @@ public struct LoginView: View {
         .background(
             ZStack {
                 PDS.COLOR.white1.scale.ignoresSafeArea()
-                Image(Resource.Image.mail, bundle: Bundle.module)
+                PDS.Icon.mailIllustration.image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding(.horizontal, 8)
