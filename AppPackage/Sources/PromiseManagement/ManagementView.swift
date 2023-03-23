@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 import SwiftUINavigation
 
@@ -112,7 +113,6 @@ public struct PromiseManagement: ReducerProtocol {
 }
 
 public struct ManagementView: View {
-    private let closeImageName = "iconClose"
     private let store: StoreOf<PromiseManagement>
 
     public init(store: StoreOf<PromiseManagement>) {
@@ -176,7 +176,7 @@ public struct ManagementView: View {
                                         Button {
                                             viewStore.send(.closeDetailButtonTapped)
                                         } label: {
-                                            Image(closeImageName, bundle: Bundle.module)
+                                            PDS.Icon.close.image
                                         }
                                     }
                                 }
