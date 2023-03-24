@@ -38,20 +38,15 @@ public struct HomeContainerView: View {
             }
             .tint(PDS.COLOR.gray8.scale)
             .navigationDestination(
-                unwrapping: viewStore.binding(\.$destinationState),
-                case: /HomeContainerCore.DestinationState.makePromise
-            ) { _ in
-                IfLetStore(
-                    store
-                        .scope(
-                            state: (\HomeContainerCore.State.destinationState)
-                                .appending(path: /HomeContainerCore.DestinationState.makePromise)
-                                .extract(from:),
-                            action: { .destination(.makePromise($0)) }
-                        ),
-                    then: MakePromiseView.init
-                )
-            }
+                store: store
+                    .scope(
+                        state: \.$destinationState,
+                        action: HomeContainerCore.Action.destination
+                    ),
+                state: /HomeContainerCore.DestinationState.makePromise,
+                action: HomeContainerCore.DestinationAction.makePromise,
+                destination: MakePromiseView.init
+            )
         }
     }
 

@@ -30,7 +30,10 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.50.0"),
+        .package(
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            branch: "navigation-beta"
+        ),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
         .package(url: "https://github.com/Team-Planz/Planz-iOS-APIClient.git", branch: "main"),
