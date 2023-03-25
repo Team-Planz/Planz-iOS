@@ -12,7 +12,7 @@ public enum Tab: CaseIterable, Equatable {
 public struct HomeContainerCore: ReducerProtocol {
     public struct State: Equatable {
         var selectedTab: Tab
-        @BindingState var destinationState: DestinationState?
+        @PresentationState var destinationState: DestinationState?
 
         public init(
             selectedTab: Tab = .mainView,
@@ -23,10 +23,9 @@ public struct HomeContainerCore: ReducerProtocol {
         }
     }
 
-    public enum Action: BindableAction, Equatable {
+    public enum Action: Equatable {
         case selectedTabChanged(tab: Tab)
-        case destination(DestinationAction)
-        case binding(BindingAction<State>)
+        case destination(PresentationAction<DestinationAction>)
     }
 
     public enum DestinationState: Equatable {
@@ -40,8 +39,6 @@ public struct HomeContainerCore: ReducerProtocol {
     public init() {}
 
     public var body: some ReducerProtocol<State, Action> {
-        BindingReducer()
-
         Reduce { state, action in
             switch action {
             case let .selectedTabChanged(tab: tab):
@@ -53,27 +50,24 @@ public struct HomeContainerCore: ReducerProtocol {
                 }
                 return .none
 
-            case .destination(.makePromise(.dismiss)):
-                state.destinationState = nil
-                return .none
+            case .destination(.presented(.makePromise(.dismiss))):
+                return .send(.destination(.dismiss))
 
-            case .destination, .binding:
+            case .destination:
                 return .none
             }
         }
-        .ifLet(
-            \.destinationState,
-            action: /Action.destination
-        ) {
+        .ifLet(\.$destinationState, action: /Action.destination) {
             Scope(
                 state: /DestinationState.makePromise,
-                action: /DestinationAction.makePromise
-            ) {
-                Reduce(
-                    makePromiseReducer,
-                    environment: .init()
-                )
-            }
+                action: /DestinationAction.makePromise,
+                child: {
+                    Reduce(
+                        makePromiseReducer,
+                        environment: .init()
+                    )
+                }
+            )
         }
     }
 }
