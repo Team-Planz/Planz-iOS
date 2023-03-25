@@ -1,10 +1,12 @@
+import CalendarFeature
 import CasePaths
 import ComposableArchitecture
 import Foundation
+import HomeFeature
 import MakePromise
 
 public enum Tab: CaseIterable, Equatable {
-    case mainView
+    case home
     case makePromise
     case promiseManagement
 }
@@ -12,19 +14,23 @@ public enum Tab: CaseIterable, Equatable {
 public struct HomeContainerCore: ReducerProtocol {
     public struct State: Equatable {
         var selectedTab: Tab
+        var homeState: HomeCore.State
         @PresentationState var destinationState: DestinationState?
 
         public init(
-            selectedTab: Tab = .mainView,
+            selectedTab: Tab = .home,
+            homeState: HomeCore.State = .init(),
             destinationState: DestinationState? = nil
         ) {
             self.selectedTab = selectedTab
+            self.homeState = homeState
             self.destinationState = destinationState
         }
     }
 
     public enum Action: Equatable {
         case selectedTabChanged(tab: Tab)
+        case home(action: HomeCore.Action)
         case destination(PresentationAction<DestinationAction>)
     }
 
@@ -39,15 +45,24 @@ public struct HomeContainerCore: ReducerProtocol {
     public init() {}
 
     public var body: some ReducerProtocol<State, Action> {
+        Scope(
+            state: \.homeState,
+            action: /HomeContainerCore.Action.home,
+            child: HomeCore.init
+        )
+
         Reduce { state, action in
             switch action {
             case let .selectedTabChanged(tab: tab):
-                switch tab {
-                case .makePromise:
+                if case .makePromise = tab {
                     state.destinationState = .makePromise(.init())
-                default:
+                } else {
                     state.selectedTab = tab
                 }
+
+                return .none
+
+            case .home:
                 return .none
 
             case .destination(.presented(.makePromise(.dismiss))):
@@ -71,3 +86,13 @@ public struct HomeContainerCore: ReducerProtocol {
         }
     }
 }
+
+#if DEBUG
+    public extension HomeContainerCore.State {
+        static let preview = Self(
+            selectedTab: .home,
+            homeState: .preview,
+            destinationState: nil
+        )
+    }
+#endif

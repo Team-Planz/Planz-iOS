@@ -4,10 +4,18 @@ import Foundation
 public struct CalendarCore: ReducerProtocol {
     public struct State: Equatable {
         public var monthList: IdentifiedArrayOf<MonthCore.State> = []
-        public var selectedMonth: Date = .currentMonth
+        public var selectedMonth: Date
         public var selectedDates: Set<Date> = []
 
-        public init() {}
+        public init(
+            monthList: IdentifiedArrayOf<MonthCore.State> = [],
+            selectedMonth: Date = .currentMonth,
+            selectedDates: Set<Date> = []
+        ) {
+            self.monthList = monthList
+            self.selectedMonth = selectedMonth
+            self.selectedDates = selectedDates
+        }
     }
 
     public enum Action: Equatable {
@@ -19,7 +27,7 @@ public struct CalendarCore: ReducerProtocol {
         case rightSideButtonTapped
         case createMonthStateList(type: CalendarType, range: CalendarClient.DateRange)
         case updateMonthStateList(CalendarClient.DateRange, TaskResult<[MonthState]>)
-        case monthAction(id: MonthCore.State.ID, action: MonthCore.Action)
+        case month(id: MonthCore.State.ID, action: MonthCore.Action)
         case overSelection
     }
 
@@ -106,7 +114,7 @@ public struct CalendarCore: ReducerProtocol {
             case .updateMonthStateList:
                 return .none
 
-            case let .monthAction(
+            case let .month(
                 id: id,
                 action: .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex))
             ):
@@ -127,7 +135,7 @@ public struct CalendarCore: ReducerProtocol {
                     }
 
                     return .send(
-                        .monthAction(
+                        .month(
                             id: id,
                             action: .dragFiltered(
                                 startIndex: startIndex,
@@ -138,7 +146,7 @@ public struct CalendarCore: ReducerProtocol {
                 }
 
                 return .send(
-                    .monthAction(
+                    .month(
                         id: id,
                         action: .dragFiltered(
                             startIndex: startIndex,
@@ -147,7 +155,7 @@ public struct CalendarCore: ReducerProtocol {
                     )
                 )
 
-            case let .monthAction(
+            case let .month(
                 id: _,
                 action: .delegate(action: .removeSelectedDates(items: dates))
             ):
@@ -156,7 +164,7 @@ public struct CalendarCore: ReducerProtocol {
 
                 return .none
 
-            case let .monthAction(
+            case let .month(
                 id: id,
                 action: .delegate(action: .firstWeekDragged(type, range))
             ):
@@ -166,7 +174,7 @@ public struct CalendarCore: ReducerProtocol {
                 let value = ((count / 7) - 1) * 7
                 let relatedRange = (range.lowerBound + value) ... (range.upperBound + value)
                 return .send(
-                    .monthAction(
+                    .month(
                         id: id.previousMonth,
                         action: type == .insert
                             ? .selectRelatedDays(relatedRange)
@@ -174,14 +182,14 @@ public struct CalendarCore: ReducerProtocol {
                     )
                 )
 
-            case let .monthAction(
+            case let .month(
                 id: id,
                 action: .delegate(action: .lastWeekDragged(type, range))
             ):
                 let relatedRange = (range.lowerBound % 7) ... (range.upperBound % 7)
 
                 return .send(
-                    .monthAction(
+                    .month(
                         id: id.nextMonth,
                         action: type == .insert
                             ? .selectRelatedDays(relatedRange)
@@ -189,7 +197,7 @@ public struct CalendarCore: ReducerProtocol {
                     )
                 )
 
-            case let .monthAction(id: id, action: .resetGesture):
+            case let .month(id: id, action: .resetGesture):
                 guard
                     let monthState = state.monthList[id: id]
                 else { return .none }
@@ -198,13 +206,13 @@ public struct CalendarCore: ReducerProtocol {
                 print("🐶", state.selectedDates.sorted())
                 return .none
 
-            case .monthAction, .overSelection:
+            case .month, .overSelection:
                 return .none
             }
         }
         .forEach(
             \.monthList,
-            action: /Action.monthAction(id:action:),
+            action: /Action.month(id:action:),
             element: MonthCore.init
         )
     }

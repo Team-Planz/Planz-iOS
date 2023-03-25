@@ -13,12 +13,19 @@ public struct MonthCore: ReducerProtocol {
                 .map { monthState.days[$0].id }
         }
 
-        var monthState: MonthState
+        public var monthState: MonthState
         var gesture: GestureState
 
-        init(monthState: MonthState, gesture: GestureState = .init()) {
+        public init(monthState: MonthState, gesture: GestureState = .init()) {
             self.monthState = monthState
             self.gesture = gesture
+        }
+
+        public subscript(_ date: Date) -> Day? {
+            guard
+                let index = monthState.days.firstIndex(where: { $0.date == date })
+            else { return nil }
+            return monthState.days[index]
         }
     }
 
@@ -168,7 +175,9 @@ public struct MonthCore: ReducerProtocol {
                             .appendSorted(contentsOf: range.subtracting(currentRange))
 
                         let removable = state.monthState.days[interection].map(\.id)
-                        let effect = EffectTask<Action>(value: .delegate(action: .removeSelectedDates(items: removable)))
+                        let effect = EffectTask<Action>(
+                            value: .delegate(action: .removeSelectedDates(items: removable))
+                        )
                         if
                             range.overlaps(state.monthState.previousRange),
                             let intersection = range.intersection(state.monthState.previousRange),
@@ -265,12 +274,14 @@ public struct MonthCore: ReducerProtocol {
     }
 }
 
-extension MonthCore {
+public extension MonthCore {
     struct GestureState: Equatable {
         var range: ClosedRange<Int>?
         var rangeList: [ClosedRange<Int>] = []
         var removableElements: Set<Int> = []
         var tempElements: Set<Int> = []
+
+        public init() {}
     }
 }
 

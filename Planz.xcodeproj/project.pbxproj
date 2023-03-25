@@ -21,6 +21,7 @@
 		AE3E344829B72744003E9005 /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = AE3E344729B72744003E9005 /* DesignSystem */; };
 		AE4313C329C1582E00E399AD /* HomeContainerFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE4313C229C1582E00E399AD /* HomeContainerFeature */; };
 		AE4640FF29C18CD000CCB602 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE4640FE29C18CD000CCB602 /* AppFeature */; };
+		AE46410129C1AE3B00CCB602 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AE46410029C1AE3B00CCB602 /* HomeFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 			files = (
 				AE4313C329C1582E00E399AD /* HomeContainerFeature in Frameworks */,
 				AE3E344829B72744003E9005 /* DesignSystem in Frameworks */,
+				AE46410129C1AE3B00CCB602 /* HomeFeature in Frameworks */,
 				AE4640FF29C18CD000CCB602 /* AppFeature in Frameworks */,
 				6F81F3D028EE78550005BAAA /* AppPackage in Frameworks */,
 				AE3E344629B72741003E9005 /* CalendarFeature in Frameworks */,
@@ -179,6 +181,7 @@
 				AE3E344729B72744003E9005 /* DesignSystem */,
 				AE4313C229C1582E00E399AD /* HomeContainerFeature */,
 				AE4640FE29C18CD000CCB602 /* AppFeature */,
+				AE46410029C1AE3B00CCB602 /* HomeFeature */,
 			);
 			productName = Planz;
 			productReference = 6F47599628D9D0CE005CC91B /* Planz.app */;
@@ -681,6 +684,10 @@
 		AE4640FE29C18CD000CCB602 /* AppFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppFeature;
+		};
+		AE46410029C1AE3B00CCB602 /* HomeFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HomeFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
