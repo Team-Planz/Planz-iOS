@@ -17,3 +17,6 @@ disabled_rules: # Default Rules에서 비활성화할 규칙
     
     # https://realm.github.io/SwiftLint/function_body_length.html
     - function_body_length
+
+    # https://realm.github.io/SwiftLint/nesting.html
+    -  nesting

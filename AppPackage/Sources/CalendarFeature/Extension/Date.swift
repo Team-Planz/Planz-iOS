@@ -8,7 +8,7 @@ let calendar: Calendar = {
 }()
 
 extension Date {
-    static var today: Date {
+    public static var today: Date {
         let components = calendar.dateComponents([.year, .month, .day], from: .now)
         guard
             let date = calendar.date(from: components)
@@ -17,7 +17,7 @@ extension Date {
         return date
     }
 
-    static let currentMonth: Date = {
+    public static let currentMonth: Date = {
         let components = calendar.dateComponents([.year, .month], from: .now)
         return calendar.date(from: components) ?? .now
     }()

@@ -167,7 +167,7 @@ public struct CalendarView: View {
                         store
                             .scope(
                                 state: \.monthList,
-                                action: CalendarCore.Action.monthAction(id:action:)
+                                action: CalendarCore.Action.month(id:action:)
                             )
                     ) {
                         MonthView(
@@ -191,7 +191,7 @@ public struct CalendarView: View {
             }
             .introspectScrollView { $0.isPagingEnabled = true }
             .onReceive(viewStore.publisher.selectedMonth) { id in
-                scrollViewProxy.scrollTo(id)
+                scrollViewProxy.scrollTo(id, anchor: .leading)
             }
             .coordinateSpace(name: coordinateSpace)
             .onPreferenceChange(ScrollViewOffset.self) { offset in

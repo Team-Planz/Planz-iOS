@@ -2,7 +2,7 @@ import Dependencies
 import Foundation
 
 public struct CalendarClient {
-    let createMonthStateList: (CalendarType, DateRange, Date) throws -> [MonthState]
+    public let createMonthStateList: (CalendarType, DateRange, Date) throws -> [MonthState]
 }
 
 extension CalendarClient: DependencyKey {
