@@ -14,8 +14,8 @@ public enum Tab: CaseIterable, Equatable {
 public struct HomeContainerCore: ReducerProtocol {
     public struct State: Equatable {
         var selectedTab: Tab
-        @PresentationState var destinationState: DestinationState?
         var homeState: HomeCore.State
+        @PresentationState var destinationState: DestinationState?
 
         public init(
             selectedTab: Tab = .home,
@@ -30,8 +30,8 @@ public struct HomeContainerCore: ReducerProtocol {
 
     public enum Action: Equatable {
         case selectedTabChanged(tab: Tab)
-        case destination(PresentationAction<DestinationAction>)
         case home(action: HomeCore.Action)
+        case destination(PresentationAction<DestinationAction>)
     }
 
     public enum DestinationState: Equatable {
@@ -86,3 +86,13 @@ public struct HomeContainerCore: ReducerProtocol {
         }
     }
 }
+
+#if DEBUG
+    public extension HomeContainerCore.State {
+        static let preview = Self(
+            selectedTab: .home,
+            homeState: .preview,
+            destinationState: nil
+        )
+    }
+#endif

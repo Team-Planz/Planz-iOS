@@ -101,7 +101,7 @@ extension Tab: CustomStringConvertible {
         static var previews: some View {
             HomeContainerView(
                 store: .init(
-                    initialState: .init(homeState: .init(calendar: .init(monthList: mock))),
+                    initialState: .preview,
                     reducer: HomeContainerCore()
                 )
             )
