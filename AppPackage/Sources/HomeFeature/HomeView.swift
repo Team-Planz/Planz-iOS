@@ -134,7 +134,7 @@ extension HomeCore.State {
                 store: .init(
                     initialState: .init(
                         calendar: .init(
-                            monthList: mock
+                            monthList: .mock
                         )
                     ),
                     reducer: HomeCore()
@@ -142,23 +142,30 @@ extension HomeCore.State {
             )
         }
     }
+
+extension IdentifiedArrayOf where Element == MonthCore.State {
+    static var mock: IdentifiedArrayOf<MonthCore.State>  {
+        var result = IdentifiedArrayOf<MonthCore.State>()
+        let item = try? CalendarClient.liveValue.createMonthStateList(.home, .default, .currentMonth)
+        var unwrappedItem = item ?? []
+        let currentMonthIndex = unwrappedItem
+            .firstIndex(where: { $0.id.date == .currentMonth }) ?? .zero
+        let todayIndex = unwrappedItem[currentMonthIndex].days
+            .firstIndex(where: { $0.id == .today }) ?? .zero
+        unwrappedItem[currentMonthIndex].days[todayIndex].promiseList = [
+            .init(type: .meeting, date: .today, name: "모각코 🙌"),
+            .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),
+            .init(type: .meal, date: .today, name: "돼지파티 약속 🐷"),
+            .init(type: .meeting, date: .today, name: "애플 로그인 약속 🍎"),
+            .init(type: .etc, date: .today, name: "🫥 🤠 🫥")
+        ]
+        result
+            .append(
+                contentsOf: unwrappedItem
+                    .map { MonthCore.State(monthState: $0) }
+            )
+        
+        return result
+    }
+}
 #endif
-
-public let mock: IdentifiedArrayOf<MonthCore.State> = {
-    var list = IdentifiedArrayOf<MonthCore.State>()
-    let item = try? CalendarClient.liveValue.createMonthStateList(.home, .default, .currentMonth)
-    var unwraped = item ?? []
-    let firstIndex = unwraped.firstIndex(where: { $0.id.date == .currentMonth })!
-    let dayFirstIndex = unwraped[firstIndex].days.firstIndex(where: { $0.id == .today })!
-    unwraped[firstIndex].days[dayFirstIndex].promiseList = [
-        .init(type: .meeting, date: .today, name: "모각코 🙌"),
-        .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),
-        .init(type: .meal, date: .today, name: "돼지파티 약속 🐷"),
-        .init(type: .meeting, date: .today, name: "애플 로그인 약속 🍎"),
-        .init(type: .etc, date: .today, name: "🫥 🤠 🫥")
-    ]
-    let result = unwraped.map { MonthCore.State(monthState: $0) }
-    list.append(contentsOf: result)
-
-    return list
-}()
