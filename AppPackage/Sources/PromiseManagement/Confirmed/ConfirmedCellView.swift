@@ -41,26 +41,21 @@ struct ConfirmedCellView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
-                HStack {
-                    VStack {
-                        ManagementTitleCellView(
-                            title: viewStore.title,
-                            role: viewStore.role
-                        )
-                        HStack {
-                            Text(viewStore.leaderName)
-                                .foregroundColor(PColor.gray5.scale)
-                            Rectangle()
-                                .frame(width: 1, height: 12)
-                                .foregroundColor(PColor.gray5.scale)
-                            Text("\(viewStore.replyPeopleCount)명 응답완료")
-                                .foregroundColor(PColor.gray5.scale)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                VStack {
+                    ManagementTitleCellView(
+                        title: viewStore.title,
+                        role: viewStore.role
+                    )
+                    HStack {
+                        Text(viewStore.leaderName)
+                            .foregroundColor(PColor.gray5.scale)
+                        Rectangle()
+                            .frame(width: 1, height: 12)
+                            .foregroundColor(PColor.gray5.scale)
+                        Text("\(viewStore.replyPeopleCount)명 응답완료")
+                            .foregroundColor(PColor.gray5.scale)
                     }
-                    Image(systemName: "chevron.forward")
-                        .frame(width: 32, height: 32)
-                        .foregroundColor(PColor.gray5.scale)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding()
                 .background(Color(hex: "FBFCFF"))
