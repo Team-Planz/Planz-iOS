@@ -13,70 +13,125 @@ import SwiftUI
 typealias NameAndPlaceView = SetNameAndPlaceView
 
 public struct SetNameAndPlaceView: View {
-    private enum TextFieldTexts {
-        case promise
+    var store: Store<SetNameAndPlaceState, SetNameAndPlaceAction>
+
+    public enum TextFieldType {
+        case name
         case place
 
         var title: String {
             switch self {
-            case .promise: return "약속명(선택)"
-            case .place: return "YUMMY"
+            case .name: return "약속명(선택)"
+            case .place: return "장소(선택)"
             }
         }
 
         var placeHolder: String {
             switch self {
-            case .promise: return "장소(선택)"
+            case .name: return "YUMMY"
             case .place: return "강남, 온라인 등"
             }
         }
     }
 
     public var body: some View {
-        return VStack {
+        VStack {
             Spacer()
-            TextFieldWithTitleView(
-                titleText: TextFieldTexts.promise.title,
-                placeHolderText: TextFieldTexts.promise.placeHolder
-            )
-            TextFieldWithTitleView(
-                titleText: TextFieldTexts.place.title,
-                placeHolderText: TextFieldTexts.place.placeHolder
-            )
+            VStack(spacing: 24) {
+                TextFieldWithTitleView(
+                    type: .name, store: self.store
+                )
+                TextFieldWithTitleView(
+                    type: .place, store: self.store
+                )
+            }
             Spacer()
         }
     }
 }
 
 public struct TextFieldWithTitleView: View {
-    var titleText: String
+    var type: SetNameAndPlaceView.TextFieldType
+    var store: Store<SetNameAndPlaceState, SetNameAndPlaceAction>
 
-    @State var textFieldText = ""
-    var placeHolderText: String
+    @ObservedObject var viewStore: ViewStore<ViewState, SetNameAndPlaceAction>
+    init(type: SetNameAndPlaceView.TextFieldType, store: Store<SetNameAndPlaceState, SetNameAndPlaceAction>) {
+        self.type = type
+        self.store = store
+        viewStore = ViewStore(
+            self.store.scope { state in
+                ViewState(type, state: state)
+            }
+        )
+    }
 
+    struct ViewState: Equatable {
+        let showWarningMessage: Bool
+        let textFieldText: String
+        let numberOfCharacter: Int
+        let maxNumberOfCharacter: Int
+
+        init(_ type: SetNameAndPlaceView.TextFieldType, state: SetNameAndPlaceState) {
+            switch type {
+            case .name:
+                showWarningMessage = state.shouldShowNameTextCountWarning
+                textFieldText = state.promiseName
+                numberOfCharacter = state.numberOfCharacterInNameText
+            case .place:
+                showWarningMessage = state.shouldShowPlaceTextCountWarning
+                textFieldText = state.promisePlace
+                numberOfCharacter = state.numberOfCharacterInPlaceText
+            }
+
+            maxNumberOfCharacter = state.maxCharacter
+        }
+    }
+
+    typealias SetNameAndPlaceStore = ViewStore<SetNameAndPlaceState, SetNameAndPlaceAction>
     public var body: some View {
         HStack {
             Spacer(minLength: 20)
             VStack {
                 HStack {
-                    Text(titleText).bold()
+                    Text(type.title).bold()
                     Spacer()
                 }
-                TextField(placeHolderText, text: $textFieldText)
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .strokeBorder(
-                                PDS.COLOR.purple9.scale,
-                                style: StrokeStyle(lineWidth: 1.0)
-                            )
+                TextField(
+                    type.placeHolder,
+                    text: viewStore.binding(
+                        get: { $0.textFieldText },
+                        send: { type == .name ? .filledPromiseName($0) : .filledPromisePlace($0) }
                     )
+                )
+                .padding()
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .strokeBorder(
+                            getBorderColor(viewStore, type: type),
+                            style: StrokeStyle(lineWidth: 1.0)
+                        )
+                )
                 HStack {
+                    if viewStore.showWarningMessage {
+                        Text("10글자를 초과했습니다")
+                            .foregroundColor(PDS.COLOR.scarlet1.scale)
+                    }
                     Spacer()
-                    Text("4/10")
+                    Text("\(viewStore.numberOfCharacter)/\(viewStore.maxNumberOfCharacter)")
+                        .foregroundColor(getTextCountColor(viewStore, type: type))
                 }
             }
             Spacer(minLength: 20)
         }
+    }
+
+    func getBorderColor(_ viewStore: ViewStore<ViewState, SetNameAndPlaceAction>, type _: SetNameAndPlaceView.TextFieldType) -> Color {
+        return viewStore.showWarningMessage ? PDS.COLOR.scarlet1.scale :
+            PDS.COLOR.purple9.scale
+    }
+
+    func getTextCountColor(_ viewStore: ViewStore<ViewState, SetNameAndPlaceAction>, type _: SetNameAndPlaceView.TextFieldType) -> Color {
+        return viewStore.showWarningMessage ? PDS.COLOR.scarlet1.scale :
+            PDS.COLOR.gray4.scale
     }
 }

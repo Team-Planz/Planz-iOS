@@ -13,7 +13,7 @@ public struct MakePromiseEnvironment {
     public init() {}
 }
 
-public let makePromiseReducer = Reducer<MakePromiseState, MakePromiseAction, MakePromiseEnvironment>.combine(
+public let makePromiseReducer = AnyReducer<MakePromiseState, MakePromiseAction, MakePromiseEnvironment>.combine(
     makePromiseSelectThemeReducer
         .optional()
         .pullback(
@@ -22,13 +22,12 @@ public let makePromiseReducer = Reducer<MakePromiseState, MakePromiseAction, Mak
             environment: { _ in SelectThemeEnvironment() }
         ),
     makePromiseSetNameAndPlaceReducer
-        .optional()
         .pullback(
             state: \.setNameAndPlace,
             action: /MakePromiseAction.setNameAndPlace,
             environment: { _ in SetNameAndPlaceEnvironment() }
         ),
-    Reducer { state, action, _ in
+    AnyReducer { state, action, _ in
         switch action {
         case .dismiss:
             return .none

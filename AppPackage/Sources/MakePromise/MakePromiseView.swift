@@ -30,15 +30,24 @@ public struct MakePromiseView: View {
 
 struct PromiseContentView: View {
     var store: Store<MakePromiseState, MakePromiseAction>
-
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             VStack {
                 switch viewStore.currentStep {
                 case .selectTheme:
-                    SelectThemeView(store: self.store.scope(state: \.selectTheme!, action: { .selectTheme($0) }))
+                    SelectThemeView(
+                        store: self.store.scope(
+                            state: \.selectTheme!,
+                            action: { .selectTheme($0) }
+                        )
+                    )
                 case .setNameAndPlace:
-                    NameAndPlaceView()
+                    NameAndPlaceView(
+                        store: self.store.scope(
+                            state: \.setNameAndPlace,
+                            action: { .setNameAndPlace($0) }
+                        )
+                    )
                 case .none:
                     MakePromiseErrorView()
                 }
