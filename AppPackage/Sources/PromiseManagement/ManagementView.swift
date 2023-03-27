@@ -6,6 +6,7 @@
 //  Copyright © 2023 Team-Planz. All rights reserved.
 //
 
+import CommonView
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
@@ -17,12 +18,12 @@ public struct PromiseManagement: ReducerProtocol {
         @BindingState var visibleTab: Tab = .standby
         var confirmedTab = ConfirmedListFeature.State()
         var standbyTab = StandbyListFeature.State()
-        @PresentationState var detailItem: ConfirmedDetailFeature.State?
+        @PresentationState var detailItem: PromiseDetailFeature.State?
 
         public init(
             standbyRows: IdentifiedArrayOf<StandbyCell.State> = [],
             confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = [],
-            detailItem: ConfirmedDetailFeature.State? = nil
+            detailItem: PromiseDetailFeature.State? = nil
         ) {
             standbyTab = StandbyListFeature.State(rows: standbyRows)
             confirmedTab = ConfirmedListFeature.State(rows: confirmedRows)
@@ -35,7 +36,7 @@ public struct PromiseManagement: ReducerProtocol {
         case onAppear
         case standbyTab(StandbyListFeature.Action)
         case confirmedTab(ConfirmedListFeature.Action)
-        case detailItem(PresentationAction<ConfirmedDetailFeature.Action>)
+        case detailItem(PresentationAction<PromiseDetailFeature.Action>)
         case closeDetailButtonTapped
     }
 
@@ -49,7 +50,7 @@ public struct PromiseManagement: ReducerProtocol {
                     standbyRows: .mock,
                     confirmedRows: .mock,
                     detailItem:
-                    ConfirmedDetailFeature.State(
+                    PromiseDetailFeature.State(
                         id: UUID(),
                         title: "약속명",
                         theme: "여행",
@@ -64,7 +65,7 @@ public struct PromiseManagement: ReducerProtocol {
             case let .confirmedTab(.delegate(action)):
                 switch action {
                 case let .showDetailView(item):
-                    state.detailItem = ConfirmedDetailFeature.State(
+                    state.detailItem = PromiseDetailFeature.State(
                         id: item.id,
                         title: item.title,
                         theme: item.theme,
@@ -81,7 +82,7 @@ public struct PromiseManagement: ReducerProtocol {
             case let .standbyTab(.delegate(action)):
                 switch action {
                 case let .showDetailView(item):
-                    state.detailItem = ConfirmedDetailFeature.State(
+                    state.detailItem = PromiseDetailFeature.State(
                         id: item.id,
                         title: item.title,
                         theme: "테마",
@@ -105,7 +106,7 @@ public struct PromiseManagement: ReducerProtocol {
             ConfirmedListFeature()
         }
         .ifLet(\.$detailItem, action: /Action.detailItem) {
-            ConfirmedDetailFeature()
+            PromiseDetailFeature()
         }
     }
 }
@@ -167,7 +168,7 @@ public struct ManagementView: View {
                     )
                     ) { store in
                         NavigationStack {
-                            ConfirmedDetailView(store: store)
+                            PromiseDetailView(store: store)
                                 .toolbar {
                                     ToolbarItem {
                                         Button {
@@ -194,7 +195,7 @@ struct ManagementView_Previews: PreviewProvider {
                 standbyRows: .mock,
                 confirmedRows: .mock,
                 detailItem:
-                ConfirmedDetailFeature.State(
+                PromiseDetailFeature.State(
                     id: UUID(),
                     title: "약속명",
                     theme: "여행",

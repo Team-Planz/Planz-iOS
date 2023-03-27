@@ -9,7 +9,9 @@ import ComposableArchitecture
 import DesignSystem
 import SwiftUI
 
-public struct ConfirmedDetailFeature: ReducerProtocol {
+public struct PromiseDetailFeature: ReducerProtocol {
+    public init() {}
+
     public struct State: Equatable, Identifiable {
         public let id: UUID
         let title: String
@@ -17,6 +19,22 @@ public struct ConfirmedDetailFeature: ReducerProtocol {
         let date: String
         let place: String
         let participants: [String]
+
+        public init(
+            id: UUID,
+            title: String,
+            theme: String,
+            date: String,
+            place: String,
+            participants: [String]
+        ) {
+            self.id = id
+            self.title = title
+            self.theme = theme
+            self.date = date
+            self.place = place
+            self.participants = participants
+        }
     }
 
     public enum Action: Equatable {}
@@ -28,10 +46,10 @@ public struct ConfirmedDetailFeature: ReducerProtocol {
 
 // MARK: - ConfirmedDetailView
 
-public struct ConfirmedDetailView: View {
-    let store: StoreOf<ConfirmedDetailFeature>
+public struct PromiseDetailView: View {
+    let store: StoreOf<PromiseDetailFeature>
 
-    public init(store: StoreOf<ConfirmedDetailFeature>) {
+    public init(store: StoreOf<PromiseDetailFeature>) {
         self.store = store
     }
 
@@ -110,10 +128,10 @@ public struct ConfirmedDetailView: View {
 #if DEBUG
     struct ConfirmedDetailView_Previews: PreviewProvider {
         static var previews: some View {
-            ConfirmedDetailView(store:
+            PromiseDetailView(store:
                 .init(
                     initialState:
-                    ConfirmedDetailFeature.State(
+                    PromiseDetailFeature.State(
                         id: UUID(),
                         title: "약속명",
                         theme: "여행",
@@ -121,7 +139,7 @@ public struct ConfirmedDetailView: View {
                         place: "강남",
                         participants: ["정인혜", "이은영"]
                     ),
-                    reducer: ConfirmedDetailFeature()._printChanges()
+                    reducer: PromiseDetailFeature()._printChanges()
                 )
             )
         }
