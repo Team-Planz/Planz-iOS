@@ -5,6 +5,7 @@
 //  Created by Sujin Jin on 2023/02/25.
 //  Copyright © 2023 Team-Planz. All rights reserved.
 //
+import CommonView
 import ComposableArchitecture
 import SwiftUI
 
@@ -54,7 +55,7 @@ struct ConfirmedListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             Group {
                 if viewStore.rows.isEmpty {
-                    ManagementEmptyDataView()
+                    EmptyDataView()
                 } else {
                     List {
                         ForEachStore(self.store.scope(

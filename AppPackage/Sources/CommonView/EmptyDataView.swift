@@ -1,5 +1,5 @@
 //
-//  ManagementNoDataView.swift
+//  EmptyDataView.swift
 //  Planz
 //
 //  Created by Sujin Jin on 2023/03/02.
@@ -9,12 +9,12 @@
 import DesignSystem
 import SwiftUI
 
-struct ManagementEmptyDataView: View {
-    private let imageName = "illustNodata"
+public struct EmptyDataView: View {
+    public init() {}
 
-    var body: some View {
+    public var body: some View {
         VStack {
-            Image(imageName, bundle: Bundle.module)
+            PDS.Icon.illustEmptydata.image
 
             VStack(spacing: 4) {
                 Group {
@@ -50,7 +50,7 @@ private struct RoundCornerButtonStyle: ButtonStyle {
 #if DEBUG
     struct ManagementNoDataView_Previews: PreviewProvider {
         static var previews: some View {
-            ManagementEmptyDataView()
+            EmptyDataView()
         }
     }
 #endif

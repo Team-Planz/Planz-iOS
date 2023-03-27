@@ -25,6 +25,10 @@ let package = Package(
         ),
         .library(name: "DesignSystem", targets: ["DesignSystem"]),
         .library(
+            name: "CommonView",
+            targets: ["CommonView"]
+        ),
+        .library(
             name: "HomeContainerFeature",
             targets: ["HomeContainerFeature"]
         ),
@@ -67,6 +71,12 @@ let package = Package(
             ]
         ),
         .target(
+            name: "CommonView",
+            dependencies: [
+                "DesignSystem"
+            ]
+        ),
+        .target(
             name: "CalendarFeature",
             dependencies: [
                 "DesignSystem",
@@ -92,6 +102,7 @@ let package = Package(
             name: "PromiseManagement",
             dependencies: [
                 "DesignSystem",
+                "CommonView",
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
