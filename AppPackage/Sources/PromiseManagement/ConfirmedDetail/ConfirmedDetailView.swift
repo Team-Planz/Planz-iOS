@@ -31,6 +31,10 @@ public struct ConfirmedDetailFeature: ReducerProtocol {
 public struct ConfirmedDetailView: View {
     let store: StoreOf<ConfirmedDetailFeature>
 
+    public init(store: StoreOf<ConfirmedDetailFeature>) {
+        self.store = store
+    }
+
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             GeometryReader { proxy in

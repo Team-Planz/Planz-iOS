@@ -9,7 +9,6 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
-import SwiftUINavigation
 
 public struct PromiseManagement: ReducerProtocol {
     public init() {}
@@ -18,7 +17,7 @@ public struct PromiseManagement: ReducerProtocol {
         @BindingState var visibleTab: Tab = .standby
         var confirmedTab = ConfirmedListFeature.State()
         var standbyTab = StandbyListFeature.State()
-        var detailItem: ConfirmedDetailFeature.State?
+        @PresentationState var detailItem: ConfirmedDetailFeature.State?
 
         public init(
             standbyRows: IdentifiedArrayOf<StandbyCell.State> = [],
@@ -31,12 +30,12 @@ public struct PromiseManagement: ReducerProtocol {
         }
     }
 
-    public enum Action: BindableAction {
+    public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case onAppear
         case standbyTab(StandbyListFeature.Action)
         case confirmedTab(ConfirmedListFeature.Action)
-        case detailItem(FullScreenAction<ConfirmedDetailFeature.Action>)
+        case detailItem(PresentationAction<ConfirmedDetailFeature.Action>)
         case closeDetailButtonTapped
     }
 
@@ -92,8 +91,7 @@ public struct PromiseManagement: ReducerProtocol {
                     )
                     return .none
                 }
-
-            case let .detailItem(action):
+            case let .detailItem(.presented(action)):
                 return .none
 
             default:
@@ -106,7 +104,7 @@ public struct PromiseManagement: ReducerProtocol {
         Scope(state: \.confirmedTab, action: /Action.confirmedTab) {
             ConfirmedListFeature()
         }
-        .fullScreen(state: \.detailItem, action: /Action.detailItem) {
+        .ifLet(\.$detailItem, action: /Action.detailItem) {
             ConfirmedDetailFeature()
         }
     }
@@ -164,8 +162,8 @@ public struct ManagementView: View {
                         }
                     }
                     .onAppear { viewStore.send(.onAppear) }
-                    .fullScreen(store: self.store.scope(
-                        state: \.detailItem,
+                    .fullScreenCover(store: self.store.scope(
+                        state: \.$detailItem,
                         action: PromiseManagement.Action.detailItem
                     )
                     ) { store in
