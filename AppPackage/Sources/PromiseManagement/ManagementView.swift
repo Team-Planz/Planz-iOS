@@ -156,8 +156,7 @@ public struct ManagementView: View {
                             Button {
                                 print("Add Item")
                             } label: {
-                                Image(systemName: "plus")
-                                    .foregroundColor(.black)
+                                PDS.Icon.plus.image
                             }
                         }
                     }
