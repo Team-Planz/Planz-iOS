@@ -17,9 +17,8 @@ struct ManagementTitleCellView: View {
         HStack {
             RoleMarkView(role: role)
             Text(title)
+                .PDSfont(.subtitle16)
                 .lineLimit(1)
-                .font(.title3)
-                .bold()
                 .foregroundColor(PColor.gray8.scale)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -33,6 +32,7 @@ struct RoleMarkView: View {
 
     var body: some View {
         Text(role.title)
+            .PDSfont(.body12)
             .padding(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
             .background(role.bgColor)
             .foregroundColor(role.textColor)
