@@ -10,8 +10,37 @@ import ComposableArchitecture
 import Foundation
 
 public struct SetNameAndPlaceState: Equatable {
-    var promiseName: String?
-    var promisePlace: String?
+    var maxCharacter = 10
+    var promiseName: String = ""
+    var promisePlace: String = ""
+
+    var numberOfCharacterInNameText: Int {
+        if promiseName.count <= maxCharacter {
+            return promiseName.count
+        } else {
+            return maxCharacter
+        }
+    }
+
+    var numberOfCharacterInPlaceText: Int {
+        if promisePlace.count <= maxCharacter {
+            return promisePlace.count
+        } else {
+            return maxCharacter
+        }
+    }
+
+    var shouldShowNameTextCountWarning: Bool {
+        promiseName.count > maxCharacter
+    }
+
+    var shouldShowPlaceTextCountWarning: Bool {
+        promisePlace.count > maxCharacter
+    }
+
+    var isNextButtonEnable: Bool {
+        (numberOfCharacterInNameText > 0 && !shouldShowNameTextCountWarning) && (numberOfCharacterInPlaceText > 0 && !shouldShowPlaceTextCountWarning)
+    }
 
     public init() {}
 }

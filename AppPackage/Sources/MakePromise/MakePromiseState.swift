@@ -28,7 +28,7 @@ public struct MakePromiseState: Equatable {
         }
     }
 
-    var setNameAndPlace: SetNameAndPlaceState?
+    var setNameAndPlace = SetNameAndPlaceState()
 
     public init(
         shouldShowBackButton: Bool = false,
