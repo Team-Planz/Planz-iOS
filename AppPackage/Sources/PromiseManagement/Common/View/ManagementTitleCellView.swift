@@ -15,12 +15,12 @@ struct ManagementTitleCellView: View {
 
     var body: some View {
         HStack {
+            RoleMarkView(role: role)
             Text(title)
                 .lineLimit(1)
                 .font(.title3)
                 .bold()
                 .foregroundColor(PColor.gray8.scale)
-            RoleMarkView(role: role)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

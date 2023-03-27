@@ -92,6 +92,7 @@ let package = Package(
             name: "PromiseManagement",
             dependencies: [
                 "DesignSystem",
+                .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
