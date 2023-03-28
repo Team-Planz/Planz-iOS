@@ -1,8 +1,49 @@
 import Foundation
+import IdentifiedCollections
+
+enum WeekDay: CaseIterable, CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .sunday:
+            return "일"
+        case .monday:
+            return "월"
+        case .tuesday:
+            return "화"
+        case .wednesday:
+            return "수"
+        case .thursday:
+            return "목"
+        case .friday:
+            return "금"
+        case .saturday:
+            return "토"
+        }
+    }
+
+    case sunday
+    case monday
+    case tuesday
+    case wednesday
+    case thursday
+    case friday
+    case saturday
+}
 
 public enum CalendarType {
     case home
-    case appointment
+    case promise
+}
+
+public enum CalendarForm {
+    case `default`
+    case list
+
+    mutating func toggle() {
+        self = self == .default
+            ? .list
+            : .default
+    }
 }
 
 public enum PromiseType: Equatable {
@@ -13,7 +54,7 @@ public enum PromiseType: Equatable {
 }
 
 public struct Promise: Identifiable, Equatable {
-    public var id: UUID = .init()
+    public let id: UUID
     public let type: PromiseType
     public let date: Date
     public let name: String
@@ -62,31 +103,34 @@ public struct Month: Hashable {
 }
 
 public struct MonthState: Identifiable, Equatable {
+    public var promiseList: [Promise] {
+        dayStateList
+            .flatMap(\.day.promiseList)
+    }
+
     public let id: Month
-    public var days: [Day] = []
+    public var dayStateList: IdentifiedArrayOf<DayCore.State> = []
 
     var previousRange: ClosedRange<Int> {
         0 ... 6
     }
 
     var nextRange: ClosedRange<Int> {
-        let count = days.count / 7
+        let count = dayStateList.count / 7
         return (7 * count - 7) ... (7 * count - 1)
     }
 
     public init(
         id: Date,
-        days: [Day]
+        dayStateList: IdentifiedArrayOf<Day>
     ) {
         self.id = Month(date: id)
-        self.days = days
+        self.dayStateList = dayStateList
+            .map { DayCore.State(day: $0) }
+            .toIdentifiedCollection
     }
 
     public subscript(_ date: Date) -> [Promise] {
-        guard
-            let index = days.firstIndex(where: { $0.id == date })
-        else { return [] }
-
-        return days[index].promiseList
+        return dayStateList[id: date]?.day.promiseList ?? []
     }
 }

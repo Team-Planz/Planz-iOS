@@ -1,4 +1,11 @@
 import Foundation
+import IdentifiedCollections
+
+public extension Array where Element: Identifiable {
+    var toIdentifiedCollection: IdentifiedArrayOf<Element> {
+        IdentifiedArrayOf<Element>(uniqueElements: self)
+    }
+}
 
 extension Array where Element == ClosedRange<Int> {
     mutating
