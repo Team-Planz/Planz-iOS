@@ -7,6 +7,25 @@
 
 import SwiftUI
 
+// MARK: - PretendardFont
+public struct PretendardFont {
+    static let medium = PretendardFont(named: "Pretendard-Medium")
+    static let semibold = PretendardFont(named: "Pretendard-SemiBold")
+    
+    let name: String
+    
+    private init(named name: String) {
+        self.name = name
+        do {
+            try registerFont(named: name)
+        } catch {
+            let reason = error.localizedDescription
+            fatalError("Failed to register font: \(reason)")
+        }
+    }
+}
+
+// MARK: - PDS.FONT
 public extension PDS {
     enum FONT: String, CaseIterable {
         case headline14
@@ -14,17 +33,17 @@ public extension PDS {
         case headline18
         case headline20
         case headline24
-
+        
         case subtitle14
         case subtitle16
-
+        
         case body12
         case body14
         case body16
-
+        
         case caption
-
-        public var values: (size: CGFloat, weight: Font.Weight) {
+        
+        public var values: (size: CGFloat, font: PretendardFont) {
             switch self {
             case .headline14:
                 return (14, .semibold)
@@ -56,28 +75,31 @@ public extension PDS {
 public extension Text {
     func PDSfont(_ designFont: PDS.FONT) -> Text {
         return font(
-            .system(
-                size: designFont.values.size,
-                weight: designFont.values.weight
+            .custom(
+                designFont.values.font.name,
+                size: designFont.values.size
             )
         )
     }
 }
 
 #if DEBUG
-    private struct FontView: View {
-        var body: some View {
-            VStack {
-                Text("Hello")
-                    .PDSfont(.body14)
-                    .foregroundColor(PDS.COLOR.purple9.scale)
-            }
+private struct FontView: View {
+    var body: some View {
+        VStack {
+            Text("Hello 안녕하세요?")
+                .PDSfont(.headline24)
+                .foregroundColor(PDS.COLOR.purple9.scale)
+            
+            Text("Hello 안녕하세요?")
+                .font(.headline)
         }
     }
+}
 
-    struct Font_Previews: PreviewProvider {
-        static var previews: some View {
-            FontView()
-        }
+struct Font_Previews: PreviewProvider {
+    static var previews: some View {
+        FontView()
     }
+}
 #endif
