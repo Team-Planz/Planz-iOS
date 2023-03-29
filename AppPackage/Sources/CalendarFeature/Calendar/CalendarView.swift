@@ -248,6 +248,7 @@ public struct CalendarView: View {
                                         Text(promise.name)
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                             .padding(.trailing, 12)
+                                            .lineLimit(1)
 
                                         Text(hourMinuteFormatter.string(from: promise.date))
                                             .frame(width: 50)
