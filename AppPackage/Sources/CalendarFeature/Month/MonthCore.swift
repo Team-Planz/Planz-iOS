@@ -48,7 +48,7 @@ public struct MonthCore: ReducerProtocol {
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
-            case .delegate(action: .drag(startIndex: _, endIndex: _)):
+            case .delegate(action: .drag):
                 return .none
 
             case let .dragFiltered(
