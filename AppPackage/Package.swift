@@ -12,7 +12,8 @@ let package = Package(
                 "Share",
                 "MakePromise",
                 "PromiseManagement",
-                "LoginFeature"
+                "LoginFeature",
+                "SwiftUIHelper"
             ]
         ),
         .library(
@@ -73,7 +74,9 @@ let package = Package(
         .target(
             name: "CommonView",
             dependencies: [
-                "DesignSystem"
+                "DesignSystem",
+                "SwiftUIHelper",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .target(
@@ -135,6 +138,10 @@ let package = Package(
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
             ]
+        ),
+        .target(
+            name: "SwiftUIHelper",
+            dependencies: []
         )
     ]
 )

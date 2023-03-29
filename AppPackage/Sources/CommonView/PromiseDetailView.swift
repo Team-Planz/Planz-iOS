@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import SwiftUIHelper
 
 public struct PromiseDetailFeature: ReducerProtocol {
     public init() {}
@@ -47,6 +48,8 @@ public struct PromiseDetailFeature: ReducerProtocol {
 // MARK: - ConfirmedDetailView
 
 public struct PromiseDetailView: View {
+    @Environment(\.screenSize) var screenSize
+
     let store: StoreOf<PromiseDetailFeature>
 
     public init(store: StoreOf<PromiseDetailFeature>) {
@@ -55,62 +58,58 @@ public struct PromiseDetailView: View {
 
     public var body: some View {
         WithViewStore(self.store) { viewStore in
-            GeometryReader { proxy in
-                NavigationView {
-                    VStack {
-                        PDS.Icon.illustDetail.image
-                            .resizable()
-                            .zIndex(1)
-                            .offset(y: 32)
-                            .frame(width: 64, height: 64)
+            VStack {
+                PDS.Icon.illustDetail.image
+                    .resizable()
+                    .zIndex(1)
+                    .offset(y: 32)
+                    .frame(width: 64, height: 64)
 
-                        VStack(alignment: .leading) {
-                            Group {
-                                Text(viewStore.theme)
-                                    .bold()
-                                    .font(.title)
-                                    .foregroundColor(PColor.purple9.scale)
+                VStack(alignment: .leading) {
+                    Group {
+                        Text(viewStore.theme)
+                            .bold()
+                            .font(.title)
+                            .foregroundColor(PColor.purple9.scale)
 
-                                Text(viewStore.title)
-                                    .foregroundColor(PColor.cGray2.scale)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .center)
+                        Text(viewStore.title)
+                            .foregroundColor(PColor.cGray2.scale)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
 
-                            Rectangle()
-                                .frame(height: 1)
-                                .foregroundColor(PColor.gray3.scale)
+                    Rectangle()
+                        .frame(height: 1)
+                        .foregroundColor(PColor.gray3.scale)
 
-                            VStack(alignment: .leading, spacing: 16) {
-                                makeContentView(
-                                    title: "날짜/시간",
-                                    content: viewStore.date
-                                )
+                    VStack(alignment: .leading, spacing: 16) {
+                        makeContentView(
+                            title: "날짜/시간",
+                            content: viewStore.date
+                        )
 
-                                makeContentView(
-                                    title: "장소",
-                                    content: viewStore.place
-                                )
+                        makeContentView(
+                            title: "장소",
+                            content: viewStore.place
+                        )
 
-                                makeContentView(
-                                    title: "참여자",
-                                    content: viewStore.participants
-                                        .sorted(by: <)
-                                        .joinedNames(separator: ", ")
-                                )
-                            }
-                            .padding(.top)
-                        }
-                        .padding(EdgeInsets(top: 32, leading: 20, bottom: 32, trailing: 20))
-                        .background(PColor.gray1.scale)
-                        .frame(width: proxy.size.width * 0.9, alignment: .leading)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(PColor.gray3.scale, lineWidth: 1)
+                        makeContentView(
+                            title: "참여자",
+                            content: viewStore.participants
+                                .sorted(by: <)
+                                .joinedNames(separator: ", ")
                         )
                     }
-                    .offset(y: -proxy.size.height * 0.1)
+                    .padding(.top)
                 }
+                .padding(EdgeInsets(top: 32, leading: 20, bottom: 32, trailing: 20))
+                .background(PColor.gray1.scale)
+                .frame(width: screenSize.width * 0.9, alignment: .leading)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(PColor.gray3.scale, lineWidth: 1)
+                )
             }
+            .offset(y: -screenSize.height * 0.1)
         }
     }
 
