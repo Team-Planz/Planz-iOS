@@ -127,6 +127,8 @@ public struct CalendarView: View {
                 }
 
             case .promise:
+                let isLeadingIndex = Optional(viewStore.selectedMonth) == viewStore.monthList.first?.id
+                let leftButtonVisible = type == .promise && isLeadingIndex
                 Button(action: { viewStore.send(.leftSideButtonTapped) }) {
                     PDS.Icon.calendarHeaderLeft.image
                         .resizable()
@@ -137,6 +139,11 @@ public struct CalendarView: View {
                         )
                 }
                 .padding(.trailing, 16)
+                .opacity(
+                    leftButtonVisible
+                    ? .zero
+                    : 1
+                )
 
                 Text(viewStore.selectedMonth.yearMonthString)
                     .font(.system(size: 18))
@@ -202,7 +209,12 @@ public struct CalendarView: View {
                     }
                 }
             }
-            .introspectScrollView { $0.isPagingEnabled = true }
+            .introspectScrollView {
+                $0.isPagingEnabled = true
+                $0.isScrollEnabled = type == .promise
+                ? false
+                : true
+            }
             .onReceive(viewStore.publisher.selectedMonth) { id in
                 scrollViewProxy.scrollTo(id, anchor: .leading)
             }

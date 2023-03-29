@@ -48,14 +48,7 @@ public struct MonthCore: ReducerProtocol {
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
-            case let .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex)):
-                guard
-                    endIndex < state.monthState.dayStateList.count,
-                    endIndex >= .zero,
-                    !state.monthState.dayStateList[startIndex].day.isFaded,
-                    !state.monthState.dayStateList[endIndex].day.isFaded
-                else { return .none }
-
+            case .delegate(action: .drag(startIndex: _, endIndex: _)):
                 return .none
 
             case let .dragFiltered(

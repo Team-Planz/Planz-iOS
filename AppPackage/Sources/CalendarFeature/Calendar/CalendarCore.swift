@@ -51,7 +51,7 @@ public struct CalendarCore: ReducerProtocol {
 
             switch action {
             case let .onAppear(type: calendarType):
-                return .send(.createMonthStateList(type: calendarType, range: .default))
+                return .send(.createMonthStateList(type: calendarType, range: .custom(calendarType.range)))
 
             case .onDisAppear:
                 return .merge(
@@ -70,6 +70,8 @@ public struct CalendarCore: ReducerProtocol {
             case let .pageIndexChanged(type: calendarType, index: index):
                 state.selectedMonth = state.monthList[index].id
                 let isFirstIndex = index == .zero
+                guard !(calendarType == .promise && isFirstIndex) else { return .none }
+                
                 let isEdgeIndex = isFirstIndex || index == (state.monthList.count - 1)
                 guard isEdgeIndex else { return .none }
 
@@ -117,7 +119,7 @@ public struct CalendarCore: ReducerProtocol {
                         .map { MonthCore.State(monthState: $0) }
                     state.monthList.insert(contentsOf: monthCoreStates, at: .zero)
 
-                case .default, .upper:
+                case .custom, .upper:
                     let monthCoreStates = itemList
                         .map { MonthCore.State(monthState: $0) }
                     state.monthList.append(contentsOf: monthCoreStates)
@@ -131,7 +133,13 @@ public struct CalendarCore: ReducerProtocol {
                 id: id,
                 action: .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex))
             ):
-                guard let item = state.monthList[id: id] else { return .none }
+                guard
+                    let item = state.monthList[id: id],
+                    endIndex < item.monthState.dayStateList.count,
+                    endIndex >= .zero,
+                    item.monthState.dayStateList[startIndex].day.date >= .today,
+                    item.monthState.dayStateList[endIndex].day.date >= .today
+                else { return .none }
                 let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
                 guard
                     item.gesture.rangeList.contains(where: { $0.contains(startIndex) })
@@ -233,6 +241,18 @@ public struct CalendarCore: ReducerProtocol {
 
 private let maximumCount = 13
 
+private extension CalendarType {
+    var range: ClosedRange<Int> {
+        switch self {
+        case .home:
+            return -6 ... 6
+            
+        case .promise:
+            return 0 ... 6
+        }
+    }
+}
+
 #if DEBUG
     public extension CalendarCore.State {
         static let preview = Self(monthList: .mock)
@@ -241,7 +261,7 @@ private let maximumCount = 13
     extension IdentifiedArrayOf where Element == MonthCore.State {
         static var mock: IdentifiedArrayOf<MonthCore.State> {
             var result = IdentifiedArrayOf<MonthCore.State>()
-            let item = try? CalendarClient.liveValue.createMonthStateList(.home, .default, .currentMonth)
+            let item = try? CalendarClient.liveValue.createMonthStateList(.home, .custom(-6...6), .currentMonth)
             var unwrappedItem = item ?? []
             let currentMonthIndex = unwrappedItem
                 .firstIndex(where: { $0.id.date == .currentMonth }) ?? .zero
