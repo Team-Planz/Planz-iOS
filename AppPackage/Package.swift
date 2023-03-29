@@ -76,7 +76,7 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "SwiftUIHelper",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
         .target(
