@@ -22,7 +22,6 @@ public struct ConfirmedListFeature: ReducerProtocol {
     public enum Action: Equatable {
         case touchedRow(id: ConfirmedCell.State.ID, action: ConfirmedCell.Action)
         case delegate(Delegate)
-        
         case emptyData(EmptyDataViewFeature.Action)
         
         public enum Delegate: Equatable {
@@ -47,7 +46,6 @@ public struct ConfirmedListFeature: ReducerProtocol {
                 return .none
                 
             case .emptyData(.delegate(.makePromise)):
-                print("확인 리스트에서 약속만들기 이벤트 발생!")
                 return .none
                 
             default:

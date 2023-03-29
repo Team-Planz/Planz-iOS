@@ -12,6 +12,7 @@ import SwiftUI
 public struct StandbyListFeature: ReducerProtocol {
     public struct State: Equatable {
         var rows: IdentifiedArrayOf<StandbyCell.State>
+        var emptyData = EmptyDataViewFeature.State()
         
         init(rows: IdentifiedArrayOf<StandbyCell.State> = []) {
             self.rows = rows
@@ -21,6 +22,7 @@ public struct StandbyListFeature: ReducerProtocol {
     public enum Action: Equatable {
         case pushDetailView(id: StandbyCell.State.ID, action: StandbyCell.Action)
         case delegate(Delegate)
+        case emptyData(EmptyDataViewFeature.Action)
         
         public enum Delegate: Equatable {
             case showDetailView(StandbyCell.State)
@@ -38,6 +40,12 @@ public struct StandbyListFeature: ReducerProtocol {
                 
             case .delegate:
                 return .none
+                
+            case .emptyData(.delegate(.makePromise)):
+                return .none
+                
+            default:
+                return .none
             }
         }
         .forEach(\.rows, action: /Action.pushDetailView(id: action:)) {
@@ -52,8 +60,10 @@ struct StandbyListView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             if viewStore.rows.isEmpty {
-                // TODO: - 데이터가 없습니다 화면 노출
-                Text("Empty")
+                EmptyDataView(store: self.store.scope(
+                    state: \.emptyData,
+                    action: StandbyListFeature.Action.emptyData)
+                )
             } else {
                 List {
                     ForEachStore(self.store.scope(
