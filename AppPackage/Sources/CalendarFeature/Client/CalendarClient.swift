@@ -55,7 +55,7 @@ extension CalendarClient: DependencyKey {
                         )
                     }
 
-                return .init(id: month, days: list)
+                return .init(id: month, dayStateList: list.toIdentifiedCollection)
             }
     }
 }
