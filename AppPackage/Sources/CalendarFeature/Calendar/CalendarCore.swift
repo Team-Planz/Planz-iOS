@@ -247,6 +247,12 @@ private let maximumCount = 13
                 .firstIndex(where: { $0.id.date == .currentMonth }) ?? .zero
             let todayIndex = unwrappedItem[currentMonthIndex].dayStateList
                 .firstIndex(where: { $0.id == .today }) ?? .zero
+            unwrappedItem[currentMonthIndex].dayStateList[0].day.promiseList = [
+                .init(type: .meeting, date: .today, name: "모각코 🙌"),
+                .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),
+                .init(type: .meal, date: .today, name: "돼지파티 약속 🐷")
+            ]
+            
             unwrappedItem[currentMonthIndex].dayStateList[todayIndex].day.promiseList = [
                 .init(type: .meeting, date: .today, name: "모각코 🙌"),
                 .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),

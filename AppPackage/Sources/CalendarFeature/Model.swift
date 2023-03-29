@@ -105,6 +105,14 @@ public struct Month: Hashable {
 public struct MonthState: Identifiable, Equatable {
     public var promiseList: [Promise] {
         dayStateList
+            .filter {
+                calendar
+                    .isDate(
+                        $0.day.id,
+                        equalTo: id.date,
+                        toGranularity: .month
+                    )
+            }
             .flatMap(\.day.promiseList)
     }
 
