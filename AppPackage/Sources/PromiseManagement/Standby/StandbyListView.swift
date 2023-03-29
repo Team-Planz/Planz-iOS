@@ -12,21 +12,21 @@ import SwiftUI
 public struct StandbyListFeature: ReducerProtocol {
     public struct State: Equatable {
         var rows: IdentifiedArrayOf<StandbyCell.State>
-
+        
         init(rows: IdentifiedArrayOf<StandbyCell.State> = []) {
             self.rows = rows
         }
     }
-
+    
     public enum Action: Equatable {
         case pushDetailView(id: StandbyCell.State.ID, action: StandbyCell.Action)
         case delegate(Delegate)
-
+        
         public enum Delegate: Equatable {
             case showDetailView(StandbyCell.State)
         }
     }
-
+    
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
@@ -35,7 +35,7 @@ public struct StandbyListFeature: ReducerProtocol {
                     return .none
                 }
                 return .send(.delegate(.showDetailView(selectedData)))
-
+                
             case .delegate:
                 return .none
             }
@@ -48,23 +48,22 @@ public struct StandbyListFeature: ReducerProtocol {
 
 struct StandbyListView: View {
     let store: StoreOf<StandbyListFeature>
-
+    
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            Group {
-                if viewStore.rows.isEmpty {
-                    EmptyDataView()
-                } else {
-                    List {
-                        ForEachStore(self.store.scope(
-                            state: \.rows,
-                            action: StandbyListFeature.Action.pushDetailView(id: action:)
-                        )) {
-                            StandbyCellView(store: $0)
-                        }
+            if viewStore.rows.isEmpty {
+                // TODO: - 데이터가 없습니다 화면 노출
+                Text("Empty")
+            } else {
+                List {
+                    ForEachStore(self.store.scope(
+                        state: \.rows,
+                        action: StandbyListFeature.Action.pushDetailView(id: action:)
+                    )) {
+                        StandbyCellView(store: $0)
                     }
-                    .listStyle(.plain)
                 }
+                .listStyle(.plain)
             }
         }
     }
