@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "illust-nodata@1x.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "illust-nodata@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "illust-nodata@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "illustEmptydata.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {
