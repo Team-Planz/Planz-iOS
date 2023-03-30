@@ -3,32 +3,38 @@ import Foundation
 
 public struct CalendarCore: ReducerProtocol {
     public struct State: Equatable {
+        var calendarForm: CalendarForm
         public var monthList: IdentifiedArrayOf<MonthCore.State> = []
-        public var selectedMonth: Date
+        @BindingState public var selectedMonth: Date
         public var selectedDates: Set<Date> = []
 
         public init(
+            calendarForm: CalendarForm = .default,
             monthList: IdentifiedArrayOf<MonthCore.State> = [],
             selectedMonth: Date = .currentMonth,
             selectedDates: Set<Date> = []
         ) {
+            self.calendarForm = calendarForm
             self.monthList = monthList
             self.selectedMonth = selectedMonth
             self.selectedDates = selectedDates
         }
     }
 
-    public enum Action: Equatable {
+    public enum Action: BindableAction, Equatable {
         case onAppear(type: CalendarType)
         case onDisAppear
         case scrollViewOffsetChanged(type: CalendarType, index: Int)
         case pageIndexChanged(type: CalendarType, index: Int)
         case leftSideButtonTapped
         case rightSideButtonTapped
+        case formChangeButtonTapped
         case createMonthStateList(type: CalendarType, range: CalendarClient.DateRange)
         case updateMonthStateList(CalendarClient.DateRange, TaskResult<[MonthState]>)
         case month(id: MonthCore.State.ID, action: MonthCore.Action)
+        case promiseTapped(Promise.ID)
         case overSelection
+        case binding(BindingAction<State>)
     }
 
     @Dependency(\.calendarClient) var calendarClient
@@ -37,13 +43,15 @@ public struct CalendarCore: ReducerProtocol {
     public init() {}
 
     public var body: some ReducerProtocol<State, Action> {
+        BindingReducer()
+
         Reduce { state, action in
             struct UpdateScrollViewOffsetID {}
             struct OverSelectionID {}
 
             switch action {
             case let .onAppear(type: calendarType):
-                return .send(.createMonthStateList(type: calendarType, range: .default))
+                return .send(.createMonthStateList(type: calendarType, range: .custom(calendarType.range)))
 
             case .onDisAppear:
                 return .merge(
@@ -62,6 +70,8 @@ public struct CalendarCore: ReducerProtocol {
             case let .pageIndexChanged(type: calendarType, index: index):
                 state.selectedMonth = state.monthList[index].id
                 let isFirstIndex = index == .zero
+                guard !(calendarType == .promise && isFirstIndex) else { return .none }
+                
                 let isEdgeIndex = isFirstIndex || index == (state.monthList.count - 1)
                 guard isEdgeIndex else { return .none }
 
@@ -88,6 +98,11 @@ public struct CalendarCore: ReducerProtocol {
 
                 return .none
 
+            case .formChangeButtonTapped:
+                state.calendarForm.toggle()
+
+                return .none
+
             case let .createMonthStateList(type: calendarType, range: range):
                 do {
                     let itemList = try calendarClient
@@ -104,7 +119,7 @@ public struct CalendarCore: ReducerProtocol {
                         .map { MonthCore.State(monthState: $0) }
                     state.monthList.insert(contentsOf: monthCoreStates, at: .zero)
 
-                case .default, .upper:
+                case .custom, .upper:
                     let monthCoreStates = itemList
                         .map { MonthCore.State(monthState: $0) }
                     state.monthList.append(contentsOf: monthCoreStates)
@@ -118,7 +133,13 @@ public struct CalendarCore: ReducerProtocol {
                 id: id,
                 action: .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex))
             ):
-                guard let item = state.monthList[id: id] else { return .none }
+                guard
+                    let item = state.monthList[id: id],
+                    endIndex < item.monthState.dayStateList.count,
+                    endIndex >= .zero,
+                    item.monthState.dayStateList[startIndex].day.date >= .today,
+                    item.monthState.dayStateList[endIndex].day.date >= .today
+                else { return .none }
                 let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
                 guard
                     item.gesture.rangeList.contains(where: { $0.contains(startIndex) })
@@ -169,7 +190,7 @@ public struct CalendarCore: ReducerProtocol {
                 action: .delegate(action: .firstWeekDragged(type, range))
             ):
                 guard
-                    let count = state.monthList[id: id.previousMonth]?.monthState.days.count
+                    let count = state.monthList[id: id.previousMonth]?.monthState.dayStateList.count
                 else { return .none }
                 let value = ((count / 7) - 1) * 7
                 let relatedRange = (range.lowerBound + value) ... (range.upperBound + value)
@@ -206,7 +227,7 @@ public struct CalendarCore: ReducerProtocol {
                 print("🐶", state.selectedDates.sorted())
                 return .none
 
-            case .month, .overSelection:
+            case .month, .overSelection, .binding, .promiseTapped:
                 return .none
             }
         }
@@ -219,3 +240,56 @@ public struct CalendarCore: ReducerProtocol {
 }
 
 private let maximumCount = 13
+
+private extension CalendarType {
+    var range: ClosedRange<Int> {
+        switch self {
+        case .home:
+            return -6 ... 6
+            
+        case .promise:
+            return 0 ... 6
+        }
+    }
+}
+
+#if DEBUG
+    public extension CalendarCore.State {
+        static let preview = Self(monthList: .mock)
+    }
+
+    extension IdentifiedArrayOf where Element == MonthCore.State {
+        static var mock: IdentifiedArrayOf<MonthCore.State> {
+            var result = IdentifiedArrayOf<MonthCore.State>()
+            let item = try? CalendarClient.liveValue.createMonthStateList(.home, .custom(-6...6), .currentMonth)
+            var unwrappedItem = item ?? []
+            let currentMonthIndex = unwrappedItem
+                .firstIndex(where: { $0.id.date == .currentMonth }) ?? .zero
+            let todayIndex = unwrappedItem[currentMonthIndex].dayStateList
+                .firstIndex(where: { $0.id == .today }) ?? .zero
+            unwrappedItem[currentMonthIndex].dayStateList[0].day.promiseList = [
+                .init(type: .meeting, date: .today, name: "모각코 🙌"),
+                .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),
+                .init(type: .meal, date: .today, name: "돼지파티 약속 🐷")
+            ]
+            
+            unwrappedItem[currentMonthIndex].dayStateList[todayIndex].day.promiseList = [
+                .init(type: .meeting, date: .today, name: "모각코 🙌"),
+                .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),
+                .init(type: .meal, date: .today, name: "돼지파티 약속 🐷"),
+                .init(type: .meeting, date: .today, name: "애플 로그인 약속 🍎"),
+                .init(type: .etc, date: .today, name: "🫥 🤠 🫥"),
+                .init(type: .etc, date: .today, name: "🫥 🤠 🫥"),
+                .init(type: .etc, date: .today, name: "🫥 🤠 🫥"),
+                .init(type: .etc, date: .today, name: "🫥 🤠 🫥")
+            ]
+            result
+                .append(
+                    contentsOf: unwrappedItem
+                        .map { MonthCore.State(monthState: $0) }
+                )
+
+            return result
+        }
+    }
+#endif

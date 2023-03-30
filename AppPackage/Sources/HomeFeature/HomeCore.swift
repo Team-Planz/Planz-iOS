@@ -47,11 +47,6 @@ public struct HomeCore: ReducerProtocol {
 
 #if DEBUG
     public extension HomeCore.State {
-        static let preview = Self(
-            calendar: .init(
-                monthList: .mock,
-                selectedMonth: .currentMonth
-            )
-        )
+        static let preview = Self(calendar: .preview)
     }
 #endif
