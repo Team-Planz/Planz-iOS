@@ -8,12 +8,13 @@
 import SwiftUI
 
 // MARK: - PretendardFont
+
 public struct PretendardFont {
     static let medium = PretendardFont(named: "Pretendard-Medium")
     static let semibold = PretendardFont(named: "Pretendard-SemiBold")
-    
+
     let name: String
-    
+
     private init(named name: String) {
         self.name = name
         do {
@@ -26,6 +27,7 @@ public struct PretendardFont {
 }
 
 // MARK: - PDS.FONT
+
 public extension PDS {
     enum FONT: String, CaseIterable {
         case headline14
@@ -33,16 +35,16 @@ public extension PDS {
         case headline18
         case headline20
         case headline24
-        
+
         case subtitle14
         case subtitle16
-        
+
         case body12
         case body14
         case body16
-        
+
         case caption
-        
+
         public var values: (size: CGFloat, font: PretendardFont) {
             switch self {
             case .headline14:
@@ -72,34 +74,32 @@ public extension PDS {
     }
 }
 
-public extension Text {
-    func PDSfont(_ designFont: PDS.FONT) -> Text {
-        return font(
-            .custom(
-                designFont.values.font.name,
-                size: designFont.values.size
-            )
+public extension Font {
+    static func planz(_ designFont: PDS.FONT) -> Font {
+        return .custom(
+            designFont.values.font.name,
+            size: designFont.values.size
         )
     }
 }
 
 #if DEBUG
-private struct FontView: View {
-    var body: some View {
-        VStack {
-            Text("Hello 안녕하세요?")
-                .PDSfont(.headline24)
-                .foregroundColor(PDS.COLOR.purple9.scale)
-            
-            Text("Hello 안녕하세요?")
-                .font(.headline)
+    private struct FontView: View {
+        var body: some View {
+            VStack {
+                Text("Hello 안녕하세요?")
+                    .font(.planz(.headline24))
+                    .foregroundColor(PDS.COLOR.purple9.scale)
+
+                Text("Hello 안녕하세요?")
+                    .font(.headline)
+            }
         }
     }
-}
 
-struct Font_Previews: PreviewProvider {
-    static var previews: some View {
-        FontView()
+    struct Font_Previews: PreviewProvider {
+        static var previews: some View {
+            FontView()
+        }
     }
-}
 #endif
