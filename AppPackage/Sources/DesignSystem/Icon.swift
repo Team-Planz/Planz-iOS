@@ -37,6 +37,10 @@ public extension PDS {
 
         case calendar
         case emptySchedule
+        
+        case illustEmptydata
+        case illustError
+        case plus
 
         public var image: Image {
             return Image(rawValue, bundle: Bundle.module)

@@ -49,7 +49,7 @@ struct StandbyCellView: View {
             role = state.role
             namesText = state.names
                 .sorted(by: <)
-                .joinedNames(separator: ", ")
+                .joined(separator: ", ")
         }
     }
 

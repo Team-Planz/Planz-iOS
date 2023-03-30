@@ -1,5 +1,5 @@
 //
-//  ManagementErrorView.swift
+//  ErrorView.swift
 //
 //
 //  Created by Sujin Jin on 2023/03/15.
@@ -8,10 +8,12 @@
 import DesignSystem
 import SwiftUI
 
-struct ManagementErrorView: View {
-    var body: some View {
+public struct ErrorView: View {
+    public init() {}
+
+    public var body: some View {
         VStack {
-            Image("illustError", bundle: Bundle.module)
+            PDS.Icon.illustError.image
 
             VStack(spacing: 4) {
                 Group {
@@ -30,7 +32,7 @@ struct ManagementErrorView: View {
 #if DEBUG
     struct ManagementErrorView_Previews: PreviewProvider {
         static var previews: some View {
-            ManagementErrorView()
+            ErrorView()
         }
     }
 #endif

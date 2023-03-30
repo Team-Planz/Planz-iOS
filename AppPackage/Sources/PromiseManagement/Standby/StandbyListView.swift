@@ -5,27 +5,30 @@
 //  Created by Sujin Jin on 2023/02/27.
 //  Copyright © 2023 Team-Planz. All rights reserved.
 //
+import CommonView
 import ComposableArchitecture
 import SwiftUI
 
 public struct StandbyListFeature: ReducerProtocol {
     public struct State: Equatable {
         var rows: IdentifiedArrayOf<StandbyCell.State>
-
+        var emptyData = EmptyDataViewFeature.State()
+        
         init(rows: IdentifiedArrayOf<StandbyCell.State> = []) {
             self.rows = rows
         }
     }
-
+    
     public enum Action: Equatable {
         case pushDetailView(id: StandbyCell.State.ID, action: StandbyCell.Action)
         case delegate(Delegate)
-
+        case emptyData(EmptyDataViewFeature.Action)
+        
         public enum Delegate: Equatable {
             case showDetailView(StandbyCell.State)
         }
     }
-
+    
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
@@ -34,8 +37,14 @@ public struct StandbyListFeature: ReducerProtocol {
                     return .none
                 }
                 return .send(.delegate(.showDetailView(selectedData)))
-
+                
             case .delegate:
+                return .none
+                
+            case .emptyData(.delegate(.makePromise)):
+                return .none
+                
+            default:
                 return .none
             }
         }
@@ -47,23 +56,24 @@ public struct StandbyListFeature: ReducerProtocol {
 
 struct StandbyListView: View {
     let store: StoreOf<StandbyListFeature>
-
+    
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            Group {
-                if viewStore.rows.isEmpty {
-                    ManagementEmptyDataView()
-                } else {
-                    List {
-                        ForEachStore(self.store.scope(
-                            state: \.rows,
-                            action: StandbyListFeature.Action.pushDetailView(id: action:)
-                        )) {
-                            StandbyCellView(store: $0)
-                        }
+            if viewStore.rows.isEmpty {
+                EmptyDataView(store: self.store.scope(
+                    state: \.emptyData,
+                    action: StandbyListFeature.Action.emptyData)
+                )
+            } else {
+                List {
+                    ForEachStore(self.store.scope(
+                        state: \.rows,
+                        action: StandbyListFeature.Action.pushDetailView(id: action:)
+                    )) {
+                        StandbyCellView(store: $0)
                     }
-                    .listStyle(.plain)
                 }
+                .listStyle(.plain)
             }
         }
     }
