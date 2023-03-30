@@ -31,7 +31,7 @@ public struct CalendarView: View {
     let type: CalendarType
     let layoutConstraint: LayoutConstraint
     let store: StoreOf<CalendarCore>
-    @ObservedObject var viewStore: ViewStoreOf<CalendarCore>
+    @ObservedObject var viewStore: ViewStore<ViewState, ViewAction>
 
     public init(
         type: CalendarType,
@@ -40,15 +40,27 @@ public struct CalendarView: View {
         self.type = type
         layoutConstraint = type.layoutConstraint
         self.store = store
-        viewStore = ViewStore(store)
+        viewStore = ViewStore(
+            store
+                .scope(
+                    state: \.viewState,
+                    action: \.reducerAction
+                )
+        )
     }
 
     public var body: some View {
         GeometryReader { geometryProxy in
             VStack(spacing: .zero) {
                 headerView
-                weekDayListView
-                scrollView(width: geometryProxy.size.width)
+                switch viewStore.calendarForm {
+                case .default:
+                    weekDayListView
+                    scrollView(width: geometryProxy.size.width)
+
+                case .list:
+                    promiseListView
+                }
             }
             .padding(.top, layoutConstraint.contentTopPadding)
             .padding(.horizontal, layoutConstraint.contentHorizontalPadding)
@@ -96,15 +108,16 @@ public struct CalendarView: View {
 
                         Spacer()
 
-                        Button(action: {}) {
-                            PDS.Icon.calendarHeaderList.image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(
-                                    width: layoutConstraint.listButtonSize.width,
-                                    height: layoutConstraint.listButtonSize.height
-                                )
+                        Button(action: { viewStore.send(.formChangeButtonTapped) }) {
+                            viewStore.calendarForm == .default
+                                ? PDS.Icon.calendarHeaderList.image
+                                : PDS.Icon.calendar.image
                         }
+                        .aspectRatio(contentMode: .fit)
+                        .frame(
+                            width: layoutConstraint.listButtonSize.width,
+                            height: layoutConstraint.listButtonSize.height
+                        )
                     }
                     .padding(.bottom, 12)
 
@@ -113,7 +126,9 @@ public struct CalendarView: View {
                         .frame(height: 1)
                 }
 
-            case .appointment:
+            case .promise:
+                let isLeadingIndex = Optional(viewStore.selectedMonth) == viewStore.monthList.first?.id
+                let leftButtonVisible = type == .promise && isLeadingIndex
                 Button(action: { viewStore.send(.leftSideButtonTapped) }) {
                     PDS.Icon.calendarHeaderLeft.image
                         .resizable()
@@ -124,6 +139,11 @@ public struct CalendarView: View {
                         )
                 }
                 .padding(.trailing, 16)
+                .opacity(
+                    leftButtonVisible
+                    ? .zero
+                    : 1
+                )
 
                 Text(viewStore.selectedMonth.yearMonthString)
                     .font(.system(size: 18))
@@ -189,7 +209,12 @@ public struct CalendarView: View {
                     }
                 }
             }
-            .introspectScrollView { $0.isPagingEnabled = true }
+            .introspectScrollView {
+                $0.isPagingEnabled = true
+                $0.isScrollEnabled = type == .promise
+                ? false
+                : true
+            }
             .onReceive(viewStore.publisher.selectedMonth) { id in
                 scrollViewProxy.scrollTo(id, anchor: .leading)
             }
@@ -203,6 +228,58 @@ public struct CalendarView: View {
         }
     }
 
+    @ViewBuilder
+    var promiseListView: some View {
+        let verticalPadding = layoutConstraint.weekDayRowHeight + layoutConstraint.weekDayListBottomPadding
+
+        TabView(selection: viewStore.binding(\.$selectedMonth)) {
+            ForEach(viewStore.monthList) { item in
+                Group {
+                    if item.monthState.promiseList.isEmpty {
+                        VStack(spacing: 14) {
+                            PDS.Icon.emptySchedule.image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 85, height: 75)
+
+                            Text(Resource.Text.emptySchedule)
+                                .foregroundColor(PDS.COLOR.gray5.scale)
+                                .font(.system(size: 14))
+                        }
+                    } else {
+                        ScrollView(showsIndicators: false) {
+                            LazyVStack(spacing: 30) {
+                                ForEach(item.monthState.promiseList) { promise in
+                                    HStack(spacing: .zero) {
+                                        Text(promise.date.monthDayString)
+                                            .frame(width: 30)
+                                            .font(.system(size: 14))
+                                            .padding(.trailing, 20)
+                                            .foregroundColor(PDS.COLOR.purple9.scale)
+
+                                        Text(promise.name)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .padding(.trailing, 12)
+                                            .lineLimit(1)
+
+                                        Text(hourMinuteFormatter.string(from: promise.date))
+                                            .frame(width: 50)
+                                            .font(.system(size: 13))
+                                            .foregroundColor(PDS.COLOR.gray5.scale)
+                                    }
+                                    .onTapGesture { viewStore.send(.promiseTapped(promise.id)) }
+                                }
+                            }
+                        }
+                    }
+                }
+                .tag(item.id)
+            }
+        }
+        .frame(height: layoutConstraint.scrollViewHeight + verticalPadding)
+        .tabViewStyle(.page(indexDisplayMode: .never))
+    }
+
     private func transformToIndex(point: CGPoint, viewWidth: CGFloat) -> Int {
         let rowWidth = Int(viewWidth) / layoutConstraint.weekDayListCout
         let rowHeight = Int(layoutConstraint.dayRowHeight)
@@ -210,6 +287,68 @@ public struct CalendarView: View {
         let yLocation = Int(point.y) / rowHeight * 7
 
         return xLocation + yLocation
+    }
+}
+
+extension CalendarView {
+    struct ViewState: Equatable {
+        let calendarForm: CalendarForm
+        @BindingState var selectedMonth: Date
+        let monthList: IdentifiedArrayOf<MonthCore.State>
+    }
+
+    enum ViewAction: Equatable, BindableAction {
+        var reducerAction: CalendarCore.Action {
+            switch self {
+            case let .onAppear(type: type):
+                return .onAppear(type: type)
+
+            case .onDisAppear:
+                return .onDisAppear
+
+            case .leftSideButtonTapped:
+                return .leftSideButtonTapped
+
+            case .rightSideButtonTapped:
+                return .rightSideButtonTapped
+
+            case .formChangeButtonTapped:
+                return .formChangeButtonTapped
+
+            case let .scrollViewOffsetChanged(type: type, index: index):
+                return .scrollViewOffsetChanged(type: type, index: index)
+
+            case let .promiseTapped(id):
+                return .promiseTapped(id)
+
+            case let .binding(item):
+                return .binding(item.pullback(\.viewState))
+            }
+        }
+
+        case onAppear(type: CalendarType)
+        case onDisAppear
+        case leftSideButtonTapped
+        case rightSideButtonTapped
+        case formChangeButtonTapped
+        case scrollViewOffsetChanged(type: CalendarType, index: Int)
+        case promiseTapped(Promise.ID)
+        case binding(BindingAction<ViewState>)
+    }
+}
+
+private extension CalendarCore.State {
+    var viewState: CalendarView.ViewState {
+        get {
+            .init(
+                calendarForm: calendarForm,
+                selectedMonth: selectedMonth,
+                monthList: monthList
+            )
+        }
+        set {
+            selectedMonth = newValue.selectedMonth
+        }
     }
 }
 
@@ -226,7 +365,7 @@ private extension CalendarType {
                 contentBackgroundCornerRadius: 16
             )
 
-        case .appointment:
+        case .promise:
             return .init(
                 currentMonthInfoBottomPadding: 20,
                 directionButtonSize: .init(width: 24, height: 24),
@@ -239,26 +378,15 @@ private extension CalendarType {
     }
 }
 
-enum WeekDay: CaseIterable, CustomStringConvertible {
-    var description: String {
-        switch self {
-        case .sunday:
-            return "일"
-        case .monday:
-            return "월"
-        case .tuesday:
-            return "화"
-        case .wednesday:
-            return "수"
-        case .thursday:
-            return "목"
-        case .friday:
-            return "금"
-        case .saturday:
-            return "토"
+private extension CalendarView {
+    enum Resource {
+        enum Text {
+            static let emptySchedule = "이번달 일정이 없어요!"
         }
     }
+}
 
+private extension WeekDay {
     var color: Color {
         switch self {
         case .sunday:
@@ -268,14 +396,6 @@ enum WeekDay: CaseIterable, CustomStringConvertible {
             return PDS.COLOR.cGray2.scale
         }
     }
-
-    case sunday
-    case monday
-    case tuesday
-    case wednesday
-    case thursday
-    case friday
-    case saturday
 }
 
 private extension Date {
@@ -294,7 +414,21 @@ private extension Date {
                 .locale(.init(identifier: "ko_KR"))
         )
     }
+
+    var monthDayString: String {
+        formatted(
+            .dateTime
+                .month(.defaultDigits)
+                .day()
+        )
+    }
 }
+
+private let hourMinuteFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "h시mm분"
+    return formatter
+}()
 
 private struct ScrollViewOffset: PreferenceKey {
     static var defaultValue: CGFloat = .zero
@@ -314,13 +448,13 @@ private struct ScrollViewOffset: PreferenceKey {
                 CalendarView(
                     type: .home,
                     store: .init(
-                        initialState: .init(),
+                        initialState: .preview,
                         reducer: CalendarCore()
                     )
                 )
 
                 CalendarView(
-                    type: .appointment,
+                    type: .promise,
                     store: .init(
                         initialState: .init(),
                         reducer: CalendarCore()

@@ -16,8 +16,8 @@ extension CalendarClient: DependencyKey {
             case .lower:
                 return -6 ... -1
 
-            case .default:
-                return -6 ... 6
+            case let .custom(range):
+                return range
 
             case .upper:
                 return 1 ... 6
@@ -25,7 +25,7 @@ extension CalendarClient: DependencyKey {
         }
 
         case lower
-        case `default`
+        case custom(ClosedRange<Int>)
         case upper
     }
 
@@ -55,7 +55,7 @@ extension CalendarClient: DependencyKey {
                         )
                     }
 
-                return .init(id: month, days: list)
+                return .init(id: month, dayStateList: list.toIdentifiedCollection)
             }
     }
 }
