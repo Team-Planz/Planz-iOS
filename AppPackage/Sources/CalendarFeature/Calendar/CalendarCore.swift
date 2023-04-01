@@ -42,10 +42,10 @@ public struct CalendarCore: ReducerProtocol {
 
     public init() {}
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some ReducerProtocolOf<Self> {
         BindingReducer()
 
-        Reduce { state, action in
+        Reduce<State, Action> { state, action in
             struct UpdateScrollViewOffsetID {}
             struct OverSelectionID {}
 
@@ -71,7 +71,7 @@ public struct CalendarCore: ReducerProtocol {
                 state.selectedMonth = state.monthList[index].id
                 let isFirstIndex = index == .zero
                 guard !(calendarType == .promise && isFirstIndex) else { return .none }
-                
+
                 let isEdgeIndex = isFirstIndex || index == (state.monthList.count - 1)
                 guard isEdgeIndex else { return .none }
 
@@ -131,28 +131,44 @@ public struct CalendarCore: ReducerProtocol {
 
             case let .month(
                 id: id,
-                action: .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex))
+                action: .delegate(action)
             ):
-                guard
-                    let item = state.monthList[id: id],
-                    endIndex < item.monthState.dayStateList.count,
-                    endIndex >= .zero,
-                    item.monthState.dayStateList[startIndex].day.date >= .today,
-                    item.monthState.dayStateList[endIndex].day.date >= .today
-                else { return .none }
-                let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
-                guard
-                    item.gesture.rangeList.contains(where: { $0.contains(startIndex) })
-                else {
+                switch action {
+                case .day:
+                    return .none
+
+                case let .drag(startIndex: startIndex, endIndex: endIndex):
                     guard
-                        range.count + state.selectedDates.count <= maximumCount
+                        let item = state.monthList[id: id],
+                        endIndex < item.monthState.dayStateList.count,
+                        endIndex >= .zero,
+                        item.monthState.dayStateList[startIndex].day.date >= .today,
+                        item.monthState.dayStateList[endIndex].day.date >= .today
+                    else { return .none }
+                    let range = min(startIndex, endIndex) ... max(startIndex, endIndex)
+                    guard
+                        item.gesture.rangeList.contains(where: { $0.contains(startIndex) })
                     else {
-                        return .send(.overSelection)
-                            .debounce(
-                                id: OverSelectionID.self,
-                                for: .seconds(0.5),
-                                scheduler: mainQueue
+                        guard
+                            range.count + state.selectedDates.count <= maximumCount
+                        else {
+                            return .send(.overSelection)
+                                .debounce(
+                                    id: OverSelectionID.self,
+                                    for: .seconds(0.5),
+                                    scheduler: mainQueue
+                                )
+                        }
+
+                        return .send(
+                            .month(
+                                id: id,
+                                action: .dragFiltered(
+                                    startIndex: startIndex,
+                                    currentRange: range
+                                )
                             )
+                        )
                     }
 
                     return .send(
@@ -164,59 +180,47 @@ public struct CalendarCore: ReducerProtocol {
                             )
                         )
                     )
+
+                case let .removeSelectedDates(items: items):
+                    items
+                        .forEach { state.selectedDates.remove($0) }
+
+                    return .send(.month(id: id, action: .cleanUp))
+
+                case let .firstWeekDragged(type, range):
+                    guard
+                        let count = state.monthList[id: id.previousMonth]?.monthState.dayStateList.count
+                    else { return .none }
+                    let value = ((count / 7) - 1) * 7
+                    let relatedRange = (range.lowerBound + value) ... (range.upperBound + value)
+                    
+                    return .merge(
+                        .send(
+                            .month(
+                                id: id.previousMonth,
+                                action: type == .insert
+                                    ? .selectRelatedDays(relatedRange)
+                                    : .deSelectRelatedDays(relatedRange)
+                            )
+                        ),
+                        .send(.month(id: id, action: .cleanUp))
+                    )
+
+                case let .lastWeekDragged(type, range):
+                    let relatedRange = (range.lowerBound % 7) ... (range.upperBound % 7)
+
+                    return .merge(
+                        .send(
+                            .month(
+                                id: id.nextMonth,
+                                action: type == .insert
+                                    ? .selectRelatedDays(relatedRange)
+                                    : .deSelectRelatedDays(relatedRange)
+                            )
+                        ),
+                        .send(.month(id: id, action: .cleanUp))
+                    )
                 }
-
-                return .send(
-                    .month(
-                        id: id,
-                        action: .dragFiltered(
-                            startIndex: startIndex,
-                            currentRange: range
-                        )
-                    )
-                )
-
-            case let .month(
-                id: _,
-                action: .delegate(action: .removeSelectedDates(items: dates))
-            ):
-                dates
-                    .forEach { state.selectedDates.remove($0) }
-
-                return .none
-
-            case let .month(
-                id: id,
-                action: .delegate(action: .firstWeekDragged(type, range))
-            ):
-                guard
-                    let count = state.monthList[id: id.previousMonth]?.monthState.dayStateList.count
-                else { return .none }
-                let value = ((count / 7) - 1) * 7
-                let relatedRange = (range.lowerBound + value) ... (range.upperBound + value)
-                return .send(
-                    .month(
-                        id: id.previousMonth,
-                        action: type == .insert
-                            ? .selectRelatedDays(relatedRange)
-                            : .deSelectRelatedDays(relatedRange)
-                    )
-                )
-
-            case let .month(
-                id: id,
-                action: .delegate(action: .lastWeekDragged(type, range))
-            ):
-                let relatedRange = (range.lowerBound % 7) ... (range.upperBound % 7)
-
-                return .send(
-                    .month(
-                        id: id.nextMonth,
-                        action: type == .insert
-                            ? .selectRelatedDays(relatedRange)
-                            : .deSelectRelatedDays(relatedRange)
-                    )
-                )
 
             case let .month(id: id, action: .resetGesture):
                 guard
@@ -225,6 +229,7 @@ public struct CalendarCore: ReducerProtocol {
                 monthState.selectedDates
                     .forEach { state.selectedDates.insert($0) }
                 print("🐶", state.selectedDates.sorted())
+                
                 return .none
 
             case .month, .overSelection, .binding, .promiseTapped:
@@ -246,7 +251,7 @@ private extension CalendarType {
         switch self {
         case .home:
             return -6 ... 6
-            
+
         case .promise:
             return 0 ... 6
         }
@@ -261,7 +266,7 @@ private extension CalendarType {
     extension IdentifiedArrayOf where Element == MonthCore.State {
         static var mock: IdentifiedArrayOf<MonthCore.State> {
             var result = IdentifiedArrayOf<MonthCore.State>()
-            let item = try? CalendarClient.liveValue.createMonthStateList(.home, .custom(-6...6), .currentMonth)
+            let item = try? CalendarClient.liveValue.createMonthStateList(.home, .custom(-6 ... 6), .currentMonth)
             var unwrappedItem = item ?? []
             let currentMonthIndex = unwrappedItem
                 .firstIndex(where: { $0.id.date == .currentMonth }) ?? .zero
@@ -272,7 +277,7 @@ private extension CalendarType {
                 .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),
                 .init(type: .meal, date: .today, name: "돼지파티 약속 🐷")
             ]
-            
+
             unwrappedItem[currentMonthIndex].dayStateList[todayIndex].day.promiseList = [
                 .init(type: .meeting, date: .today, name: "모각코 🙌"),
                 .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),

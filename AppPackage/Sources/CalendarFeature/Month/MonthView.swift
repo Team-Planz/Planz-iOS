@@ -114,7 +114,7 @@ private extension MonthView {
                 return .delegate(action: .day(id: id, action: dayAction))
 
             case let .drag(startIndex: startIndex, endIndex: endIndex):
-                return .delegate(action: .drag(startIndex: startIndex, endIndex: endIndex))
+                return .drag(startIndex: startIndex, endIndex: endIndex)
 
             case let .dragEnded(startIndex: startIndex):
                 return .dragEnded(startIndex: startIndex)
