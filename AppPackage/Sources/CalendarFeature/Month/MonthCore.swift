@@ -35,7 +35,7 @@ public struct MonthCore: ReducerProtocol {
             case lastWeekDragged(GestureType, ClosedRange<Int>)
         }
 
-        case delegate(action: Delegate)
+        case drag(startIndex: Int, endIndex: Int)
         case dragFiltered(startIndex: Int, currentRange: ClosedRange<Int>)
         case dragEnded(startIndex: Int)
         case selectRelatedDays(ClosedRange<Int>)
@@ -43,13 +43,21 @@ public struct MonthCore: ReducerProtocol {
         case groupContinuousRanges
         case resetGesture
         case cleanUp
+        case delegate(action: Delegate)
     }
 
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
-            case .delegate(action: .drag):
-                return .none
+            case let .drag(startIndex: startIndex, endIndex: endIndex):
+                return .send(
+                    .delegate(
+                        action: .drag(
+                            startIndex: startIndex,
+                            endIndex: endIndex
+                        )
+                    )
+                )
 
             case let .dragFiltered(
                 startIndex: startIndex,
@@ -197,9 +205,15 @@ public struct MonthCore: ReducerProtocol {
                     )
                     state.gesture.rangeList.appendSorted(item: range)
                     if let intersection = state.monthState.previousRange.intersection(range) {
-                        return .send(.delegate(action: .firstWeekDragged(.insert, intersection)))
+                        return .merge(
+                            .send(.delegate(action: .firstWeekDragged(.insert, intersection))),
+                            .send(.cleanUp)
+                        )
                     } else if let intersection = state.monthState.nextRange.intersection(range) {
-                        return .send(.delegate(action: .lastWeekDragged(.insert, intersection)))
+                        return .merge(
+                            .send(.delegate(action: .lastWeekDragged(.insert, intersection))),
+                            .send(.cleanUp)
+                        )
                     }
                 }
 
@@ -257,7 +271,7 @@ public struct MonthCore: ReducerProtocol {
                 )
 
             case .delegate:
-                return .send(.cleanUp)
+                return .none
             }
         }
         .forEach(
