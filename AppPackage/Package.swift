@@ -9,7 +9,7 @@ let package = Package(
             name: "AppPackage",
             targets: [
                 "TimeTableFeature",
-                "Share",
+                "ShareFeature",
                 "MakePromise",
                 "PromiseManagement",
                 "LoginFeature",
@@ -90,7 +90,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Share",
+            name: "ShareFeature",
             dependencies: [
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
