@@ -25,16 +25,20 @@ public struct Login: ReducerProtocol {
 
     public init() {}
 
+    @Dependency(\.apiClient) var apiClient: APIClient
+
     public var body: some ReducerProtocol<State, Action> {
         Reduce { _, action in
             switch action {
             case .kakaoButtonTapped:
                 return .task {
-                    await .authorizeResponse(
-                        TaskResult {
-                            try await APIClient.liveValue.authenticate()
-                        }
-                    )
+                    let result = await TaskResult {
+                        try await apiClient.authenticate()
+                    }
+                    if case .success = result {
+                        try? await apiClient.request(route: .user(.signup))
+                    }
+                    return .authorizeResponse(result)
                 }
             case .browsingTapped:
                 return .none
