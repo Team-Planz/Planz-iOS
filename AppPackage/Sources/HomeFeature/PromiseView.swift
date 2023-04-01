@@ -1,6 +1,7 @@
 import CalendarFeature
 import ComposableArchitecture
 import DesignSystem
+import SharedModel
 import SwiftUI
 
 public struct PromiseView: View {

@@ -3,6 +3,7 @@ import ComposableArchitecture
 import DesignSystem
 import Foundation
 import Introspect
+import SharedModel
 import SwiftUI
 
 public struct HomeView: View {
