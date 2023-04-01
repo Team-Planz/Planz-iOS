@@ -37,7 +37,7 @@ public extension PDS {
 
         case calendar
         case emptySchedule
-        
+
         case illustEmptydata
         case illustError
         case plus

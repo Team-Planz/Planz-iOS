@@ -15,16 +15,16 @@ public struct EmptyDataViewFeature: ReducerProtocol {
     public struct State: Equatable {
         public init() {}
     }
-    
+
     public enum Action: Equatable {
         case makePromiseButtonTapped
         case delegate(Delegate)
-        
+
         public enum Delegate: Equatable {
             case makePromise
         }
     }
-    
+
     public var body: some ReducerProtocol<State, Action> {
         Reduce { _, action in
             switch action {
@@ -39,7 +39,7 @@ public struct EmptyDataViewFeature: ReducerProtocol {
 
 public struct EmptyDataView: View {
     public let store: StoreOf<EmptyDataViewFeature>
-    
+
     public init(store: StoreOf<EmptyDataViewFeature>) {
         self.store = store
     }
@@ -87,7 +87,8 @@ private struct RoundCornerButtonStyle: ButtonStyle {
         static var previews: some View {
             EmptyDataView(store: .init(
                 initialState: EmptyDataViewFeature.State(),
-                reducer: EmptyDataViewFeature()._printChanges()))
+                reducer: EmptyDataViewFeature()._printChanges()
+            ))
         }
     }
 #endif
