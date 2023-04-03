@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import DesignSystem
-import SharedModel
+import Entity
 import SwiftUI
 
 public struct PromiseItemCore: ReducerProtocol {

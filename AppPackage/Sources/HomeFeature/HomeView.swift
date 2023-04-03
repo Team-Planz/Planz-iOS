@@ -1,9 +1,9 @@
 import CalendarFeature
 import ComposableArchitecture
 import DesignSystem
+import Entity
 import Foundation
 import Introspect
-import SharedModel
 import SwiftUI
 
 public struct HomeView: View {

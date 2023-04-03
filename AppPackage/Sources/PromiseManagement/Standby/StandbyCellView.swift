@@ -21,7 +21,7 @@ public struct StandbyCell: ReducerProtocol {
         case touched
     }
 
-    public func reduce(into: inout State, action: Action) -> EffectTask<Action> {
+    public func reduce(into _: inout State, action: Action) -> EffectTask<Action> {
         switch action {
         case .touched:
             return .none

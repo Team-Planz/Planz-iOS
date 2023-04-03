@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import DesignSystem
+import Entity
 import Introspect
-import SharedModel
 import SwiftUI
 
 public struct CalendarView: View {

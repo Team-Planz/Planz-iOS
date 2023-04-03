@@ -13,27 +13,27 @@ public struct ConfirmedListFeature: ReducerProtocol {
     public struct State: Equatable {
         var rows: IdentifiedArrayOf<ConfirmedCell.State>
         var emptyData = EmptyDataViewFeature.State()
-        
+
         init(rows: IdentifiedArrayOf<ConfirmedCell.State> = []) {
             self.rows = rows
         }
     }
-    
+
     public enum Action: Equatable {
         case touchedRow(id: ConfirmedCell.State.ID, action: ConfirmedCell.Action)
         case delegate(Delegate)
         case emptyData(EmptyDataViewFeature.Action)
-        
+
         public enum Delegate: Equatable {
             case showDetailView(ConfirmedCell.State)
         }
     }
-    
+
     public var body: some ReducerProtocol<State, Action> {
         Scope(state: \.emptyData, action: /Action.emptyData) {
             EmptyDataViewFeature()
         }
-        
+
         Reduce { state, action in
             switch action {
             case .touchedRow(id: let id, action: .touched):
@@ -41,13 +41,13 @@ public struct ConfirmedListFeature: ReducerProtocol {
                     return .none
                 }
                 return .send(.delegate(.showDetailView(selectedData)))
-                
+
             case .delegate:
                 return .none
-                
+
             case .emptyData(.delegate(.makePromise)):
                 return .none
-                
+
             default:
                 return .none
             }
@@ -62,16 +62,17 @@ public struct ConfirmedListFeature: ReducerProtocol {
 
 struct ConfirmedListView: View {
     let store: StoreOf<ConfirmedListFeature>
-    
+
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            
+
             if viewStore.rows.isEmpty {
                 EmptyDataView(store: self.store.scope(
                     state: \.emptyData,
-                    action: ConfirmedListFeature.Action.emptyData)
+                    action: ConfirmedListFeature.Action.emptyData
                 )
-                
+                )
+
             } else {
                 List {
                     ForEachStore(self.store.scope(

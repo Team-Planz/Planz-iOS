@@ -1,6 +1,6 @@
+import Entity
 import Foundation
 import IdentifiedCollections
-import SharedModel
 
 enum WeekDay: CaseIterable, CustomStringConvertible {
     var description: String {

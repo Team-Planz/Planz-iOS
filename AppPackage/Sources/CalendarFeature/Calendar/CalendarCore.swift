@@ -1,6 +1,6 @@
 import ComposableArchitecture
+import Entity
 import Foundation
-import SharedModel
 
 public struct CalendarCore: ReducerProtocol {
     public struct State: Equatable {
