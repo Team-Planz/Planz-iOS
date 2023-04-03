@@ -22,6 +22,7 @@ public struct MakePromiseBottomButton: View {
                         PromiseBackButton(store: store)
                     }
                     PromiseNextButton(store: store)
+                        .disabled(!viewStore.isNextButtonEnable)
                         .onTapGesture {
                             viewStore.send(.nextButtonTapped)
                         }
@@ -45,9 +46,9 @@ public struct PromiseNextButton: View {
             }
             .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0))
             .background(
-                viewStore.selectTheme?.selectedType != nil ?
-                    PDS.COLOR.purple9.scale :
-                    PDS.COLOR.gray3.scale
+                viewStore.isNextButtonEnable
+                    ? PDS.COLOR.purple9.scale
+                    : PDS.COLOR.gray3.scale
             )
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }

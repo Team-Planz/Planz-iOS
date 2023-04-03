@@ -28,13 +28,17 @@ public struct TopInformationView: View {
                         viewStore.send(.dismiss)
                     }) {
                         Image(systemName: PlanzText.xmark.rawValue)
+                            .renderingMode(.template)
+                            .foregroundColor(PDS.COLOR.gray6.scale)
                     }
                     Spacer().frame(width: 20)
                 }
                 HStack {
                     Spacer().frame(width: 20)
-                    Text(PlanzText.themeSelectTitle.rawValue)
-                        .bold()
+                    if let title = viewStore.currentStep?.title {
+                        Text(title)
+                            .bold()
+                    }
                     Spacer()
                 }
             }
@@ -45,5 +49,22 @@ public struct TopInformationView: View {
     enum PlanzText: String {
         case xmark
         case themeSelectTitle = "약속 테마를 선택해 주세요!"
+    }
+}
+
+private extension MakePromiseState.Step {
+    var title: String {
+        switch self {
+        case .selectTheme:
+            return "약속 테마를 선택해 주세요!"
+        case .setNameAndPlace:
+            return "약속명과 장소를 입력해주세요!"
+        case .calendar:
+            return "제안할 약속 날짜를 선택해주세요!"
+        case .timeSelection:
+            return "제안할 약속 시간대를 선택해주세요!"
+        case .timeTable:
+            return "가능한 시간을 선택해주세요!"
+        }
     }
 }

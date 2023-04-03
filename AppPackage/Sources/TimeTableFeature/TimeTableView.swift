@@ -14,7 +14,7 @@ public struct TimeTableState: Equatable {
         public let id: Int
         let date: Date
 
-        init(date: Date) {
+        public init(date: Date) {
             id = date.hashValue
             self.date = date
         }
@@ -40,7 +40,7 @@ public struct TimeTableState: Equatable {
         let isStartTimeVisible: Bool
     }
 
-    let days: [Day]
+    public var days: [Day]
     let startTime: TimeInterval
     let endTime: TimeInterval
     let timeInterval: TimeInterval
@@ -48,12 +48,12 @@ public struct TimeTableState: Equatable {
     let timeRanges: [TimeRange]
     var timeCells: [[TimeCell]]
 
-    init(
-        days: [Day],
-        startTime: TimeInterval,
-        endTime: TimeInterval,
-        timeInterval: TimeInterval,
-        timeMarkerInterval: TimeInterval
+    public init(
+        days: [Day] = [],
+        startTime: TimeInterval = .init(),
+        endTime: TimeInterval = .init(),
+        timeInterval: TimeInterval = .init(),
+        timeMarkerInterval: TimeInterval = .init()
     ) {
         self.days = days
         self.startTime = startTime
@@ -76,6 +76,12 @@ public struct TimeTableState: Equatable {
             repeating: .init(repeating: .deselected, count: timeRanges.count),
             count: days.count
         )
+    }
+
+    public var isTimeSelected: Bool {
+        timeCells
+            .flatMap { $0 }
+            .contains { $0 == .selected }
     }
 }
 

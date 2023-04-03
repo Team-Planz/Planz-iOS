@@ -6,8 +6,10 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import CalendarFeature
 import ComposableArchitecture
 import Foundation
+import TimeTableFeature
 
 public struct MakePromiseEnvironment {
     public init() {}
@@ -22,10 +24,36 @@ public let makePromiseReducer = AnyReducer<MakePromiseState, MakePromiseAction, 
             environment: { _ in SelectThemeEnvironment() }
         ),
     makePromiseSetNameAndPlaceReducer
+        .optional()
         .pullback(
             state: \.setNameAndPlace,
             action: /MakePromiseAction.setNameAndPlace,
             environment: { _ in SetNameAndPlaceEnvironment() }
+        ),
+    AnyReducer { _ in
+        CalendarCore()
+    }
+    .optional()
+    .pullback(
+        state: \.calendar,
+        action: /MakePromiseAction.calendar,
+        environment: { _ in }
+    ),
+    AnyReducer { _ in
+        TimeSelection()
+    }
+    .optional()
+    .pullback(
+        state: \.timeSelection,
+        action: /MakePromiseAction.timeSelection,
+        environment: { _ in }
+    ),
+    timeTableReducer
+        .optional()
+        .pullback(
+            state: \.timeTable,
+            action: /MakePromiseAction.timeTable,
+            environment: { _ in () }
         ),
     AnyReducer { state, action, _ in
         switch action {
@@ -33,7 +61,14 @@ public let makePromiseReducer = AnyReducer<MakePromiseState, MakePromiseAction, 
             return .none
 
         case .nextButtonTapped:
-            if state.isNextButtonEnable() {
+            if case let .calendar(calendarState) = state.currentStep {
+                let days: [TimeTableState.Day] = calendarState.selectedDates.map {
+                    .init(date: $0)
+                }
+                state.timeTable?.days = days
+            }
+
+            if state.isNextButtonEnable {
                 state.moveNextStep()
                 state.updateBackButtonVisibleState()
             }
@@ -47,6 +82,12 @@ public let makePromiseReducer = AnyReducer<MakePromiseState, MakePromiseAction, 
         case let .setNameAndPlace(.filledPromiseName(name)):
             return .none
         case let .setNameAndPlace(.filledPromisePlace(place)):
+            return .none
+        case .calendar:
+            return .none
+        case .timeSelection:
+            return .none
+        case .timeTable:
             return .none
         }
     }
