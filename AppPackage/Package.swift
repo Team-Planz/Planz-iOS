@@ -95,7 +95,10 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "APIClient", package: "Planz-iOS-APIClient")
+                .product(name: "APIClient", package: "Planz-iOS-APIClient"),
+                .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
+                .product(name: "FirebaseFirestore", package: "firebase-ios-sdk"),
+                .product(name: "FirebaseDynamicLinks", package: "firebase-ios-sdk")
             ]
         ),
         .target(
