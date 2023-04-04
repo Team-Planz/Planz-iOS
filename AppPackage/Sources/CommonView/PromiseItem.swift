@@ -1,10 +1,33 @@
-import ComposableArchitecture
 import DesignSystem
 import Entity
 import SwiftUI
 
-public struct PromiseItemCore: ReducerProtocol {
-    public struct State: Equatable {
+public struct PromiseItem: View {
+    let state: State
+
+    public init(state: State) {
+        self.state = state
+    }
+
+    public var body: some View {
+        HStack(spacing: 16) {
+            state.promiseType.image
+                .resizable()
+                .frame(width: 46, height: 46)
+
+            VStack(alignment: .leading, spacing: .zero) {
+                Text(formatter.string(from: state.date))
+
+                Text(state.name)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background { Color.white }
+        }
+    }
+}
+
+public extension PromiseItem {
+    struct State: Equatable {
         let promiseType: PromiseType
         let name: String
         let date: Date
@@ -18,43 +41,6 @@ public struct PromiseItemCore: ReducerProtocol {
             self.name = name
             self.date = date
         }
-    }
-
-    public init() {}
-
-    public enum Action: Equatable {
-        case tapped
-    }
-
-    public var body: some ReducerProtocolOf<Self> {
-        EmptyReducer()
-    }
-}
-
-struct PromiseItem: View {
-    let store: StoreOf<PromiseItemCore>
-    @ObservedObject var viewStore: ViewStoreOf<PromiseItemCore>
-
-    public init(store: StoreOf<PromiseItemCore>) {
-        self.store = store
-        viewStore = ViewStore(store)
-    }
-
-    var body: some View {
-        HStack(spacing: 16) {
-            viewStore.promiseType.image
-                .resizable()
-                .frame(width: 46, height: 46)
-
-            VStack(alignment: .leading, spacing: .zero) {
-                Text(formatter.string(from: viewStore.date))
-
-                Text(viewStore.name)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background { Color.white }
-        }
-        .onTapGesture { viewStore.send(.tapped) }
     }
 }
 
@@ -86,13 +72,10 @@ private let formatter: DateFormatter = {
     struct PromiseItem_Previews: PreviewProvider {
         static var previews: some View {
             PromiseItem(
-                store: .init(
-                    initialState: .init(
-                        promiseType: .meeting,
-                        name: "앱 출시하기",
-                        date: .now
-                    ),
-                    reducer: PromiseItemCore()
+                state: .init(
+                    promiseType: .meeting,
+                    name: "앱 출시하기",
+                    date: .now
                 )
             )
         }

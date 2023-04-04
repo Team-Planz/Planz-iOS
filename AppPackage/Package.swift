@@ -136,6 +136,7 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "CalendarFeature",
+                "CommonView",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
