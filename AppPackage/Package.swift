@@ -142,12 +142,7 @@ let package = Package(
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
             ]
         ),
-        .target(
-            name: "SwiftUIHelper",
-            dependencies: [
-                "DesignSystem"
-            ]
-        ),
+        .target(name: "SwiftUIHelper"),
         .target(name: "Entity")
     ]
 )
