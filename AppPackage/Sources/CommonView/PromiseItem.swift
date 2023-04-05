@@ -17,8 +17,11 @@ public struct PromiseItem: View {
 
             VStack(alignment: .leading, spacing: .zero) {
                 Text(formatter.string(from: state.date))
+                    .foregroundColor(PDS.COLOR.gray5.scale)
+                    .font(.planz(.body12))
 
                 Text(state.name)
+                    .font(.planz(.subtitle14))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .background { Color.white }
@@ -40,6 +43,12 @@ public extension PromiseItem {
             self.promiseType = promiseType
             self.name = name
             self.date = date
+        }
+        
+        public init(promise: Promise) {
+            self.promiseType = promise.type
+            self.name = promise.name
+            self.date = promise.date
         }
     }
 }
