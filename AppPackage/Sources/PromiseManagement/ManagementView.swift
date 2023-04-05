@@ -42,6 +42,7 @@ public struct PromiseManagement: ReducerProtocol {
         case confirmedTab(ConfirmedListFeature.Action)
         case closeDetailButtonTapped
         case standbyFetchAllResponse([StandbyCell.State])
+        case confirmedFetchAllResponse([ConfirmedCell.State])
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -54,32 +55,14 @@ public struct PromiseManagement: ReducerProtocol {
                 state.standbyTab = StandbyListFeature.State(rows: rows)
                 return .none
 
-            case .onAppear:
-                return .task {
-                    try .standbyFetchAllResponse(
-                        await APIClient.mock
-                            .request(route: .promising(.fetchAll), as: SharedModels.PromisingTimeStamps.self)
-                            .promisingTimeStamps
-                            .map { StandbyCell.State(
-                                id: UUID(uuidString: String($0.id)) ?? UUID(),
-                                title: $0.promisingName,
-                                role:
-                                $0.isOwner
-                                    ? RoleType.leader
-                                    : RoleType.general,
-                                members: $0.members.map(\.name),
+            case let .confirmedFetchAllResponse(result):
+                let rows = IdentifiedArrayOf(uniqueElements: result)
+                state.confirmedTab = ConfirmedListFeature.State(rows: rows)
+                return .none
 
-                                startDate: $0.startDate,
-                                endDate: $0.endDate,
-                                category: StandbyCell.State.Category(
-                                    id: $0.category.id,
-                                    keyword: $0.category.keyword,
-                                    type: $0.category.keyword
-                                ),
-                                placeName: $0.placeName
-                            )
-                            }
-                    )
+            case .onAppear:
+                return .run { send in
+                    await self.initializeAPIRequest(send: send)
                 }
 
             case let .confirmedTab(.delegate(action)):
@@ -126,6 +109,58 @@ public struct PromiseManagement: ReducerProtocol {
         Scope(state: \.confirmedTab, action: /Action.confirmedTab) {
             ConfirmedListFeature()
         }
+    }
+
+    private func initializeAPIRequest(send: Send<Action>) async {
+        do {
+            // ERROR: - 확정약속 mock 데이터가 정의되지 않아서 에러 발생
+//            try await APIClient.mock.request(route: .promise(.fetchAll(.user)))
+
+            async let confirmedFetchResponse: Void = send(.confirmedFetchAllResponse(
+                await APIClient.mock.request(route: .promising(.fetchAll), as: SharedModels.PromisingTimeStamps.self)
+                    .promisingTimeStamps
+                    .map {
+                        ConfirmedCell.State(
+                            id: UUID(uuidString: String($0.id)) ?? UUID(),
+                            title: $0.promisingName,
+                            role: $0.isOwner
+                                ? RoleType.leader
+                                : RoleType.general,
+                            leaderName: $0.owner.name,
+                            replyPeopleCount: $0.members.count,
+                            theme: $0.category.type,
+                            date: $0.startDate.toString(),
+                            place: $0.placeName,
+                            participants: $0.members.map(\.name)
+                        )
+                    }
+            ))
+
+            async let standbyFetchResponse: Void = try send(.standbyFetchAllResponse(
+                await APIClient.mock.request(route: .promising(.fetchAll), as: SharedModels.PromisingTimeStamps.self)
+                    .promisingTimeStamps
+                    .map { StandbyCell.State(
+                        id: UUID(uuidString: String($0.id)) ?? UUID(),
+                        title: $0.promisingName,
+                        role:
+                        $0.isOwner
+                            ? RoleType.leader
+                            : RoleType.general,
+                        members: $0.members.map(\.name),
+                        startDate: $0.startDate,
+                        endDate: $0.endDate,
+                        category: StandbyCell.State.Category(
+                            id: $0.category.id,
+                            keyword: $0.category.keyword,
+                            type: $0.category.keyword
+                        ),
+                        placeName: $0.placeName
+                    )
+                    }
+            ))
+
+            let _ = try await (standbyFetchResponse, confirmedFetchResponse)
+        } catch {}
     }
 }
 
