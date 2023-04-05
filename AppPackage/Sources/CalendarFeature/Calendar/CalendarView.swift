@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import DesignSystem
+import Entity
 import Introspect
 import SwiftUI
 
@@ -141,8 +142,8 @@ public struct CalendarView: View {
                 .padding(.trailing, 16)
                 .opacity(
                     leftButtonVisible
-                    ? .zero
-                    : 1
+                        ? .zero
+                        : 1
                 )
 
                 Text(viewStore.selectedMonth.yearMonthString)
@@ -212,8 +213,8 @@ public struct CalendarView: View {
             .introspectScrollView {
                 $0.isPagingEnabled = true
                 $0.isScrollEnabled = type == .promise
-                ? false
-                : true
+                    ? false
+                    : true
             }
             .onReceive(viewStore.publisher.selectedMonth) { id in
                 scrollViewProxy.scrollTo(id, anchor: .leading)
