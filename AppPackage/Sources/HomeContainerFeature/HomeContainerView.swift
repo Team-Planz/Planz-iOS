@@ -4,6 +4,8 @@ import HomeFeature
 import MakePromise
 import SwiftUI
 import SwiftUINavigation
+import CommonView
+import Entity
 
 public struct HomeContainerView: View {
     let store: StoreOf<HomeContainerCore>
@@ -48,6 +50,35 @@ public struct HomeContainerView: View {
                 action: HomeContainerCore.DestinationAction.makePromise,
                 destination: MakePromiseView.init
             )
+            .sheet(
+                store: store
+                    .scope(
+                        state: \.$destinationState,
+                        action: HomeContainerCore.Action.destination
+                    ),
+                state: /HomeContainerCore.DestinationState.promiseList,
+                action: HomeContainerCore.DestinationAction.promiseList
+            ) { store in
+                ZStack {
+                    PromiseListView(store: store)
+                        .presentationDetents(
+                            viewStore.detents,
+                            selection: viewStore
+                                .binding(
+                                    get: \.selectedDetent,
+                                    send: { _ in
+                                        .destination(.presented(.promiseList(.deSelectPromise)))
+                                    }
+                                )
+                        )
+                        .opacity(viewStore.selectedDetent == .large ? .zero : 1)
+                    
+                    if let selectedPromise = viewStore.selectedPromise {
+                        PromiseDetailView(state: .init(promise: selectedPromise))
+                                .opacity(viewStore.selectedDetent == .large ? 1 : .zero)
+                    }
+                }
+            }
         }
     }
 
@@ -69,6 +100,38 @@ public struct HomeContainerView: View {
         case .promiseManagement:
             Text("Promise")
         }
+    }
+}
+
+private extension HomeContainerCore.State {
+    var selectedPromise: Promise? {
+        guard
+            let destinationState,
+            let state = (/HomeContainerCore.DestinationState.promiseList).extract(from: destinationState),
+            let promise = state.selectedPromise
+        else { return nil }
+        
+        return promise
+    }
+    
+    var detents: Set<PresentationDetent> {
+        guard
+            let destinationState,
+            let state = (/HomeContainerCore.DestinationState.promiseList).extract(from: destinationState),
+            state.selectedPromise != nil
+        else { return [.medium] }
+
+        return [.large, .medium]
+    }
+
+    var selectedDetent: PresentationDetent {
+        guard
+            let destinationState,
+            let state = (/HomeContainerCore.DestinationState.promiseList).extract(from: destinationState),
+            state.selectedPromise != nil
+        else { return .medium }
+
+        return .large
     }
 }
 

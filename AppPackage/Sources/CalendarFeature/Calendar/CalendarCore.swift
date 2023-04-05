@@ -37,7 +37,7 @@ public struct CalendarCore: ReducerProtocol {
         case createMonthStateList(type: CalendarType, range: CalendarClient.DateRange)
         case updateMonthStateList(CalendarClient.DateRange, TaskResult<[MonthState]>)
         case month(id: MonthCore.State.ID, action: MonthCore.Action)
-        case promiseTapped(Promise.ID)
+        case promiseTapped(Date, Promise.ID)
         case overSelection
         case binding(BindingAction<State>)
     }
