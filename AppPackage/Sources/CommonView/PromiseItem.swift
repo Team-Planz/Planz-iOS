@@ -44,11 +44,11 @@ public extension PromiseItem {
             self.name = name
             self.date = date
         }
-        
+
         public init(promise: Promise) {
-            self.promiseType = promise.type
-            self.name = promise.name
-            self.date = promise.date
+            promiseType = promise.type
+            name = promise.name
+            date = promise.date
         }
     }
 }

@@ -99,16 +99,16 @@ private extension Date {
 #if DEBUG
 struct PromiseListView_Previews: PreviewProvider {
     static var previews: some View {
-        ZStack { }
+        ZStack {}
             .sheet(isPresented: .constant(true)) {
                 PromiseListView(
                     store: .init(
                         initialState: .init(
                             date: .now,
                             promiseList: [
-                                .init(type: .etc, date: .now, name: "돼지파티 약속"),
-                                .init(type: .etc, date: .now, name: "ABC1"),
-                                .init(type: .etc, date: .now, name: "ABC2")
+                                .init(type: .etc, date: .now, name: "돼지파티 약속", place: "", participants: []),
+                                .init(type: .etc, date: .now, name: "ABC1", place: "", participants: []),
+                                .init(type: .etc, date: .now, name: "ABC2", place: "", participants: [])
                             ]
                         ),
                         reducer: PromiseListCore()

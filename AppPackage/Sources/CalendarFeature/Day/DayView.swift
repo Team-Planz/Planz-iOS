@@ -150,17 +150,23 @@ private extension Color {
                                 .init(
                                     type: .meal,
                                     date: .today,
-                                    name: "앱 출시하기"
+                                    name: "앱 출시하기",
+                                    place: "",
+                                    participants: []
                                 ),
                                 .init(
                                     type: .meal,
                                     date: .today,
-                                    name: "앱 출시하기"
+                                    name: "앱 출시하기",
+                                    place: "",
+                                    participants: []
                                 ),
                                 .init(
                                     type: .meal,
                                     date: .today,
-                                    name: "앱 출시하기"
+                                    name: "앱 출시하기",
+                                    place: "",
+                                    participants: []
                                 )
                             ],
                             isFaded: false,

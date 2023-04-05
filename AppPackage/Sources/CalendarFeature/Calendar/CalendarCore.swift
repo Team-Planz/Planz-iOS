@@ -20,6 +20,10 @@ public struct CalendarCore: ReducerProtocol {
             self.selectedMonth = selectedMonth
             self.selectedDates = selectedDates
         }
+
+        public subscript(_ date: Date) -> Day? {
+            monthList[id: selectedMonth]?[date]
+        }
     }
 
     public enum Action: BindableAction, Equatable {
@@ -274,20 +278,20 @@ private extension CalendarType {
             let todayIndex = unwrappedItem[currentMonthIndex].dayStateList
                 .firstIndex(where: { $0.id == .today }) ?? .zero
             unwrappedItem[currentMonthIndex].dayStateList[0].day.promiseList = [
-                .init(type: .meeting, date: .today, name: "모각코 🙌"),
-                .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),
-                .init(type: .meal, date: .today, name: "돼지파티 약속 🐷")
+                .init(type: .meeting, date: .today, name: "모각코 🙌", place: "", participants: []),
+                .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌", place: "", participants: []),
+                .init(type: .meal, date: .today, name: "돼지파티 약속 🐷", place: "", participants: [])
             ]
 
             unwrappedItem[currentMonthIndex].dayStateList[todayIndex].day.promiseList = [
-                .init(type: .meeting, date: .today, name: "모각코 🙌"),
-                .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌"),
-                .init(type: .meal, date: .today, name: "돼지파티 약속 🐷"),
-                .init(type: .meeting, date: .today, name: "애플 로그인 약속 🍎"),
-                .init(type: .etc, date: .today, name: "🫥 🤠 🫥"),
-                .init(type: .etc, date: .today, name: "🫥 🤠 🫥"),
-                .init(type: .etc, date: .today, name: "🫥 🤠 🫥"),
-                .init(type: .etc, date: .today, name: "🫥 🤠 🫥")
+                .init(type: .meeting, date: .today, name: "모각코 🙌", place: "", participants: []),
+                .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌", place: "", participants: []),
+                .init(type: .meal, date: .today, name: "돼지파티 약속 🐷", place: "", participants: []),
+                .init(type: .meeting, date: .today, name: "애플 로그인 약속 🍎", place: "", participants: []),
+                .init(type: .etc, date: .today, name: "🫥 🤠 🫥", place: "", participants: []),
+                .init(type: .etc, date: .today, name: "🫥 🤠 🫥", place: "", participants: []),
+                .init(type: .etc, date: .today, name: "🫥 🤠 🫥", place: "", participants: []),
+                .init(type: .etc, date: .today, name: "🫥 🤠 🫥", place: "", participants: [])
             ]
             result
                 .append(
