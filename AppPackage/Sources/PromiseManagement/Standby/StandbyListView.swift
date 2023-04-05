@@ -82,9 +82,9 @@ struct StandbyListView: View {
 
 extension IdentifiedArray where ID == StandbyCell.State.ID, Element == StandbyCell.State {
     static let mock: Self = [
-        StandbyCell.State(id: UUID(), title: "약속1", role: .general, members: ["여윤정", "한지희", "김세현", "조하은", "일리윤", "이은정", "강빛나"], startDate: .now, endDate: .now + 3600, category: .init(id: 0, keyword: "keyword", type: "type"), placeName: "강남"),
-        StandbyCell.State(id: UUID(), title: "약속2", role: .general, members: ["여윤정", "한지희", "김세현", "조하은"], startDate: .now, endDate: .now + 3600, category: .init(id: 0, keyword: "keyword", type: "type"), placeName: "홍대입구역"),
-        StandbyCell.State(id: UUID(), title: "약속3", role: .general, members: ["한지희", "김세현", "이은정", "강빛나"], startDate: .now, endDate: .now + 3600, category: .init(id: 0, keyword: "keyword", type: "type"), placeName: "여의도")
+        StandbyCell.State(id: 0, title: "약속1", role: .general, members: ["여윤정", "한지희", "김세현", "조하은", "일리윤", "이은정", "강빛나"], startDate: .now, endDate: .now + 3600, category: .init(id: 0, keyword: "keyword", type: "type"), placeName: "강남"),
+        StandbyCell.State(id: 1, title: "약속2", role: .general, members: ["여윤정", "한지희", "김세현", "조하은"], startDate: .now, endDate: .now + 3600, category: .init(id: 0, keyword: "keyword", type: "type"), placeName: "홍대입구역"),
+        StandbyCell.State(id: 2, title: "약속3", role: .general, members: ["한지희", "김세현", "이은정", "강빛나"], startDate: .now, endDate: .now + 3600, category: .init(id: 0, keyword: "keyword", type: "type"), placeName: "여의도")
     ]
 }
 

@@ -69,7 +69,7 @@ public struct PromiseManagement: ReducerProtocol {
                 switch action {
                 case let .showDetailView(item):
                     state.detailItem = PromiseDetailView.State(
-                        id: item.id,
+                        id: UUID(uuidString: String(item.id)) ?? UUID(),
                         title: item.title,
                         theme: item.theme,
 
@@ -89,7 +89,7 @@ public struct PromiseManagement: ReducerProtocol {
                 switch action {
                 case let .showDetailView(item):
                     state.detailItem = PromiseDetailView.State(
-                        id: item.id,
+                        id: UUID(uuidString: String(item.id)) ?? UUID(),
                         title: item.title,
                         theme: "테마",
                         date: .now,
@@ -121,7 +121,7 @@ public struct PromiseManagement: ReducerProtocol {
                     .promisingTimeStamps
                     .map {
                         ConfirmedCell.State(
-                            id: UUID(uuidString: String($0.id)) ?? UUID(),
+                            id: $0.id,
                             title: $0.promisingName,
                             role: $0.isOwner
                                 ? RoleType.leader
@@ -140,7 +140,7 @@ public struct PromiseManagement: ReducerProtocol {
                 await APIClient.mock.request(route: .promising(.fetchAll), as: SharedModels.PromisingTimeStamps.self)
                     .promisingTimeStamps
                     .map { StandbyCell.State(
-                        id: UUID(uuidString: String($0.id)) ?? UUID(),
+                        id: $0.id,
                         title: $0.promisingName,
                         role:
                         $0.isOwner

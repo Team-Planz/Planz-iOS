@@ -11,7 +11,7 @@ import SwiftUI
 
 public struct StandbyCell: ReducerProtocol {
     public struct State: Equatable, Identifiable {
-        public let id: UUID
+        public let id: Int
         let title: String
         let role: RoleType
         let members: [String]
@@ -33,7 +33,7 @@ public struct StandbyCell: ReducerProtocol {
         }
 
         public init(
-            id: UUID,
+            id: Int,
             title: String,
             role: RoleType,
             members: [String],
@@ -121,7 +121,7 @@ struct StandbyCellView_Previews: PreviewProvider {
         StandbyCellView(store: Store(
             initialState:
             StandbyCell.State(
-                id: UUID(),
+                id: 0,
                 title: "가나다라마바사아자차카파타하이",
                 role: .leader,
                 members: ["김세현", "한지희", "여윤정", "조하은", "이은희", "조운", "나세리", "도진우", "민지혜"],
