@@ -18,12 +18,12 @@ public struct PromiseManagement: ReducerProtocol {
         @BindingState var visibleTab: Tab = .standby
         var confirmedTab = ConfirmedListFeature.State()
         var standbyTab = StandbyListFeature.State()
-        @PresentationState var detailItem: PromiseDetailFeature.State?
+        @BindingState var detailItem: PromiseDetailView.State?
 
         public init(
             standbyRows: IdentifiedArrayOf<StandbyCell.State> = [],
             confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = [],
-            detailItem: PromiseDetailFeature.State? = nil
+            detailItem: PromiseDetailView.State? = nil
         ) {
             standbyTab = StandbyListFeature.State(rows: standbyRows)
             confirmedTab = ConfirmedListFeature.State(rows: confirmedRows)
@@ -36,7 +36,6 @@ public struct PromiseManagement: ReducerProtocol {
         case onAppear
         case standbyTab(StandbyListFeature.Action)
         case confirmedTab(ConfirmedListFeature.Action)
-        case detailItem(PresentationAction<PromiseDetailFeature.Action>)
         case closeDetailButtonTapped
     }
 
@@ -50,11 +49,11 @@ public struct PromiseManagement: ReducerProtocol {
                     standbyRows: .mock,
                     confirmedRows: .mock,
                     detailItem:
-                    PromiseDetailFeature.State(
+                    PromiseDetailView.State(
                         id: UUID(),
                         title: "약속명",
                         theme: "여행",
-                        date: "2023",
+                        date: .now,
                         place: "강남",
                         participants: ["정인혜", "이은영"]
                     )
@@ -65,11 +64,14 @@ public struct PromiseManagement: ReducerProtocol {
             case let .confirmedTab(.delegate(action)):
                 switch action {
                 case let .showDetailView(item):
-                    state.detailItem = PromiseDetailFeature.State(
+                    state.detailItem = PromiseDetailView.State(
                         id: item.id,
                         title: item.title,
                         theme: item.theme,
-                        date: item.date,
+
+                        // MARK: - TODO must fix it
+
+                        date: .now,
                         place: item.place,
                         participants: item.participants
                     )
@@ -82,18 +84,16 @@ public struct PromiseManagement: ReducerProtocol {
             case let .standbyTab(.delegate(action)):
                 switch action {
                 case let .showDetailView(item):
-                    state.detailItem = PromiseDetailFeature.State(
+                    state.detailItem = PromiseDetailView.State(
                         id: item.id,
                         title: item.title,
                         theme: "테마",
-                        date: "5월 1일 오후 3시",
+                        date: .now,
                         place: "강남역",
                         participants: item.names
                     )
                     return .none
                 }
-            case let .detailItem(.presented(action)):
-                return .none
 
             default:
                 return .none
@@ -104,9 +104,6 @@ public struct PromiseManagement: ReducerProtocol {
         }
         Scope(state: \.confirmedTab, action: /Action.confirmedTab) {
             ConfirmedListFeature()
-        }
-        .ifLet(\.$detailItem, action: /Action.detailItem) {
-            PromiseDetailFeature()
         }
     }
 }
@@ -162,13 +159,11 @@ public struct ManagementView: View {
                         }
                     }
                     .onAppear { viewStore.send(.onAppear) }
-                    .fullScreenCover(store: self.store.scope(
-                        state: \.$detailItem,
-                        action: PromiseManagement.Action.detailItem
-                    )
-                    ) { store in
+                    .fullScreenCover(
+                        unwrapping: viewStore.binding(\.$detailItem)
+                    ) { state in
                         NavigationStack {
-                            PromiseDetailView(store: store)
+                            PromiseDetailView(state: state.wrappedValue)
                                 .toolbar {
                                     ToolbarItem {
                                         Button {
@@ -195,11 +190,11 @@ struct ManagementView_Previews: PreviewProvider {
                 standbyRows: .mock,
                 confirmedRows: .mock,
                 detailItem:
-                PromiseDetailFeature.State(
+                PromiseDetailView.State(
                     id: UUID(),
                     title: "약속명",
                     theme: "여행",
-                    date: "2023",
+                    date: .now,
                     place: "강남",
                     participants: ["정인혜", "이은영"]
                 )
