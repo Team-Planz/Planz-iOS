@@ -1,5 +1,6 @@
 import CalendarFeature
 import ComposableArchitecture
+import Entity
 import Foundation
 
 public struct HomeCore: ReducerProtocol {

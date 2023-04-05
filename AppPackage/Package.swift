@@ -13,7 +13,8 @@ let package = Package(
                 "MakePromise",
                 "PromiseManagement",
                 "LoginFeature",
-                "SwiftUIHelper"
+                "SwiftUIHelper",
+                "Entity"
             ]
         ),
         .library(
@@ -83,6 +84,7 @@ let package = Package(
             name: "CalendarFeature",
             dependencies: [
                 "DesignSystem",
+                "Entity",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
             ]
@@ -134,14 +136,13 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "CalendarFeature",
+                "CommonView",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
             ]
         ),
-        .target(
-            name: "SwiftUIHelper",
-            dependencies: []
-        )
+        .target(name: "SwiftUIHelper"),
+        .target(name: "Entity")
     ]
 )

@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import Entity
 import Foundation
 
 public struct CalendarCore: ReducerProtocol {
@@ -193,7 +194,7 @@ public struct CalendarCore: ReducerProtocol {
                     else { return .none }
                     let value = ((count / 7) - 1) * 7
                     let relatedRange = (range.lowerBound + value) ... (range.upperBound + value)
-                    
+
                     return .merge(
                         .send(
                             .month(
@@ -229,7 +230,7 @@ public struct CalendarCore: ReducerProtocol {
                 monthState.selectedDates
                     .forEach { state.selectedDates.insert($0) }
                 print("🐶", state.selectedDates.sorted())
-                
+
                 return .none
 
             case .month, .overSelection, .binding, .promiseTapped:
