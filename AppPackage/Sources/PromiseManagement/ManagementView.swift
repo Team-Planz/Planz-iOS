@@ -6,6 +6,8 @@
 //  Copyright © 2023 Team-Planz. All rights reserved.
 //
 
+import APIClient
+import APIClientLive
 import CommonView
 import ComposableArchitecture
 import DesignSystem
@@ -13,6 +15,8 @@ import SwiftUI
 
 public struct PromiseManagement: ReducerProtocol {
     public init() {}
+
+    @Dependency(\.apiClient) var apiClient
 
     public struct State: Equatable {
         @BindingState var visibleTab: Tab = .standby
@@ -37,6 +41,7 @@ public struct PromiseManagement: ReducerProtocol {
         case standbyTab(StandbyListFeature.Action)
         case confirmedTab(ConfirmedListFeature.Action)
         case closeDetailButtonTapped
+        case standbyFetchAllResponse([StandbyCell.State])
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -44,22 +49,38 @@ public struct PromiseManagement: ReducerProtocol {
 
         Reduce { state, action in
             switch action {
-            case .onAppear:
-                state = .init(
-                    standbyRows: .mock,
-                    confirmedRows: .mock,
-                    detailItem:
-                    PromiseDetailView.State(
-                        id: UUID(),
-                        title: "약속명",
-                        theme: "여행",
-                        date: .now,
-                        place: "강남",
-                        participants: ["정인혜", "이은영"]
-                    )
-                )
-
+            case let .standbyFetchAllResponse(result):
+                let rows = IdentifiedArrayOf(uniqueElements: result)
+                state.standbyTab = StandbyListFeature.State(rows: rows)
                 return .none
+
+            case .onAppear:
+                return .task {
+                    try .standbyFetchAllResponse(
+                        await APIClient.mock
+                            .request(route: .promising(.fetchAll), as: SharedModels.PromisingTimeStamps.self)
+                            .promisingTimeStamps
+                            .map { StandbyCell.State(
+                                id: UUID(uuidString: String($0.id)) ?? UUID(),
+                                title: $0.promisingName,
+                                role:
+                                $0.isOwner
+                                    ? RoleType.leader
+                                    : RoleType.general,
+                                members: $0.members.map(\.name),
+
+                                startDate: $0.startDate,
+                                endDate: $0.endDate,
+                                category: StandbyCell.State.Category(
+                                    id: $0.category.id,
+                                    keyword: $0.category.keyword,
+                                    type: $0.category.keyword
+                                ),
+                                placeName: $0.placeName
+                            )
+                            }
+                    )
+                }
 
             case let .confirmedTab(.delegate(action)):
                 switch action {
@@ -90,7 +111,7 @@ public struct PromiseManagement: ReducerProtocol {
                         theme: "테마",
                         date: .now,
                         place: "강남역",
-                        participants: item.names
+                        participants: item.members
                     )
                     return .none
                 }

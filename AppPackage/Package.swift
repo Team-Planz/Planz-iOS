@@ -111,7 +111,8 @@ let package = Package(
                 "DesignSystem",
                 "CommonView",
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "APIClient", package: "Planz-iOS-APIClient")
             ]
         ),
         .target(
