@@ -1,5 +1,6 @@
 import CalendarFeature
 import CasePaths
+import CommonView
 import ComposableArchitecture
 import Foundation
 import HomeFeature
@@ -36,22 +37,24 @@ public struct HomeContainerCore: ReducerProtocol {
 
     public enum DestinationState: Equatable {
         case makePromise(MakePromiseState)
+        case promiseList(PromiseListCore.State)
     }
 
     public enum DestinationAction: Equatable {
         case makePromise(MakePromiseAction)
+        case promiseList(PromiseListCore.Action)
     }
 
     public init() {}
 
-    public var body: some ReducerProtocol<State, Action> {
+    public var body: some ReducerProtocolOf<Self> {
         Scope(
             state: \.homeState,
             action: /HomeContainerCore.Action.home,
             child: HomeCore.init
         )
 
-        Reduce { state, action in
+        Reduce<State, Action> { state, action in
             switch action {
             case let .selectedTabChanged(tab: tab):
                 if case .makePromise = tab {
@@ -61,14 +64,64 @@ public struct HomeContainerCore: ReducerProtocol {
                 }
 
                 return .none
-
-            case .home:
+                
+            case let .home(action: .rowTapped(date)):
+                guard
+                    let day = state.homeState.calendar[date],
+                    let firstIndex = day.promiseList.firstIndex(where: { $0.date == date })
+                else { return .none }
+                state.destinationState = .promiseList(
+                    .init(
+                        date: day.id,
+                        promiseList: .init(uniqueElements: day.promiseList),
+                        selectedPromise: day.promiseList[firstIndex]
+                    )
+                )
+                
+                return .none
+                
+            case let .home(action: .calendar(action: .promiseTapped(date, id))):
+                guard
+                    let day = state.homeState.calendar[date],
+                    let firstIndex = day.promiseList.firstIndex(where: { $0.id == id })
+                else { return .none }
+                state.destinationState = .promiseList(
+                    .init(
+                        date: day.id,
+                        promiseList: .init(uniqueElements: day.promiseList),
+                        selectedPromise: day.promiseList[firstIndex]
+                    )
+                )
                 return .none
 
-            case .destination(.presented(.makePromise(.dismiss))):
+            case let .home(
+                action: .calendar(
+                    action: .month(
+                        id: _,
+                        action: .delegate(
+                            action: .day(
+                                id: dayID,
+                                action: .tapped
+                            )
+                        )
+                    )
+                )
+            ):
+                let itemList = state.homeState.calendar[dayID]?.promiseList ?? []
+                state.destinationState = .promiseList(
+                    .init(
+                        date: dayID,
+                        promiseList: .init(uniqueElements: itemList)
+                    )
+                )
+
+                return .none
+
+            case .destination(.presented(.makePromise(.dismiss))),
+                 .destination(.presented(.promiseList(.delegate(.dismiss)))):
                 return .send(.destination(.dismiss))
 
-            case .destination:
+            case .destination, .home:
                 return .none
             }
         }
@@ -82,6 +135,12 @@ public struct HomeContainerCore: ReducerProtocol {
                         environment: .init()
                     )
                 }
+            )
+
+            Scope(
+                state: /DestinationState.promiseList,
+                action: /DestinationAction.promiseList,
+                child: PromiseListCore.init
             )
         }
     }

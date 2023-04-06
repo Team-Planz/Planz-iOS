@@ -127,6 +127,7 @@ let package = Package(
                 "MakePromise",
                 "HomeFeature",
                 "CalendarFeature",
+                "SwiftUIHelper",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation")
             ]

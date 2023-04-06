@@ -8,6 +8,7 @@
 import DesignSystem
 import SwiftUI
 import SwiftUIHelper
+import Entity
 
 // MARK: - ConfirmedDetailView
 
@@ -109,6 +110,15 @@ public extension PromiseDetailView {
             self.date = date
             self.place = place
             self.participants = participants
+        }
+        
+        public init(promise: Promise) {
+            self.id = promise.id
+            self.title = promise.name
+            self.theme = promise.type.description
+            self.date = promise.date
+            self.place = promise.place
+            self.participants = promise.participants
         }
     }
 }
