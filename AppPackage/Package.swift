@@ -48,7 +48,9 @@ let package = Package(
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
         .package(url: "https://github.com/Team-Planz/Planz-iOS-APIClient.git", branch: "main"),
         .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "0.6.1"),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "8.10.0")
+        .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "8.10.0"),
+        .package(url: "https://github.com/kakao/kakao-ios-sdk.git", from: "2.14.0"),
+        .package(url: "https://github.com/Team-Planz/Planz-iOS-Secrets", branch: "main")
     ],
     targets: [
         .target(
@@ -98,7 +100,9 @@ let package = Package(
                 .product(name: "APIClient", package: "Planz-iOS-APIClient"),
                 .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseFirestore", package: "firebase-ios-sdk"),
-                .product(name: "FirebaseDynamicLinks", package: "firebase-ios-sdk")
+                .product(name: "FirebaseDynamicLinks", package: "firebase-ios-sdk"),
+                .product(name: "KakaoSDK", package: "kakao-ios-sdk"),
+                .product(name: "Planz-iOS-Secrets", package: "Planz-iOS-Secrets")
             ]
         ),
         .target(
