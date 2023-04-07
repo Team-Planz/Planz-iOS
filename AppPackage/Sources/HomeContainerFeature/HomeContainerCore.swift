@@ -64,7 +64,7 @@ public struct HomeContainerCore: ReducerProtocol {
                 }
 
                 return .none
-                
+
             case let .home(action: .rowTapped(date)):
                 guard
                     let day = state.homeState.calendar[date],
@@ -77,9 +77,9 @@ public struct HomeContainerCore: ReducerProtocol {
                         selectedPromise: day.promiseList[firstIndex]
                     )
                 )
-                
+
                 return .none
-                
+
             case let .home(action: .calendar(action: .promiseTapped(date, id))):
                 guard
                     let day = state.homeState.calendar[date],

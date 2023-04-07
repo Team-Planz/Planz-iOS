@@ -36,7 +36,7 @@ public struct PromiseTimeDetailView: View {
                                 ResponseModalView(title: "런치런치", attendee: "손흥민, 이강인, 오인규, 조규성")
                                     .animation(.easeOut)
                                     .transition(.move(edge: .bottom))
-                                    .shadow(radius: 10, x: 0, y: 0)
+                                    .shadow(radius: 6, x: 0, y: 0)
                                     .mask(Rectangle().padding(.top, -20))
                             }
                         }

@@ -12,32 +12,32 @@ public struct PromiseListCore: ReducerProtocol {
         var promiseList: IdentifiedArrayOf<Promise>
         var selectedPromise: Promise?
     }
-    
+
     public enum Action: Equatable {
         public enum Delegate: Equatable {
             case dismiss
         }
-        
+
         case rowTapped(Promise.ID)
         case closeButtonTapped
         case deSelectPromise
         case delegate(Delegate)
     }
-    
+
     public var body: some ReducerProtocolOf<Self> {
         Reduce { state, action in
             switch action {
             case let .rowTapped(id):
                 state.selectedPromise = state.promiseList[id: id]
                 return .none
-                
+
             case .closeButtonTapped:
                 return .send(.delegate(.dismiss))
-                
+
             case .deSelectPromise:
                 state.selectedPromise = nil
                 return .none
-                
+
             case .delegate:
                 return .none
             }
@@ -48,12 +48,12 @@ public struct PromiseListCore: ReducerProtocol {
 struct PromiseListView: View {
     let store: StoreOf<PromiseListCore>
     @ObservedObject var viewStore: ViewStoreOf<PromiseListCore>
-    
+
     init(store: StoreOf<PromiseListCore>) {
         self.store = store
         viewStore = ViewStore(store)
     }
-    
+
     var body: some View {
         VStack(spacing: .zero) {
             HStack {
@@ -61,7 +61,7 @@ struct PromiseListView: View {
                     .foregroundColor(PDS.COLOR.gray8.scale)
                     .font(.planz(.body12))
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
+
                 Button(action: { viewStore.send(.closeButtonTapped) }) {
                     PDS.Icon.close.image
                         .resizable()
@@ -70,7 +70,7 @@ struct PromiseListView: View {
                 }
                 .padding(.vertical, 24)
             }
-            
+
             ScrollView(showsIndicators: false) {
                 ForEach(viewStore.promiseList) { promise in
                     PromiseItem(state: .init(promise: promise))
@@ -78,7 +78,7 @@ struct PromiseListView: View {
                 }
             }
             .hidden(viewStore.promiseList.isEmpty)
-            
+
             Text(Resource.Text.emptyPromiseList)
                 .foregroundColor(PDS.COLOR.gray5.scale)
                 .font(.planz(.body16))
@@ -111,24 +111,24 @@ private extension Date {
 }
 
 #if DEBUG
-struct PromiseListView_Previews: PreviewProvider {
-    static var previews: some View {
-        ZStack {}
-            .sheet(isPresented: .constant(true)) {
-                PromiseListView(
-                    store: .init(
-                        initialState: .init(
-                            date: .now,
-                            promiseList: [
-                                .init(type: .etc, date: .now, name: "돼지파티 약속", place: "", participants: []),
-                                .init(type: .etc, date: .now, name: "ABC1", place: "", participants: []),
-                                .init(type: .etc, date: .now, name: "ABC2", place: "", participants: [])
-                            ]
-                        ),
-                        reducer: PromiseListCore()
+    struct PromiseListView_Previews: PreviewProvider {
+        static var previews: some View {
+            ZStack {}
+                .sheet(isPresented: .constant(true)) {
+                    PromiseListView(
+                        store: .init(
+                            initialState: .init(
+                                date: .now,
+                                promiseList: [
+                                    .init(type: .etc, date: .now, name: "돼지파티 약속", place: "", participants: []),
+                                    .init(type: .etc, date: .now, name: "ABC1", place: "", participants: []),
+                                    .init(type: .etc, date: .now, name: "ABC2", place: "", participants: [])
+                                ]
+                            ),
+                            reducer: PromiseListCore()
+                        )
                     )
-                )
-            }
+                }
+        }
     }
-}
 #endif
