@@ -151,7 +151,7 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "TimeTableFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         )
     ]
