@@ -14,8 +14,8 @@ import FirebaseFirestore
 import Foundation
 import KakaoSDKShare
 import KakaoSDKTemplate
-import UIKit
 import Planz_iOS_Secrets
+import UIKit
 
 public struct SharePromiseFeature: ReducerProtocol {
     public init() {}
@@ -50,8 +50,8 @@ public struct SharePromiseFeature: ReducerProtocol {
 
     func shareViaKakao(url _: String) {
         if ShareApi.isKakaoTalkSharingAvailable() {
-            //TODO: 이전 화면에서 전달해주는 id 값에 맞춰서 공유 링크의 파라미터로 추가하도록 수정 필요
-            ShareApi.shared.shareCustom(templateId: Int(Secrets.Kakao.templateId.value)!, templateArgs: ["": ""]) { linkResult, error in
+            // TODO: 이전 화면에서 전달해주는 id 값에 맞춰서 공유 링크의 파라미터로 추가하도록 수정 필요
+            ShareApi.shared.shareCustom(templateId: Int64(Secrets.Kakao.templateId.value)!, templateArgs: ["": ""]) { linkResult, error in
                 if let error = error {
                     print("error : \(error)")
                 } else {

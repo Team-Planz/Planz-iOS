@@ -2,9 +2,9 @@ import AppFeature
 import ComposableArchitecture
 import Firebase
 import KakaoSDKCommon
+import Planz_iOS_Secrets
 import ShareFeature
 import SwiftUI
-import Planz_iOS_Secrets
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_: UIApplication,

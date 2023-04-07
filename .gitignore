@@ -1,3 +1,6 @@
+## xcconfig hide
+*.xcconfig
+
 ## User settings
 xcuserdata/
  
