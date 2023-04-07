@@ -5,112 +5,75 @@
 //  Created by Sujin Jin on 2023/03/06.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import SwiftUI
 import SwiftUIHelper
-
-public struct PromiseDetailFeature: ReducerProtocol {
-    public init() {}
-
-    public struct State: Equatable, Identifiable {
-        public let id: UUID
-        let title: String
-        let theme: String
-        let date: String
-        let place: String
-        let participants: [String]
-
-        public init(
-            id: UUID,
-            title: String,
-            theme: String,
-            date: String,
-            place: String,
-            participants: [String]
-        ) {
-            self.id = id
-            self.title = title
-            self.theme = theme
-            self.date = date
-            self.place = place
-            self.participants = participants
-        }
-    }
-
-    public enum Action: Equatable {}
-
-    public var body: some ReducerProtocol<State, Action> {
-        EmptyReducer()
-    }
-}
+import Entity
 
 // MARK: - ConfirmedDetailView
 
 public struct PromiseDetailView: View {
     @Environment(\.screenSize) var screenSize
 
-    let store: StoreOf<PromiseDetailFeature>
+    let state: State
 
-    public init(store: StoreOf<PromiseDetailFeature>) {
-        self.store = store
+    public init(state: State) {
+        self.state = state
     }
 
     public var body: some View {
-        WithViewStore(self.store) { viewStore in
-            VStack {
-                PDS.Icon.illustDetail.image
-                    .resizable()
-                    .zIndex(1)
-                    .offset(y: 32)
-                    .frame(width: 64, height: 64)
+        VStack {
+            PDS.Icon.illustDetail.image
+                .resizable()
+                .zIndex(1)
+                .offset(y: 32)
+                .frame(width: 64, height: 64)
 
-                VStack(alignment: .leading) {
-                    Group {
-                        Text(viewStore.theme)
-                            .bold()
-                            .font(.title)
-                            .foregroundColor(PColor.purple9.scale)
+            VStack(alignment: .leading) {
+                Group {
+                    Text(state.theme)
+                        .bold()
+                        .font(.title)
+                        .foregroundColor(PColor.purple9.scale)
 
-                        Text(viewStore.title)
-                            .foregroundColor(PColor.cGray2.scale)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-
-                    Rectangle()
-                        .frame(height: 1)
-                        .foregroundColor(PColor.gray3.scale)
-
-                    VStack(alignment: .leading, spacing: 16) {
-                        makeContentView(
-                            title: "날짜/시간",
-                            content: viewStore.date
-                        )
-
-                        makeContentView(
-                            title: "장소",
-                            content: viewStore.place
-                        )
-
-                        makeContentView(
-                            title: "참여자",
-                            content: viewStore.participants
-                                .sorted(by: <)
-                                .joinedNames(separator: ", ")
-                        )
-                    }
-                    .padding(.top)
+                    Text(state.title)
+                        .foregroundColor(PColor.cGray2.scale)
                 }
-                .padding(EdgeInsets(top: 32, leading: 20, bottom: 32, trailing: 20))
-                .background(PColor.gray1.scale)
-                .frame(width: screenSize.width * 0.9, alignment: .leading)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(PColor.gray3.scale, lineWidth: 1)
-                )
+                .frame(maxWidth: .infinity, alignment: .center)
+
+                Rectangle()
+                    .frame(height: 1)
+                    .foregroundColor(PColor.gray3.scale)
+
+                VStack(alignment: .leading, spacing: 16) {
+                    makeContentView(
+                        title: "날짜/시간",
+                        content: formatter.string(from: state.date)
+                    )
+
+                    makeContentView(
+                        title: "장소",
+                        content: state.place
+                    )
+
+                    makeContentView(
+                        title: "참여자",
+                        content: state.participants
+                            .sorted(by: <)
+                            .joinedNames(separator: ", ")
+                    )
+                }
+                .padding(.top)
             }
-            .offset(y: -screenSize.height * 0.1)
+            .padding(EdgeInsets(top: 32, leading: 20, bottom: 32, trailing: 20))
+            .background(PColor.gray1.scale)
+            .frame(width: screenSize.width * 0.9, alignment: .leading)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(PColor.gray3.scale, lineWidth: 1)
+            )
         }
+        .offset(y: -screenSize.height * 0.1)
     }
 
     private func makeContentView(title: String, content: String) -> some View {
@@ -124,21 +87,61 @@ public struct PromiseDetailView: View {
     }
 }
 
+public extension PromiseDetailView {
+    struct State: Equatable, Identifiable {
+        public let id: UUID
+        let title: String
+        let theme: String
+        let date: Date
+        let place: String
+        let participants: [String]
+
+        public init(
+            id: UUID,
+            title: String,
+            theme: String,
+            date: Date,
+            place: String,
+            participants: [String]
+        ) {
+            self.id = id
+            self.title = title
+            self.theme = theme
+            self.date = date
+            self.place = place
+            self.participants = participants
+        }
+        
+        public init(promise: Promise) {
+            self.id = promise.id
+            self.title = promise.name
+            self.theme = promise.type.description
+            self.date = promise.date
+            self.place = promise.place
+            self.participants = promise.participants
+        }
+    }
+}
+
+private let formatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "M월 d일 a h시 m분"
+    formatter.locale = .init(identifier: "KO")
+
+    return formatter
+}()
+
 #if DEBUG
     struct ConfirmedDetailView_Previews: PreviewProvider {
         static var previews: some View {
-            PromiseDetailView(store:
+            PromiseDetailView(state:
                 .init(
-                    initialState:
-                    PromiseDetailFeature.State(
-                        id: UUID(),
-                        title: "약속명",
-                        theme: "여행",
-                        date: "2023",
-                        place: "강남",
-                        participants: ["정인혜", "이은영"]
-                    ),
-                    reducer: PromiseDetailFeature()._printChanges()
+                    id: UUID(),
+                    title: "약속명",
+                    theme: "여행",
+                    date: .now,
+                    place: "강남",
+                    participants: ["정인혜", "이은영"]
                 )
             )
         }

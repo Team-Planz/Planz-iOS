@@ -1,6 +1,8 @@
 import CalendarFeature
+import CommonView
 import ComposableArchitecture
 import DesignSystem
+import Entity
 import Foundation
 import Introspect
 import SwiftUI
@@ -72,12 +74,8 @@ public struct HomeView: View {
                 spacing: 10,
                 trailingSpace: 80
             ) { promise in
-                PromiseView(
-                    promiseType: promise.type,
-                    name: promise.name,
-                    date: promise.date
-                )
-                .onTapGesture { viewStore.send(.rowTapped(promise.date)) }
+                PromiseItem(state: promise.item)
+                    .onTapGesture { viewStore.send(.rowTapped(promise.date)) }
             }
             .frame(height: viewStore.todayPromiseListHeight)
             .padding(
@@ -124,6 +122,16 @@ extension HomeView {
 extension HomeCore.State {
     var viewState: HomeView.ViewState {
         .init(todayPromiseList: todayPromiseList)
+    }
+}
+
+private extension Promise {
+    var item: PromiseItem.State {
+        .init(
+            promiseType: type,
+            name: name,
+            date: date
+        )
     }
 }
 
