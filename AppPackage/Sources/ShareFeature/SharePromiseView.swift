@@ -57,8 +57,10 @@ public struct SharePromiseView: View {
                 }
                 Spacer()
                 VStack(spacing: 12) {
-                    ShareLinkCopyView()
-                    Button {} label: {
+                    ShareLinkCopyView(store: store)
+                    Button {
+                        viewStore.send(.shareAsKakaoTapped)
+                    } label: {
                         HStack(spacing: 0) {
                             PDS.Icon.kakao.image
                             Text("카카오톡으로 약속 공유하기")

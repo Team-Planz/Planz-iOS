@@ -1,15 +1,17 @@
 import AppFeature
 import ComposableArchitecture
 import Firebase
+import KakaoSDKCommon
 import ShareFeature
 import SwiftUI
+import Planz_iOS_Secrets
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_: UIApplication,
                      didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool
     {
-        print("Colors application is starting up. ApplicationDelegate didFinishLaunchingWithOptions.")
         FirebaseApp.configure()
+        KakaoSDK.initSDK(appKey: Secrets.Kakao.appKey.value)
         return true
     }
 }
