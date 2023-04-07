@@ -43,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		496EFF7829E0633C00351034 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		496EFF7929E0635100351034 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		4972CFAF29D8690400765115 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		49D91E11297999AC00A5C2BA /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		49D91E1429799F9D00A5C2BA /* runLint.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = runLint.sh; sourceTree = "<group>"; };
@@ -124,6 +126,8 @@
 				6F47599928D9D0CE005CC91B /* PlanzApp.swift */,
 				6F47599D28D9D0CF005CC91B /* Assets.xcassets */,
 				6F47599F28D9D0CF005CC91B /* Preview Content */,
+				496EFF7829E0633C00351034 /* Debug.xcconfig */,
+				496EFF7929E0635100351034 /* Release.xcconfig */,
 			);
 			path = Planz;
 			sourceTree = "<group>";
@@ -497,6 +501,7 @@
 		};
 		6F4759BB28D9D0CF005CC91B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 496EFF7829E0633C00351034 /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -526,6 +531,7 @@
 		};
 		6F4759BC28D9D0CF005CC91B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 496EFF7929E0635100351034 /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
