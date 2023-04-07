@@ -83,7 +83,7 @@ public enum TimeTableAction: Equatable {
     case timeCellTapped(row: Int, column: Int)
 }
 
-public let timeTableReducer = Reducer<
+public let timeTableReducer = AnyReducer<
     TimeTableState,
     TimeTableAction,
     Void
