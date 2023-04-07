@@ -1,6 +1,9 @@
 ## xcconfig hide
 *.xcconfig
 
+## Firebase
+GoogleService-Info.plist
+
 ## User settings
 xcuserdata/
  
