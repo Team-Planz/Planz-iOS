@@ -41,12 +41,12 @@ public struct TimeTableState: Equatable {
     }
 
     public var days: [Day]
-    let startTime: TimeInterval
-    let endTime: TimeInterval
-    let timeInterval: TimeInterval
-    let timeMarkerInterval: TimeInterval
-    let timeRanges: [TimeRange]
-    var timeCells: [[TimeCell]]
+    public var startTime: TimeInterval
+    public var endTime: TimeInterval
+    public var timeInterval: TimeInterval
+    public var timeMarkerInterval: TimeInterval
+    public var timeRanges: [TimeRange] = []
+    public var timeCells: [[TimeCell]] = []
 
     public init(
         days: [Day] = [],
@@ -60,6 +60,20 @@ public struct TimeTableState: Equatable {
         self.endTime = endTime
         self.timeInterval = timeInterval
         self.timeMarkerInterval = timeMarkerInterval
+        reload()
+    }
+
+    public var isTimeSelected: Bool {
+        timeCells
+            .flatMap { $0 }
+            .contains { $0 == .selected }
+    }
+
+    public var isGridLoadable: Bool {
+        timeRanges.count > 0 && days.count > 0 && timeCells.count > 0
+    }
+
+    public mutating func reload() {
         timeRanges = stride(
             from: startTime,
             to: endTime,
@@ -76,12 +90,6 @@ public struct TimeTableState: Equatable {
             repeating: .init(repeating: .deselected, count: timeRanges.count),
             count: days.count
         )
-    }
-
-    public var isTimeSelected: Bool {
-        timeCells
-            .flatMap { $0 }
-            .contains { $0 == .selected }
     }
 }
 
@@ -132,13 +140,13 @@ public struct TimeTableView: View {
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
                             .overlay(Resource.PlanzColor.gray200)
-
-                        grid
-                            .frame(
-                                width: dayCellWidth * CGFloat(viewStore.days.count),
-                                height: LayoutConstant.timeCellHeight * CGFloat(viewStore.timeRanges.count)
-                            )
-
+                        if viewStore.isGridLoadable {
+                            grid
+                                .frame(
+                                    width: dayCellWidth * CGFloat(viewStore.days.count),
+                                    height: LayoutConstant.timeCellHeight * CGFloat(viewStore.timeRanges.count)
+                                )
+                        }
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
                             .overlay(Resource.PlanzColor.gray200)

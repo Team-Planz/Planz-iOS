@@ -100,7 +100,9 @@ let package = Package(
             name: "MakePromise",
             dependencies: [
                 "DesignSystem",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                "CalendarFeature",
+                "TimeTableFeature"
             ]
         ),
         .target(

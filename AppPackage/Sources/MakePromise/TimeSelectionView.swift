@@ -12,9 +12,9 @@ import SwiftUI
 public struct TimeSelection: ReducerProtocol {
     public struct State: Equatable {
         @PresentationState var picker: TimePicker.State?
-        var startTime: Int?
-        var endTime: Int?
-        let timeRange: TimeRange
+        public var startTime: Int?
+        public var endTime: Int?
+        public let timeRange: TimeRange
 
         public init(
             picker: TimePicker.State? = nil,
