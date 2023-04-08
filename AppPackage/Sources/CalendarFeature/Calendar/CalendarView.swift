@@ -221,6 +221,7 @@ public struct CalendarView: View {
             }
             .coordinateSpace(name: coordinateSpace)
             .onPreferenceChange(ScrollViewOffset.self) { offset in
+                guard !viewStore.monthList.isEmpty else { return }
                 let horizontalPadding = (layoutConstraint.contentHorizontalPadding) * 2
                 let scrollViewWidth = width - horizontalPadding
                 let index = (offset / scrollViewWidth).rounded(.down)

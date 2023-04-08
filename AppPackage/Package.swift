@@ -100,7 +100,9 @@ let package = Package(
             name: "MakePromise",
             dependencies: [
                 "DesignSystem",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                "CalendarFeature",
+                "TimeTableFeature"
             ]
         ),
         .target(
@@ -127,6 +129,7 @@ let package = Package(
                 "MakePromise",
                 "HomeFeature",
                 "CalendarFeature",
+                "TimeTableFeature",
                 "SwiftUIHelper",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation")

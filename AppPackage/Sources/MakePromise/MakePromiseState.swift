@@ -5,7 +5,9 @@
 //  Created by 한상준 on 2023/02/25.
 //
 
+import CalendarFeature
 import ComposableArchitecture
+import TimeTableFeature
 
 public struct MakePromiseState: Equatable {
     var shouldShowBackButton: Bool
@@ -28,11 +30,107 @@ public struct MakePromiseState: Equatable {
         }
     }
 
-    var setNameAndPlace = SetNameAndPlaceState()
+    var setNameAndPlace: SetNameAndPlaceState? {
+        get {
+            steps.compactMap { step in
+                guard case let .setNameAndPlace(state) = step else {
+                    return nil
+                }
+                return state
+            }.first
+        }
+        set {
+            guard let newState = newValue else {
+                return
+            }
+            guard let index = steps.firstIndex(where: {
+                guard case .setNameAndPlace = $0 else {
+                    return false
+                }
+                return true
+            }) else { return }
+            steps[index] = .setNameAndPlace(newState)
+        }
+    }
+
+    var timeSelection: TimeSelection.State? {
+        get {
+            steps.compactMap { step in
+                guard case let .timeSelection(state) = step else {
+                    return nil
+                }
+                return state
+            }.first
+        }
+        set {
+            guard let newState = newValue else {
+                return
+            }
+            guard let index = steps.firstIndex(where: {
+                guard case .timeSelection = $0 else {
+                    return false
+                }
+                return true
+            }) else { return }
+            steps[index] = .timeSelection(newState)
+        }
+    }
+
+    var calendar: CalendarCore.State? {
+        get {
+            steps.compactMap { step in
+                guard case let .calendar(state) = step else {
+                    return nil
+                }
+                return state
+            }.first
+        }
+        set {
+            guard let newState = newValue else {
+                return
+            }
+            guard let index = steps.firstIndex(where: {
+                guard case .calendar = $0 else {
+                    return false
+                }
+                return true
+            }) else { return }
+            steps[index] = .calendar(newState)
+        }
+    }
+
+    var timeTable: TimeTableState? {
+        get {
+            steps.compactMap { step in
+                guard case let .timeTable(state) = step else {
+                    return nil
+                }
+                return state
+            }.first
+        }
+        set {
+            guard let newState = newValue else {
+                return
+            }
+            guard let index = steps.firstIndex(where: {
+                guard case .timeTable = $0 else {
+                    return false
+                }
+                return true
+            }) else { return }
+            steps[index] = .timeTable(newState)
+        }
+    }
 
     public init(
         shouldShowBackButton: Bool = false,
-        steps: [Step] = [.selectTheme(.init()), .setNameAndPlace(.init())]
+        steps: [Step] = [
+            .selectTheme(.init()),
+            .setNameAndPlace(.init()),
+            .timeSelection(.init(timeRange: .init(start: 9, end: 23))),
+            .calendar(.init()),
+            .timeTable(.mock)
+        ]
     ) {
         self.shouldShowBackButton = shouldShowBackButton
         self.steps = steps
@@ -41,15 +139,24 @@ public struct MakePromiseState: Equatable {
     public enum Step: Equatable {
         case selectTheme(SelectThemeState)
         case setNameAndPlace(SetNameAndPlaceState)
+        case calendar(CalendarCore.State)
+        case timeSelection(TimeSelection.State)
+        case timeTable(TimeTableState)
     }
 
-    func isNextButtonEnable() -> Bool {
+    var isNextButtonEnable: Bool {
         guard let currentStep else { return false }
         switch currentStep {
-        case let .selectTheme(subState):
-            return subState.selectedType != nil
-        case let .setNameAndPlace(subState):
-            return subState.promisePlace != nil && subState.promiseName != nil
+        case let .selectTheme(selectTheme):
+            return selectTheme.selectedType != nil
+        case .setNameAndPlace:
+            return true
+        case let .calendar(calendar):
+            return calendar.selectedDates.count > 0
+        case let .timeSelection(timeSelection):
+            return timeSelection.isTimeRangeValid
+        case let .timeTable(timeTable):
+            return timeTable.isTimeSelected
         }
     }
 
