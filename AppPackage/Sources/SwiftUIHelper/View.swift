@@ -1,9 +1,9 @@
-import SwiftUI
 import Foundation
+import SwiftUI
 
 public extension View {
     @ViewBuilder
-    public func hidden(_ hidden: Bool, _ isSpace: Bool = false) -> some View {
+    func hidden(_ hidden: Bool, _ isSpace: Bool = false) -> some View {
         modifier(HiddenViewModifier(hidden: hidden, isSpace: isSpace))
     }
 }
@@ -11,12 +11,12 @@ public extension View {
 public struct HiddenViewModifier: ViewModifier {
     var hidden: Bool
     var isSpace: Bool
-    
+
     public init(hidden: Bool, isSpace: Bool) {
         self.hidden = hidden
         self.isSpace = isSpace
     }
-    
+
     public func body(content: Content) -> some View {
         if hidden {
             if isSpace {

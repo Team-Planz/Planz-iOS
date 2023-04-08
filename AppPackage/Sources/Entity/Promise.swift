@@ -13,6 +13,7 @@ public enum PromiseType: Equatable, CustomStringConvertible {
             return "기타"
         }
     }
+
     case meal
     case meeting
     case trip
