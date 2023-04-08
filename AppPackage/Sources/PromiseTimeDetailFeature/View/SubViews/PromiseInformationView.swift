@@ -20,9 +20,10 @@ public struct PromiseInformationView: View {
             }
             Spacer()
             HStack {
-                PossibleUserNumberView(numberOfUser: 0)
+                // TODO: store에서 갖고있는 참석자수, 전체 사용자 수 바인딩 해야함
+                PossibleUserNumberView(numberOfAttendee: 0, numberOfTotalUser: 5)
                 GradientView()
-                PossibleUserNumberView(numberOfUser: 5)
+                PossibleUserNumberView(numberOfAttendee: 5, numberOfTotalUser: 5)
             }
         }
     }

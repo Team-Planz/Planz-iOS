@@ -10,11 +10,16 @@ import DesignSystem
 import SwiftUI
 
 public struct PossibleUserNumberView: View {
-    let numberOfUser: Int
-    public init(numberOfUser: Int) { self.numberOfUser = numberOfUser }
+    let numberOfAttendee: Int
+    let numberOfTotalUser: Int
+    public init(numberOfAttendee: Int, numberOfTotalUser: Int) {
+        self.numberOfAttendee = numberOfAttendee
+        self.numberOfTotalUser = numberOfTotalUser
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
-            Text("\(numberOfUser)/5")
+            Text("\(numberOfAttendee)/\(numberOfTotalUser)")
                 .font(.system(size: 12))
                 .foregroundColor(PDS.COLOR.cGray1.scale)
             Text("가능")
