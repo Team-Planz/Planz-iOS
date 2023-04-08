@@ -1,11 +1,11 @@
+import CommonView
 import ComposableArchitecture
 import DesignSystem
+import Entity
 import HomeFeature
 import MakePromise
 import SwiftUI
 import SwiftUINavigation
-import CommonView
-import Entity
 
 public struct HomeContainerView: View {
     let store: StoreOf<HomeContainerCore>
@@ -72,10 +72,10 @@ public struct HomeContainerView: View {
                                 )
                         )
                         .opacity(viewStore.selectedDetent == .large ? .zero : 1)
-                    
+
                     if let selectedPromise = viewStore.selectedPromise {
                         PromiseDetailView(state: .init(promise: selectedPromise))
-                                .opacity(viewStore.selectedDetent == .large ? 1 : .zero)
+                            .opacity(viewStore.selectedDetent == .large ? 1 : .zero)
                     }
                 }
             }
@@ -110,10 +110,10 @@ private extension HomeContainerCore.State {
             let state = (/HomeContainerCore.DestinationState.promiseList).extract(from: destinationState),
             let promise = state.selectedPromise
         else { return nil }
-        
+
         return promise
     }
-    
+
     var detents: Set<PresentationDetent> {
         guard
             let destinationState,
