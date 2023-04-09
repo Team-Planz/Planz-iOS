@@ -13,7 +13,7 @@ import SwiftUI
 typealias NameAndPlaceView = SetNameAndPlaceView
 
 public struct SetNameAndPlaceView: View {
-    var store: Store<SetNameAndPlaceState, SetNameAndPlaceAction>
+    var store: StoreOf<SetNameAndPlace>
 
     public enum TextFieldType {
         case name
@@ -52,10 +52,10 @@ public struct SetNameAndPlaceView: View {
 
 public struct TextFieldWithTitleView: View {
     var type: SetNameAndPlaceView.TextFieldType
-    var store: Store<SetNameAndPlaceState, SetNameAndPlaceAction>
+    var store: StoreOf<SetNameAndPlace>
 
-    @ObservedObject var viewStore: ViewStore<ViewState, SetNameAndPlaceAction>
-    init(type: SetNameAndPlaceView.TextFieldType, store: Store<SetNameAndPlaceState, SetNameAndPlaceAction>) {
+    @ObservedObject var viewStore: ViewStore<ViewState, SetNameAndPlace.Action>
+    init(type: SetNameAndPlaceView.TextFieldType, store: StoreOf<SetNameAndPlace>) {
         self.type = type
         self.store = store
         viewStore = ViewStore(
@@ -71,7 +71,7 @@ public struct TextFieldWithTitleView: View {
         let numberOfCharacter: Int
         let maxNumberOfCharacter: Int
 
-        init(_ type: SetNameAndPlaceView.TextFieldType, state: SetNameAndPlaceState) {
+        init(_ type: SetNameAndPlaceView.TextFieldType, state: SetNameAndPlace.State) {
             switch type {
             case .name:
                 showWarningMessage = state.shouldShowNameTextCountWarning
@@ -87,7 +87,7 @@ public struct TextFieldWithTitleView: View {
         }
     }
 
-    typealias SetNameAndPlaceStore = ViewStore<SetNameAndPlaceState, SetNameAndPlaceAction>
+    typealias SetNameAndPlaceStore = ViewStoreOf<SetNameAndPlace>
     public var body: some View {
         HStack {
             Spacer(minLength: 20)
@@ -125,12 +125,12 @@ public struct TextFieldWithTitleView: View {
         }
     }
 
-    func getBorderColor(_ viewStore: ViewStore<ViewState, SetNameAndPlaceAction>, type _: SetNameAndPlaceView.TextFieldType) -> Color {
+    func getBorderColor(_ viewStore: ViewStore<ViewState, SetNameAndPlace.Action>, type _: SetNameAndPlaceView.TextFieldType) -> Color {
         return viewStore.showWarningMessage ? PDS.COLOR.scarlet1.scale :
             PDS.COLOR.purple9.scale
     }
 
-    func getTextCountColor(_ viewStore: ViewStore<ViewState, SetNameAndPlaceAction>, type _: SetNameAndPlaceView.TextFieldType) -> Color {
+    func getTextCountColor(_ viewStore: ViewStore<ViewState, SetNameAndPlace.Action>, type _: SetNameAndPlaceView.TextFieldType) -> Color {
         return viewStore.showWarningMessage ? PDS.COLOR.scarlet1.scale :
             PDS.COLOR.gray4.scale
     }

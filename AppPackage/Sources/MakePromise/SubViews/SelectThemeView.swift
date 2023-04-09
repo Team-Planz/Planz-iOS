@@ -11,7 +11,7 @@ import DesignSystem
 import SwiftUI
 
 public struct SelectThemeView: View {
-    var store: Store<SelectThemeState, SelectThemeAction>
+    var store: StoreOf<SelectTheme>
     let listItemEdgePadding = EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20)
     public var body: some View {
         VStack {
@@ -28,7 +28,7 @@ public struct SelectThemeView: View {
 
 public struct SelectThemeItemView: View {
     var promiseType: PromiseType
-    var store: Store<SelectThemeState, SelectThemeAction>
+    var store: StoreOf<SelectTheme>
     let itemCornerRadius: CGFloat = 16
     let checkMarkCircle = "checkmark.circle"
     let checkmarkCircleFill = "checkmark.circle.fill"

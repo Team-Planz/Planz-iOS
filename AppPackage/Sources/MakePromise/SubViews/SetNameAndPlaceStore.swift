@@ -9,56 +9,58 @@
 import ComposableArchitecture
 import Foundation
 
-public struct SetNameAndPlaceState: Equatable {
-    var maxCharacter = 10
-    var promiseName: String = ""
-    var promisePlace: String = ""
+public struct SetNameAndPlace: ReducerProtocol {
+    public struct State: Equatable {
+        var maxCharacter = 10
+        var promiseName: String = ""
+        var promisePlace: String = ""
 
-    var numberOfCharacterInNameText: Int {
-        if promiseName.count <= maxCharacter {
-            return promiseName.count
-        } else {
-            return maxCharacter
+        var numberOfCharacterInNameText: Int {
+            if promiseName.count <= maxCharacter {
+                return promiseName.count
+            } else {
+                return maxCharacter
+            }
+        }
+
+        var numberOfCharacterInPlaceText: Int {
+            if promisePlace.count <= maxCharacter {
+                return promisePlace.count
+            } else {
+                return maxCharacter
+            }
+        }
+
+        var shouldShowNameTextCountWarning: Bool {
+            promiseName.count > maxCharacter
+        }
+
+        var shouldShowPlaceTextCountWarning: Bool {
+            promisePlace.count > maxCharacter
+        }
+
+        var isNextButtonEnable: Bool {
+            (numberOfCharacterInNameText > 0 && !shouldShowNameTextCountWarning) && (numberOfCharacterInPlaceText > 0 && !shouldShowPlaceTextCountWarning)
+        }
+
+        public init() {}
+    }
+
+    public enum Action: Equatable {
+        case filledPromiseName(String)
+        case filledPromisePlace(String)
+    }
+
+    public var body: some ReducerProtocolOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case let .filledPromiseName(name):
+                state.promiseName = name
+                return .none
+            case let .filledPromisePlace(place):
+                state.promisePlace = place
+                return .none
+            }
         }
     }
-
-    var numberOfCharacterInPlaceText: Int {
-        if promisePlace.count <= maxCharacter {
-            return promisePlace.count
-        } else {
-            return maxCharacter
-        }
-    }
-
-    var shouldShowNameTextCountWarning: Bool {
-        promiseName.count > maxCharacter
-    }
-
-    var shouldShowPlaceTextCountWarning: Bool {
-        promisePlace.count > maxCharacter
-    }
-
-    var isNextButtonEnable: Bool {
-        (numberOfCharacterInNameText > 0 && !shouldShowNameTextCountWarning) && (numberOfCharacterInPlaceText > 0 && !shouldShowPlaceTextCountWarning)
-    }
-
-    public init() {}
-}
-
-public enum SetNameAndPlaceAction: Equatable {
-    case filledPromiseName(String)
-    case filledPromisePlace(String)
-}
-
-public struct SetNameAndPlaceEnvironment {}
-
-public let makePromiseSetNameAndPlaceReducer = AnyReducer<SetNameAndPlaceState, SetNameAndPlaceAction, SetNameAndPlaceEnvironment> { state, action, _ in
-    switch action {
-    case let .filledPromiseName(name):
-        state.promiseName = name
-    case let .filledPromisePlace(place):
-        state.promisePlace = place
-    }
-
-    return .none
 }

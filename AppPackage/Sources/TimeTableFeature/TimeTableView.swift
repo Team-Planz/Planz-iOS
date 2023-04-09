@@ -9,113 +9,115 @@
 import ComposableArchitecture
 import SwiftUI
 
-public struct TimeTableState: Equatable {
-    public struct Day: Hashable, Equatable, Identifiable {
-        public let id: Int
-        let date: Date
+public struct TimeTable: ReducerProtocol {
+    public struct State: Equatable {
+        public var days: [Day]
+        public var startTime: TimeInterval
+        public var endTime: TimeInterval
+        public var timeInterval: TimeInterval
+        public var timeMarkerInterval: TimeInterval
+        public var timeRanges: [TimeRange] = []
+        public var timeCells: [[TimeCell]] = []
 
-        public init(date: Date) {
-            id = date.hashValue
-            self.date = date
+        public struct Day: Hashable, Equatable, Identifiable {
+            public let id: Int
+            let date: Date
+
+            public init(date: Date) {
+                id = date.hashValue
+                self.date = date
+            }
+        }
+
+        public enum TimeCell {
+            case selected
+            case deselected
+
+            mutating func toggle() {
+                switch self {
+                case .deselected:
+                    self = .selected
+                case .selected:
+                    self = .deselected
+                }
+            }
+        }
+
+        public struct TimeRange: Equatable, Hashable {
+            let startTime: TimeInterval
+            let endTime: TimeInterval
+            let isStartTimeVisible: Bool
+        }
+
+        public init(
+            days: [Day] = [],
+            startTime: TimeInterval = .init(),
+            endTime: TimeInterval = .init(),
+            timeInterval: TimeInterval = .init(),
+            timeMarkerInterval: TimeInterval = .init()
+        ) {
+            self.days = days
+            self.startTime = startTime
+            self.endTime = endTime
+            self.timeInterval = timeInterval
+            self.timeMarkerInterval = timeMarkerInterval
+            reload()
+        }
+
+        public var isTimeSelected: Bool {
+            timeCells
+                .flatMap { $0 }
+                .contains { $0 == .selected }
+        }
+
+        public var isGridLoadable: Bool {
+            timeRanges.count > 0 && days.count > 0 && timeCells.count > 0
+        }
+
+        public mutating func reload() {
+            timeRanges = stride(
+                from: startTime,
+                to: endTime,
+                by: timeInterval
+            )
+            .map {
+                .init(
+                    startTime: $0,
+                    endTime: $0 + timeInterval,
+                    isStartTimeVisible: $0.truncatingRemainder(dividingBy: timeMarkerInterval) == 0
+                )
+            }
+            timeCells = .init(
+                repeating: .init(repeating: .deselected, count: timeRanges.count),
+                count: days.count
+            )
         }
     }
 
-    public enum TimeCell {
-        case selected
-        case deselected
+    public enum Action: Equatable {
+        case timeCellTapped(row: Int, column: Int)
+    }
 
-        mutating func toggle() {
-            switch self {
-            case .deselected:
-                self = .selected
-            case .selected:
-                self = .deselected
+    public var body: some ReducerProtocolOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case let .timeCellTapped(row, column):
+                guard row >= 0, row < state.timeRanges.count else { return .none }
+                guard column >= 0, column < state.days.count else { return .none }
+                state.timeCells[column][row].toggle()
+                return .none
             }
         }
     }
 
-    public struct TimeRange: Equatable, Hashable {
-        let startTime: TimeInterval
-        let endTime: TimeInterval
-        let isStartTimeVisible: Bool
-    }
-
-    public var days: [Day]
-    public var startTime: TimeInterval
-    public var endTime: TimeInterval
-    public var timeInterval: TimeInterval
-    public var timeMarkerInterval: TimeInterval
-    public var timeRanges: [TimeRange] = []
-    public var timeCells: [[TimeCell]] = []
-
-    public init(
-        days: [Day] = [],
-        startTime: TimeInterval = .init(),
-        endTime: TimeInterval = .init(),
-        timeInterval: TimeInterval = .init(),
-        timeMarkerInterval: TimeInterval = .init()
-    ) {
-        self.days = days
-        self.startTime = startTime
-        self.endTime = endTime
-        self.timeInterval = timeInterval
-        self.timeMarkerInterval = timeMarkerInterval
-        reload()
-    }
-
-    public var isTimeSelected: Bool {
-        timeCells
-            .flatMap { $0 }
-            .contains { $0 == .selected }
-    }
-
-    public var isGridLoadable: Bool {
-        timeRanges.count > 0 && days.count > 0 && timeCells.count > 0
-    }
-
-    public mutating func reload() {
-        timeRanges = stride(
-            from: startTime,
-            to: endTime,
-            by: timeInterval
-        )
-        .map {
-            .init(
-                startTime: $0,
-                endTime: $0 + timeInterval,
-                isStartTimeVisible: $0.truncatingRemainder(dividingBy: timeMarkerInterval) == 0
-            )
-        }
-        timeCells = .init(
-            repeating: .init(repeating: .deselected, count: timeRanges.count),
-            count: days.count
-        )
-    }
-}
-
-public enum TimeTableAction: Equatable {
-    case timeCellTapped(row: Int, column: Int)
-}
-
-public let timeTableReducer = Reducer<
-    TimeTableState,
-    TimeTableAction,
-    Void
-> { state, action, _ in
-    switch action {
-    case let .timeCellTapped(row, column):
-        guard row >= 0, row < state.timeRanges.count else { return .none }
-        guard column >= 0, column < state.days.count else { return .none }
-        state.timeCells[column][row].toggle()
-        return .none
-    }
+    public init() {}
 }
 
 public struct TimeTableView: View {
-    let store: Store<TimeTableState, TimeTableAction>
-    @ObservedObject var viewStore: ViewStore<TimeTableState, TimeTableAction>
+    let store: StoreOf<TimeTable>
+    @ObservedObject var viewStore: ViewStoreOf<TimeTable>
 
-    public init(store: Store<TimeTableState, TimeTableAction>) {
+    public init(store: StoreOf<TimeTable>) {
         self.store = store
         viewStore = ViewStore(store)
     }
@@ -308,7 +310,7 @@ private enum Resource {
     }
 }
 
-public extension TimeTableState {
+public extension TimeTable.State {
     static var mock: Self {
         let startTime: TimeInterval = 9 * .hour
         let endTime: TimeInterval = 24 * .hour
@@ -328,8 +330,7 @@ struct TimeTableView_Previews: PreviewProvider {
         TimeTableView(
             store: .init(
                 initialState: .mock,
-                reducer: timeTableReducer,
-                environment: ()
+                reducer: TimeTable()
             )
         )
     }

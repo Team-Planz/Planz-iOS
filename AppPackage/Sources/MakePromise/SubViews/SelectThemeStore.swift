@@ -26,23 +26,26 @@ public enum PromiseType: String, CaseIterable, Equatable {
     }
 }
 
-public struct SelectThemeState: Equatable {
-    var selectedType: PromiseType?
-    public init(selectedType: PromiseType? = nil) {
-        self.selectedType = selectedType
+public struct SelectTheme: ReducerProtocol {
+    public struct State: Equatable {
+        var selectedType: PromiseType?
+
+        public init(selectedType: PromiseType? = nil) {
+            self.selectedType = selectedType
+        }
     }
-}
 
-public enum SelectThemeAction: Equatable {
-    case promiseTypeListItemTapped(PromiseType)
-}
+    public enum Action: Equatable {
+        case promiseTypeListItemTapped(PromiseType)
+    }
 
-public struct SelectThemeEnvironment {}
-
-public let makePromiseSelectThemeReducer = AnyReducer<SelectThemeState, SelectThemeAction, SelectThemeEnvironment> { state, action, _ in
-    switch action {
-    case let .promiseTypeListItemTapped(type):
-        state.selectedType = (state.selectedType == type) ? nil : type
-        return .none
+    public var body: some ReducerProtocolOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case let .promiseTypeListItemTapped(type):
+                state.selectedType = (state.selectedType == type) ? nil : type
+                return .none
+            }
+        }
     }
 }
