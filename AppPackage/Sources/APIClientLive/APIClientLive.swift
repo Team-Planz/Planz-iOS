@@ -22,7 +22,7 @@ public extension DependencyValues {
 
 extension APIClient: DependencyKey {
     public static let liveValue = Self.live(
-        baseURL: .init(string: "Secrets.EndPoint.baseURLPath"),
+        baseURL: .init(string: Secrets.EndPoint.baseURLPath),
         kakaoAppKey: Secrets.Kakao.appKey.value
     )
 
