@@ -7,18 +7,22 @@
 
 import APIClient
 import ComposableArchitecture
-import FirebaseAuth
-import FirebaseCore
-import FirebaseDynamicLinks
-import FirebaseFirestore
 import Foundation
-import KakaoSDKShare
-import KakaoSDKTemplate
 import Planz_iOS_Secrets
+import Repository
 import UIKit
 
 public struct SharePromiseFeature: ReducerProtocol {
-    public init() {}
+    let firebaseRepository: FirebaseRepository
+    let kakaoRepository: KakaoRepository
+
+    public init(
+        firebaseRepository: FirebaseRepository = FirebaseRepositoryImpl(), kakaoRepository: KakaoRepository = KakaoRepositoryImpl()
+    ) {
+        self.firebaseRepository = firebaseRepository
+        self.kakaoRepository = kakaoRepository
+    }
+
     public struct State: Equatable {
         var linkForShare = ""
         var id: Int?
@@ -31,44 +35,24 @@ public struct SharePromiseFeature: ReducerProtocol {
         case shareAsKakaoTapped
     }
 
-    func getDeepLink(id: String?) -> URL? {
-        if let id {
-            return URL(string: "\(Secrets.Firebase.domain.value)/?plandId=\(id)")
-        } else {
-            return URL(string: Secrets.Firebase.domain.value)
-        }
-    }
-
-    func getDynamicLink(id _: String?) -> URL? {
-        guard let link = getDeepLink(id: nil) else { return nil }
-        let dynamicLinksDomainURIPrefix = Secrets.Firebase.prefix.value
-        let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: dynamicLinksDomainURIPrefix)
-        linkBuilder?.iOSParameters = DynamicLinkIOSParameters(bundleID: Secrets.App.iosBundleId.value)
-        linkBuilder?.androidParameters = DynamicLinkAndroidParameters(packageName: Secrets.App.androidBundleId.value)
-        return linkBuilder?.url
-    }
-
-    func shareViaKakao(url _: String) {
-        if ShareApi.isKakaoTalkSharingAvailable() {
-            // TODO: 이전 화면에서 전달해주는 id 값에 맞춰서 공유 링크의 파라미터로 추가하도록 수정 필요
-            ShareApi.shared.shareCustom(templateId: Int64(Secrets.Kakao.templateId.value)!, templateArgs: ["": ""]) { linkResult, error in
-                if let error = error {
-                    print("error : \(error)")
-                } else {
-                    print("defaultLink(templateObject:templateJsonObject) success.")
-                    guard let linkResult = linkResult else { return }
-                    UIApplication.shared.open(linkResult.url, options: [:], completionHandler: nil)
-                }
+    func shareViaKakao(link: String) {
+        Task {
+            let sharingResult = await self.kakaoRepository.getKakaoTalkSharingResult(url: link)
+            do {
+                let url = try sharingResult.get().url
+                await UIApplication.shared.open(url)
+            } catch {
+                // TODO: 공유 에러 팝업 노출
+                print(error)
             }
-
-        } else {}
+        }
     }
 
     public var body: some ReducerProtocol<State, Action> {
         Reduce { state, action in
             switch action {
             case .viewDidAppear:
-                if let link = getDynamicLink(id: nil) {
+                if let link = self.firebaseRepository.getDynamicLink(id: nil) {
                     state.linkForShare = link.absoluteString
                 }
                 return .none
@@ -76,7 +60,7 @@ public struct SharePromiseFeature: ReducerProtocol {
                 UIPasteboard.general.string = state.linkForShare
                 return .none
             case .shareAsKakaoTapped:
-                shareViaKakao(url: state.linkForShare)
+                shareViaKakao(link: state.linkForShare)
                 return .none
             }
         }

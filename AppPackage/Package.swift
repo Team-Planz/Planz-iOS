@@ -96,12 +96,9 @@ let package = Package(
             name: "ShareFeature",
             dependencies: [
                 "DesignSystem",
+                "Repository",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "APIClient", package: "Planz-iOS-APIClient"),
-                .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
-                .product(name: "FirebaseFirestore", package: "firebase-ios-sdk"),
-                .product(name: "FirebaseDynamicLinks", package: "firebase-ios-sdk"),
-                .product(name: "KakaoSDK", package: "kakao-ios-sdk"),
                 .product(name: "Planz-iOS-Secrets", package: "Planz-iOS-Secrets")
             ]
         ),
@@ -153,6 +150,16 @@ let package = Package(
             ]
         ),
         .target(name: "SwiftUIHelper"),
-        .target(name: "Entity")
+        .target(name: "Entity"),
+        .target(
+            name: "Repository",
+            dependencies: [
+                .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
+                .product(name: "FirebaseFirestore", package: "firebase-ios-sdk"),
+                .product(name: "FirebaseDynamicLinks", package: "firebase-ios-sdk"),
+                .product(name: "KakaoSDK", package: "kakao-ios-sdk"),
+                .product(name: "Planz-iOS-Secrets", package: "Planz-iOS-Secrets")
+            ]
+        )
     ]
 )
