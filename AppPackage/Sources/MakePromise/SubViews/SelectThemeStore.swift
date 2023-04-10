@@ -6,46 +6,74 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import APIClient
+import APIClientLive
 import ComposableArchitecture
 import Foundation
 import SwiftUI
 
-public enum PromiseType: String, CaseIterable, Equatable {
-    case meal = "식사 약속"
-    case meeting = "미팅 약속"
-    case travel = "여행 약속"
-    case etc = "기타 약속"
-
-    var withEmoji: String {
-        switch self {
-        case .meal: return rawValue + " 🍚"
-        case .meeting: return rawValue + " ☕️"
-        case .travel: return rawValue + " ✈️"
-        case .etc: return rawValue + " ☺️"
-        }
-    }
-}
-
 public struct SelectTheme: ReducerProtocol {
     public struct State: Equatable {
-        var selectedType: PromiseType?
+        var selectThemeItems: IdentifiedArrayOf<SelectThemeItem.State>
 
-        public init(selectedType: PromiseType? = nil) {
-            self.selectedType = selectedType
+        public init(
+            selectThemeItems: IdentifiedArrayOf<SelectThemeItem.State> = []
+        ) {
+            self.selectThemeItems = selectThemeItems
         }
     }
 
     public enum Action: Equatable {
-        case promiseTypeListItemTapped(PromiseType)
+        case task
+        case categoriesResponse(TaskResult<[SharedModels.Category]>)
+        case selectThemeItem(id: Int, action: SelectThemeItem.Action)
     }
+
+    @Dependency(\.apiClient) var apiClient
 
     public var body: some ReducerProtocolOf<Self> {
         Reduce { state, action in
             switch action {
-            case let .promiseTypeListItemTapped(type):
-                state.selectedType = (state.selectedType == type) ? nil : type
+            case .task:
+                return .task {
+                    await .categoriesResponse(
+                        TaskResult {
+                            try await apiClient.request(
+                                route: .promising(.fetchCategories),
+                                as: [SharedModels.Category].self
+                            )
+                        }
+                    )
+                }
+            case let .categoriesResponse(.success(categories)):
+                state.selectThemeItems = .init(
+                    uniqueElements: categories.map {
+                        SelectThemeItem.State(
+                            id: $0.id,
+                            title: $0.keyword
+                        )
+                    }
+                )
+                return .none
+            case .categoriesResponse(.failure):
+                return .none
+            case let .selectThemeItem(id: id, action: .tapped):
+                state.selectThemeItems.map(\.id).forEach {
+                    state.selectThemeItems[id: $0]?.isSelected = ($0 == id)
+                }
                 return .none
             }
         }
+        .forEach(\.selectThemeItems, action: /Action.selectThemeItem(id:action:)) {
+            SelectThemeItem()
+        }
+    }
+}
+
+extension SharedModels.Category: Equatable {
+    public static func == (lhs: SharedModels.Category, rhs: SharedModels.Category) -> Bool {
+        lhs.id == rhs.id
+            && lhs.keyword == rhs.keyword
+            && lhs.type == rhs.type
     }
 }

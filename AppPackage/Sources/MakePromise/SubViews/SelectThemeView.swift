@@ -14,21 +14,61 @@ public struct SelectThemeView: View {
     var store: StoreOf<SelectTheme>
     let listItemEdgePadding = EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20)
     public var body: some View {
-        VStack {
-            Spacer()
-            ForEach(PromiseType.allCases, id: \.self) {
-                SelectThemeItemView(promiseType: $0, store: store)
-                    .padding(listItemEdgePadding)
+        WithViewStore(store) { viewStore in
+            VStack {
+                Spacer()
+                ForEachStore(
+                    store.scope(
+                        state: \.selectThemeItems,
+                        action: SelectTheme.Action.selectThemeItem(id:action:)
+                    )
+                ) {
+                    SelectThemeItemView(store: $0)
+                        .padding(listItemEdgePadding)
+                }
+                Spacer()
             }
-            Spacer()
+            .background(Color.white)
+            .task {
+                viewStore.send(.task)
+            }
         }
-        .background(Color.white)
+    }
+}
+
+public struct SelectThemeItem: ReducerProtocol {
+    public struct State: Equatable, Identifiable {
+        public let id: Int
+        let title: String
+        public var isSelected: Bool
+
+        init(
+            id: Int,
+            title: String,
+            isSelected: Bool = false
+        ) {
+            self.id = id
+            self.title = title
+            self.isSelected = isSelected
+        }
+    }
+
+    public enum Action {
+        case tapped
+    }
+
+    public var body: some ReducerProtocolOf<Self> {
+        Reduce { _, action in
+            switch action {
+            case .tapped:
+                return .none
+            }
+        }
     }
 }
 
 public struct SelectThemeItemView: View {
-    var promiseType: PromiseType
-    var store: StoreOf<SelectTheme>
+    var store: StoreOf<SelectThemeItem>
     let itemCornerRadius: CGFloat = 16
     let checkMarkCircle = "checkmark.circle"
     let checkmarkCircleFill = "checkmark.circle.fill"
@@ -36,27 +76,27 @@ public struct SelectThemeItemView: View {
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             HStack {
-                Text(promiseType.withEmoji)
+                Text(viewStore.title)
                     .foregroundColor(
-                        viewStore.selectedType == promiseType ?
+                        viewStore.isSelected ?
                             PDS.COLOR.purple9.scale :
                             PDS.COLOR.gray5.scale
                     )
                 Spacer()
                 Image(systemName:
-                    viewStore.selectedType == promiseType ?
+                    viewStore.isSelected ?
                         checkmarkCircleFill :
                         checkMarkCircle
                 )
                 .foregroundColor(
-                    viewStore.selectedType == promiseType ?
+                    viewStore.isSelected ?
                         PDS.COLOR.purple9.scale :
                         PDS.COLOR.gray5.scale
                 )
             }
             .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20))
             .background(
-                viewStore.selectedType == promiseType ?
+                viewStore.isSelected ?
                     PDS.COLOR.purple9.scale.opacity(0.15) :
                     PDS.COLOR.gray1.scale
             )
@@ -65,11 +105,11 @@ public struct SelectThemeItemView: View {
                 RoundedRectangle(cornerRadius: itemCornerRadius)
                     .stroke(
                         PDS.COLOR.purple9.scale,
-                        lineWidth: viewStore.selectedType == promiseType ? 0.7 : 0
+                        lineWidth: viewStore.isSelected ? 0.7 : 0
                     )
             )
             .onTapGesture {
-                viewStore.send(.promiseTypeListItemTapped(promiseType))
+                viewStore.send(.tapped)
             }
         }
     }

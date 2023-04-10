@@ -151,7 +151,7 @@ public struct MakePromise: ReducerProtocol {
             guard let currentStep else { return false }
             switch currentStep {
             case let .selectTheme(selectTheme):
-                return selectTheme.selectedType != nil
+                return selectTheme.selectThemeItems.contains(where: { $0.isSelected })
             case .setNameAndPlace:
                 return true
             case let .calendar(calendar):
@@ -243,7 +243,7 @@ public struct MakePromise: ReducerProtocol {
                 state.movePastStep()
                 state.updateBackButtonVisibleState()
                 return .none
-            case .selectTheme(.promiseTypeListItemTapped):
+            case .selectTheme:
                 return .none
             case .setNameAndPlace(.filledPromiseName):
                 return .none
