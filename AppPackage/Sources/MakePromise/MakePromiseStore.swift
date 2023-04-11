@@ -6,6 +6,7 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import APIClient
 import CalendarFeature
 import ComposableArchitecture
 import Foundation
@@ -218,6 +219,12 @@ public struct MakePromise: ReducerProtocol {
                 return .none
 
             case .nextButtonTapped:
+                if case let .selectTheme(selectTheme) = state.currentStep {
+                    state.setNameAndPlace?.id = selectTheme.selectThemeItems
+                        .filter { $0.isSelected }
+                        .first?.id ?? 0
+                }
+
                 if case let .timeSelection(timeSelection) = state.currentStep,
                    let startTime = timeSelection.startTime,
                    let endTime = timeSelection.endTime
@@ -245,9 +252,7 @@ public struct MakePromise: ReducerProtocol {
                 return .none
             case .selectTheme:
                 return .none
-            case .setNameAndPlace(.filledPromiseName):
-                return .none
-            case .setNameAndPlace(.filledPromisePlace):
+            case .setNameAndPlace:
                 return .none
             case .calendar:
                 return .none

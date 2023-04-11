@@ -35,17 +35,22 @@ public struct SetNameAndPlaceView: View {
     }
 
     public var body: some View {
-        VStack {
-            Spacer()
-            VStack(spacing: 24) {
-                TextFieldWithTitleView(
-                    type: .name, store: self.store
-                )
-                TextFieldWithTitleView(
-                    type: .place, store: self.store
-                )
+        WithViewStore(store) { viewStore in
+            VStack {
+                Spacer()
+                VStack(spacing: 24) {
+                    TextFieldWithTitleView(
+                        type: .name, store: self.store
+                    )
+                    TextFieldWithTitleView(
+                        type: .place, store: self.store
+                    )
+                }
+                Spacer()
             }
-            Spacer()
+            .task {
+                viewStore.send(.task)
+            }
         }
     }
 }
@@ -67,6 +72,7 @@ public struct TextFieldWithTitleView: View {
 
     struct ViewState: Equatable {
         let showWarningMessage: Bool
+        let placeholder: String
         let textFieldText: String
         let numberOfCharacter: Int
         let maxNumberOfCharacter: Int
@@ -77,12 +83,13 @@ public struct TextFieldWithTitleView: View {
                 showWarningMessage = state.shouldShowNameTextCountWarning
                 textFieldText = state.promiseName
                 numberOfCharacter = state.numberOfCharacterInNameText
+                placeholder = state.promiseNamePlaceholder
             case .place:
                 showWarningMessage = state.shouldShowPlaceTextCountWarning
                 textFieldText = state.promisePlace
                 numberOfCharacter = state.numberOfCharacterInPlaceText
+                placeholder = .init()
             }
-
             maxNumberOfCharacter = state.maxCharacter
         }
     }
@@ -97,7 +104,7 @@ public struct TextFieldWithTitleView: View {
                     Spacer()
                 }
                 TextField(
-                    type.placeHolder,
+                    viewStore.placeholder,
                     text: viewStore.binding(
                         get: { $0.textFieldText },
                         send: { type == .name ? .filledPromiseName($0) : .filledPromisePlace($0) }

@@ -6,14 +6,32 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import APIClient
+import APIClientLive
 import ComposableArchitecture
 import Foundation
 
 public struct SetNameAndPlace: ReducerProtocol {
     public struct State: Equatable {
-        var maxCharacter = 10
-        var promiseName: String = ""
-        var promisePlace: String = ""
+        public var id: Int
+        var maxCharacter: Int
+        var promiseNamePlaceholder: String
+        var promiseName: String
+        var promisePlace: String
+
+        public init(
+            id: Int = .init(),
+            maxCharacter: Int = 10,
+            promiseNamePlaceholder: String = .init(),
+            promiseName: String = .init(),
+            promisePlace: String = .init()
+        ) {
+            self.id = id
+            self.maxCharacter = maxCharacter
+            self.promiseNamePlaceholder = promiseNamePlaceholder
+            self.promiseName = promiseName
+            self.promisePlace = promisePlace
+        }
 
         var numberOfCharacterInNameText: Int {
             if promiseName.count <= maxCharacter {
@@ -42,18 +60,36 @@ public struct SetNameAndPlace: ReducerProtocol {
         var isNextButtonEnable: Bool {
             (numberOfCharacterInNameText > 0 && !shouldShowNameTextCountWarning) && (numberOfCharacterInPlaceText > 0 && !shouldShowPlaceTextCountWarning)
         }
-
-        public init() {}
     }
 
     public enum Action: Equatable {
+        case task
+        case placeHintResponse(TaskResult<SharedModels.CategoryName>)
         case filledPromiseName(String)
         case filledPromisePlace(String)
     }
 
+    @Dependency(\.apiClient) var apiClient
+
     public var body: some ReducerProtocolOf<Self> {
         Reduce { state, action in
             switch action {
+            case .task:
+                return .task { [id = state.id] in
+                    await .placeHintResponse(
+                        TaskResult {
+                            try await apiClient.request(
+                                route: .promising(.randomName(id)),
+                                as: SharedModels.CategoryName.self
+                            )
+                        }
+                    )
+                }
+            case let .placeHintResponse(.success(placeHint)):
+                state.promiseNamePlaceholder = placeHint.name
+                return .none
+            case .placeHintResponse(.failure):
+                return .none
             case let .filledPromiseName(name):
                 state.promiseName = name
                 return .none
@@ -62,5 +98,11 @@ public struct SetNameAndPlace: ReducerProtocol {
                 return .none
             }
         }
+    }
+}
+
+extension SharedModels.CategoryName: Equatable {
+    public static func == (lhs: SharedModels.CategoryName, rhs: SharedModels.CategoryName) -> Bool {
+        lhs.name == rhs.name
     }
 }
