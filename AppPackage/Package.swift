@@ -145,6 +145,7 @@ let package = Package(
             name: "HomeContainerFeature",
             dependencies: [
                 "DesignSystem",
+                "PromiseManagement",
                 "MakePromise",
                 "HomeFeature",
                 "CalendarFeature",

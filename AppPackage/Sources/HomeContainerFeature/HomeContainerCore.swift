@@ -147,7 +147,13 @@ public struct HomeContainerCore: ReducerProtocol {
                 case .makePromise:
                     state.destinationState = .makePromise(.init())
                     return .none
-                default:
+
+                case let .standbyDetail(state):
+                    // TODO: 상세화면 띄우기
+                    return .none
+
+                case let .confirmedDetail(state):
+                    // TODO: 상세화면 띄우기
                     return .none
                 }
 
