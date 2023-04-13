@@ -8,6 +8,7 @@ import Foundation
 import HomeFeature
 import MakePromise
 import SharedModel
+import PromiseManagement
 
 public enum Tab: CaseIterable, Equatable {
     case home
@@ -19,15 +20,19 @@ public struct HomeContainerCore: ReducerProtocol {
     public struct State: Equatable {
         var selectedTab: Tab
         var homeState: HomeCore.State
+        var managementPromiseState: PromiseManagement.State
+
         @PresentationState var destinationState: DestinationState?
 
         public init(
             selectedTab: Tab = .home,
             homeState: HomeCore.State = .init(),
+            managementPromiseState: PromiseManagement.State = .init(),
             destinationState: DestinationState? = nil
         ) {
             self.selectedTab = selectedTab
             self.homeState = homeState
+            self.managementPromiseState = managementPromiseState
             self.destinationState = destinationState
         }
     }
@@ -35,6 +40,7 @@ public struct HomeContainerCore: ReducerProtocol {
     public enum Action: Equatable {
         case selectedTabChanged(tab: Tab)
         case home(action: HomeCore.Action)
+        case management(action: PromiseManagement.Action)
         case destination(PresentationAction<DestinationAction>)
     }
 
@@ -55,6 +61,12 @@ public struct HomeContainerCore: ReducerProtocol {
             state: \.homeState,
             action: /HomeContainerCore.Action.home,
             child: HomeCore.init
+        )
+
+        Scope(
+            state: \.managementPromiseState,
+            action: /HomeContainerCore.Action.management,
+            child: PromiseManagement.init
         )
 
         Reduce<State, Action> { state, action in
@@ -128,6 +140,9 @@ public struct HomeContainerCore: ReducerProtocol {
                 return .send(.destination(.dismiss))
 
             case .destination, .home:
+                return .none
+
+            case let .management(action):
                 return .none
             }
         }
