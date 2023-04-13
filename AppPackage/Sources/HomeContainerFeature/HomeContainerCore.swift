@@ -142,7 +142,16 @@ public struct HomeContainerCore: ReducerProtocol {
             case .destination, .home:
                 return .none
 
-            case let .management(action):
+            case let .management(.delegate(action)):
+                switch action {
+                case .makePromise:
+                    state.destinationState = .makePromise(.init())
+                    return .none
+                default:
+                    return .none
+                }
+
+            case .management:
                 return .none
             }
         }

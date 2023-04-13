@@ -45,6 +45,12 @@ public struct PromiseManagement: ReducerProtocol {
         case closeDetailButtonTapped
         case standbyFetchAllResponse([StandbyCell.State])
         case confirmedFetchAllResponse([ConfirmedCell.State])
+        case delegate(Delegate)
+        case makePromiseButtonTapped
+
+        public enum Delegate: Equatable {
+            case makePromise
+        }
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -52,6 +58,12 @@ public struct PromiseManagement: ReducerProtocol {
 
         Reduce { state, action in
             switch action {
+            case .delegate:
+                return .none
+
+            case .makePromiseButtonTapped:
+                return .send(.delegate(.makePromise))
+
             case let .standbyFetchAllResponse(result):
                 let rows = IdentifiedArrayOf(uniqueElements: result)
                 state.standbyTab = StandbyListFeature.State(rows: rows)
@@ -209,7 +221,7 @@ public struct ManagementView: View {
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button {
-                                print("Add Item")
+                                viewStore.send(.makePromiseButtonTapped)
                             } label: {
                                 PDS.Icon.plus.image
                             }
