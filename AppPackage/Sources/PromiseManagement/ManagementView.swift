@@ -90,6 +90,9 @@ public struct PromiseManagement: ReducerProtocol {
                         participants: item.participants
                     )
                     return .send(.delegate(.confirmedDetail(detailState)))
+
+                case .showMakePromise:
+                    return .send(.delegate(.makePromise))
                 }
 
             case let .standbyTab(.delegate(action)):
@@ -104,6 +107,9 @@ public struct PromiseManagement: ReducerProtocol {
                         participants: item.members
                     )
                     return .send(.delegate(.standbyDetail(detailState)))
+
+                case .showMakePromise:
+                    return .send(.delegate(.makePromise))
                 }
 
             default:

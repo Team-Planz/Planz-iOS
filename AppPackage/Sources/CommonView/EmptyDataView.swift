@@ -61,7 +61,6 @@ public struct EmptyDataView: View {
                 )
 
                 Button("약속잡기") {
-                    // TODO: - 약속잡기 화면 이동
                     viewStore.send(.makePromiseButtonTapped)
                 }
                 .buttonStyle(RoundCornerButtonStyle())

@@ -26,6 +26,7 @@ public struct ConfirmedListFeature: ReducerProtocol {
 
         public enum Delegate: Equatable {
             case showDetailView(ConfirmedCell.State)
+            case showMakePromise
         }
     }
 
@@ -42,10 +43,10 @@ public struct ConfirmedListFeature: ReducerProtocol {
                 }
                 return .send(.delegate(.showDetailView(selectedData)))
 
-            case .delegate:
-                return .none
-
             case .emptyData(.delegate(.makePromise)):
+                return .send(.delegate(.showMakePromise))
+
+            case .delegate:
                 return .none
 
             default:
@@ -67,10 +68,11 @@ struct ConfirmedListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
 
             if viewStore.rows.isEmpty {
-                EmptyDataView(store: self.store.scope(
-                    state: \.emptyData,
-                    action: ConfirmedListFeature.Action.emptyData
-                )
+                EmptyDataView(
+                    store: self.store.scope(
+                        state: \.emptyData,
+                        action: ConfirmedListFeature.Action.emptyData
+                    )
                 )
 
             } else {
