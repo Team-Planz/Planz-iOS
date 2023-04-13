@@ -113,27 +113,26 @@ public struct PromiseManagement: ReducerProtocol {
 
     private func initializeAPIRequest(send: Send<Action>) async {
         do {
-            // ERROR: - 확정약속 mock 데이터가 정의되지 않아서 에러 발생
-//            try await APIClient.mock.request(route: .promise(.fetchAll(.user)))
-
             async let confirmedFetchResponse: Void = send(.confirmedFetchAllResponse(
-                await APIClient.mock.request(route: .promising(.fetchAll), as: SharedModels.PromisingTimeStamps.self)
-                    .promisingTimeStamps
-                    .map {
-                        ConfirmedCell.State(
-                            id: $0.id,
-                            title: $0.promisingName,
-                            role: $0.isOwner
-                                ? RoleType.leader
-                                : RoleType.general,
-                            leaderName: $0.owner.name,
-                            replyPeopleCount: $0.members.count,
-                            theme: $0.category.type,
-                            date: $0.startDate.toString(),
-                            place: $0.placeName,
-                            participants: $0.members.map(\.name)
-                        )
-                    }
+                await APIClient.mock.request(
+                    route: .promise(.fetchAll(.user)),
+                    as: [SharedModels.Promise].self
+                )
+                .map {
+                    ConfirmedCell.State(
+                        id: $0.id,
+                        title: $0.name,
+                        role: $0.isOwner
+                            ? RoleType.leader
+                            : RoleType.general,
+                        leaderName: $0.owner.name,
+                        replyPeopleCount: $0.members.count,
+                        theme: $0.category.type,
+                        date: $0.date.toString(),
+                        place: $0.place,
+                        participants: $0.members.map(\.name)
+                    )
+                }
             ))
 
             async let standbyFetchResponse: Void = try send(.standbyFetchAllResponse(
@@ -159,7 +158,7 @@ public struct PromiseManagement: ReducerProtocol {
                     }
             ))
 
-            let _ = try await (standbyFetchResponse, confirmedFetchResponse)
+            let responses = try await (standbyFetchResponse, confirmedFetchResponse)
         } catch {}
     }
 }
