@@ -1,6 +1,6 @@
 import Foundation
 
-let calendar: Calendar = {
+public let calendar: Calendar = {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = .gmt
 

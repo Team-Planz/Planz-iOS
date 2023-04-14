@@ -4,29 +4,33 @@ import SwiftUI
 
 public struct DayCore: ReducerProtocol {
     public struct State: Equatable, Identifiable {
-        public var id: Date {
-            day.id
-        }
-
+        public let id: Date
         public var day: Day
 
         public init(day: Day) {
+            id = day.id
             self.day = day
         }
     }
 
     public enum Action: Equatable {
         case tapped
+        case updatePromise([DayPromise])
     }
 
     public init() {}
 
     public func reduce(
-        into _: inout State,
+        into state: inout State,
         action: Action
     ) -> ComposableArchitecture.EffectTask<Action> {
         switch action {
         case .tapped:
+            return .none
+
+        case let .updatePromise(promiseList):
+            promiseList
+                .forEach { state.day.promiseList.updateOrAppend($0) }
             return .none
         }
     }
@@ -138,6 +142,47 @@ private extension Color {
 }
 
 #if DEBUG
+    extension Date {
+        static var random: Date {
+            let date = Date.now
+            var dateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: .now)
+            guard
+                let hourRange = calendar.range(of: .hour, in: .day, for: date),
+                let hour = hourRange.randomElement(),
+                let minuteRange = calendar.range(of: .minute, in: .hour, for: date),
+                let minute = minuteRange.randomElement()
+            else { return .now }
+            dateComponents.hour = hour
+            dateComponents.minute = minute
+            guard
+                let result = calendar.date(from: dateComponents)
+            else { return .now }
+
+            return result
+        }
+    }
+
+    extension Array where Element == DayPromise {
+        static var mock: Self {
+            [
+                .init(date: .random, name: "모각코 🙌"),
+                .init(date: .random, name: "YAPP 런칭 약속 👌👌👌👌"),
+                .init(date: .random, name: "돼지파티 약속 🐷"),
+                .init(date: .random, name: "애플 로그인 약속 🍎"),
+                .init(date: .random, name: "🫥 🤠 🫥"),
+                .init(date: .random, name: "🫥 🤠 🫥"),
+                .init(date: .random, name: "🫥 🤠 🫥"),
+                .init(date: .random, name: "🫥 🤠 🫥")
+            ]
+        }
+    }
+
+    public extension IdentifiedArrayOf where Element == DayPromise {
+        static var mock: IdentifiedArrayOf<DayPromise> {
+            .init(uniqueElements: [DayPromise].mock)
+        }
+    }
+
     struct DayView_Previews: PreviewProvider {
         static var previews: some View {
             DayView(
@@ -146,29 +191,7 @@ private extension Color {
                     initialState: .init(
                         day: Day(
                             date: .today,
-                            promiseList: [
-                                .init(
-                                    type: .meal,
-                                    date: .today,
-                                    name: "앱 출시하기",
-                                    place: "",
-                                    participants: []
-                                ),
-                                .init(
-                                    type: .meal,
-                                    date: .today,
-                                    name: "앱 출시하기",
-                                    place: "",
-                                    participants: []
-                                ),
-                                .init(
-                                    type: .meal,
-                                    date: .today,
-                                    name: "앱 출시하기",
-                                    place: "",
-                                    participants: []
-                                )
-                            ],
+                            promiseList: .mock,
                             isFaded: false,
                             isToday: true
                         )

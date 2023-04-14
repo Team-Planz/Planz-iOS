@@ -1,11 +1,11 @@
 import DesignSystem
-import Entity
+import SharedModel
 import SwiftUI
 
 public struct PromiseItem: View {
-    let state: State
+    let state: PromiseItemState
 
-    public init(state: State) {
+    public init(state: PromiseItemState) {
         self.state = state
     }
 
@@ -25,30 +25,6 @@ public struct PromiseItem: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .background { Color.white }
-        }
-    }
-}
-
-public extension PromiseItem {
-    struct State: Equatable {
-        let promiseType: PromiseType
-        let name: String
-        let date: Date
-
-        public init(
-            promiseType: PromiseType,
-            name: String,
-            date: Date
-        ) {
-            self.promiseType = promiseType
-            self.name = name
-            self.date = date
-        }
-
-        public init(promise: Promise) {
-            promiseType = promise.type
-            name = promise.name
-            date = promise.date
         }
     }
 }
@@ -82,6 +58,7 @@ private let formatter: DateFormatter = {
         static var previews: some View {
             PromiseItem(
                 state: .init(
+                    id: .zero,
                     promiseType: .meeting,
                     name: "앱 출시하기",
                     date: .now

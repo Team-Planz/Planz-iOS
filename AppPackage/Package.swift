@@ -53,6 +53,7 @@ let package = Package(
         .target(
             name: "APIClient",
             dependencies: [
+                "Entity",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
@@ -91,6 +92,7 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "SwiftUIHelper",
+                "SharedModel",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
@@ -124,6 +126,7 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "CommonView",
+                "SharedModel",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
@@ -154,11 +157,20 @@ let package = Package(
                 "DesignSystem",
                 "CalendarFeature",
                 "CommonView",
+                "SharedModel",
+                "APIClient",
+                "APIClientLive",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
             ]
         ),
         .target(name: "SwiftUIHelper"),
-        .target(name: "Entity")
+        .target(name: "Entity"),
+        .target(
+            name: "SharedModel",
+            dependencies: [
+                "Entity"
+            ]
+        )
     ]
 )
