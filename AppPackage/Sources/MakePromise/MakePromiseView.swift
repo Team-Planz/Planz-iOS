@@ -69,5 +69,11 @@ struct PromiseContentView: View {
         }
         .frame(alignment: .top)
         .navigationBarBackButtonHidden()
+        .alert(
+            store: self.store.scope(
+                state: \.$alert,
+                action: MakePromise.Action.alert
+            )
+        )
     }
 }

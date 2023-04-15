@@ -14,6 +14,7 @@ import TimeTableFeature
 
 public struct MakePromise: ReducerProtocol {
     public struct State: Equatable {
+        @PresentationState var alert: AlertState<AlertAction>?
         var shouldShowBackButton: Bool
         var steps: [Step]
         var currentStep: Step? {
@@ -127,15 +128,17 @@ public struct MakePromise: ReducerProtocol {
         }
 
         public init(
+            alert: AlertState<AlertAction>? = nil,
             shouldShowBackButton: Bool = false,
             steps: [Step] = [
                 .selectTheme(.init()),
                 .setNameAndPlace(.init()),
-                .timeSelection(.init(timeRange: .init(start: 9, end: 23))),
                 .calendar(.init()),
+                .timeSelection(.init(timeRange: .init(start: 9, end: 23))),
                 .timeTable(.mock)
             ]
         ) {
+            self.alert = alert
             self.shouldShowBackButton = shouldShowBackButton
             self.steps = steps
         }
@@ -200,16 +203,26 @@ public struct MakePromise: ReducerProtocol {
         mutating func fetchCurrentStep() {}
     }
 
+    @Dependency(\.apiClient) var apiClient
+
     public enum Action: Equatable {
         case dismiss
         case nextButtonTapped
         case backButtonTapped
+
+        case temporaryPromisingResponse(TaskResult<SharedModels.CreatePromisingResponse>)
 
         case selectTheme(SelectTheme.Action)
         case setNameAndPlace(SetNameAndPlace.Action)
         case calendar(CalendarCore.Action)
         case timeSelection(TimeSelection.Action)
         case timeTable(TimeTable.Action)
+        case alert(PresentationAction<AlertAction>)
+    }
+
+    public enum AlertAction: Equatable {
+        case confirmButtonTapped
+        case dismiss
     }
 
     public var body: some ReducerProtocolOf<Self> {
@@ -241,12 +254,25 @@ public struct MakePromise: ReducerProtocol {
                     state.timeTable?.days = days
                 }
 
+                if case .timeSelection = state.currentStep {
+                    state.alert = .init(
+                        title: .init(Resource.string.alert),
+                        message: .init(Resource.string.warning),
+                        primaryButton: .cancel(.init(Resource.string.cancel), action: .send(.dismiss)),
+                        secondaryButton: .default(.init(Resource.string.confirm), action: .send(.confirmButtonTapped))
+                    )
+                    return .none
+                }
+
                 if state.isNextButtonEnable {
                     state.moveNextStep()
                     state.updateBackButtonVisibleState()
                 }
                 return .none
             case .backButtonTapped:
+                if case .timeTable = state.currentStep {
+                    return .send(.dismiss)
+                }
                 state.movePastStep()
                 state.updateBackButtonVisibleState()
                 return .none
@@ -260,39 +286,109 @@ public struct MakePromise: ReducerProtocol {
                 return .none
             case .timeTable:
                 return .none
+            case .alert(.presented(.confirmButtonTapped)):
+                guard case let .timeSelection(timeSelection) = state.currentStep else {
+                    return .none
+                }
+                guard let categoryID = state.selectTheme?.selectThemeItems
+                    .filter({ $0.isSelected }).first?.id
+                else {
+                    return .none
+                }
+                guard let startTime: Date = .today(hour: timeSelection.startTime),
+                      let endTime: Date = .today(hour: timeSelection.endTime)
+                else {
+                    return .none
+                }
+                state.alert = nil
+                return .task { [state = state] in
+                    await .temporaryPromisingResponse(
+                        TaskResult {
+                            try await apiClient.request(
+                                route: .promising(
+                                    .create(
+                                        .init(
+                                            name: state.setNameAndPlace?.promiseName ?? "",
+                                            minTime: dateFormatter.string(from: startTime),
+                                            maxTime: dateFormatter.string(from: endTime),
+                                            categoryID: categoryID,
+                                            availableDates: state.calendar?.selectedDates.map { dateFormatter.string(from: $0) } ?? [],
+                                            place: state.setNameAndPlace?.promisePlace ?? ""
+                                        )
+                                    )
+                                ),
+                                as: SharedModels.CreatePromisingResponse.self
+                            )
+                        }
+                    )
+                }
+            case let .temporaryPromisingResponse(.success(response)):
+                state.moveNextStep()
+                state.updateBackButtonVisibleState()
+                return .none
+            case .temporaryPromisingResponse(.failure):
+                return .none
+            case .alert:
+                return .none
             }
         }
-        .ifLet(
-            \.selectTheme,
-            action: /MakePromise.Action.selectTheme
-        ) {
+        .ifLet(\.selectTheme, action: /MakePromise.Action.selectTheme) {
             SelectTheme()
         }
-        .ifLet(
-            \.setNameAndPlace,
-            action: /MakePromise.Action.setNameAndPlace
-        ) {
+        .ifLet(\.setNameAndPlace, action: /MakePromise.Action.setNameAndPlace) {
             SetNameAndPlace()
         }
-        .ifLet(
-            \.calendar,
-            action: /MakePromise.Action.calendar
-        ) {
+        .ifLet(\.calendar, action: /MakePromise.Action.calendar) {
             CalendarCore()
         }
-        .ifLet(
-            \.timeSelection,
-            action: /MakePromise.Action.timeSelection
-        ) {
+        .ifLet(\.timeSelection, action: /MakePromise.Action.timeSelection) {
             TimeSelection()
         }
-        .ifLet(
-            \.timeTable,
-            action: /MakePromise.Action.timeTable
-        ) {
+        .ifLet(\.timeTable, action: /MakePromise.Action.timeTable) {
             TimeTable()
         }
     }
 
     public init() {}
+}
+
+private enum Resource {
+    enum string {
+        static let alert = "알림"
+        static let warning = "다음을 누르시면 이전 단계로 돌아갈 수 없습니다. 진행하시겠습니까?"
+        static let cancel = "취소"
+        static let confirm = "확인"
+    }
+}
+
+extension SharedModels.CreatePromisingResponse: Equatable {
+    public static func == (lhs: SharedModels.CreatePromisingResponse, rhs: SharedModels.CreatePromisingResponse) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
+private var dateFormatter: DateFormatter = {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+    return dateFormatter
+}()
+
+private extension Date {
+    static func today(
+        hour: Int? = nil,
+        minute: Int? = nil,
+        second: Int? = nil
+    ) -> Self? {
+        let today: Date = .now
+        let calendar = Calendar.current
+        let dateComponents = DateComponents(
+            year: calendar.component(.year, from: today),
+            month: calendar.component(.month, from: today),
+            day: calendar.component(.day, from: today),
+            hour: hour,
+            minute: minute,
+            second: second
+        )
+        return calendar.date(from: dateComponents)
+    }
 }
