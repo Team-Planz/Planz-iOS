@@ -11,7 +11,7 @@ let package = Package(
                 "TimeTableFeature",
                 "Share",
                 "MakePromise",
-                "PromiseManagement",
+                "ManagePromiseFeature",
                 "LoginFeature",
                 "SwiftUIHelper",
                 "Entity"
@@ -122,7 +122,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "PromiseManagement",
+            name: "ManagePromiseFeature",
             dependencies: [
                 "DesignSystem",
                 "CommonView",
@@ -145,7 +145,7 @@ let package = Package(
             name: "HomeContainerFeature",
             dependencies: [
                 "DesignSystem",
-                "PromiseManagement",
+                "ManagePromiseFeature",
                 "MakePromise",
                 "HomeFeature",
                 "CalendarFeature",

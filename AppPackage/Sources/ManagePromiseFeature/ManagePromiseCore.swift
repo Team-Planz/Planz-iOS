@@ -1,21 +1,18 @@
 //
-//  ManagementView.swift
-//  Planz
+//  ManagePromiseCore.swift
 //
-//  Created by Sujin Jin on 2023/02/25.
-//  Copyright © 2023 Team-Planz. All rights reserved.
+//
+//  Created by Sujin Jin on 2023/04/16.
 //
 
 import APIClient
 import APIClientLive
-import CommonView
 import ComposableArchitecture
-import DesignSystem
 import Entity
 import SharedModel
-import SwiftUI
+import Foundation
 
-public struct PromiseManagement: ReducerProtocol {
+public struct ManagePromiseCore: ReducerProtocol {
     public init() {}
 
     @Dependency(\.apiClient) var apiClient
@@ -173,74 +170,5 @@ public struct PromiseManagement: ReducerProtocol {
 
             let responses = try await (standbyFetchResponse, confirmedFetchResponse)
         } catch {}
-    }
-}
-
-public struct ManagementView: View {
-    private let store: StoreOf<PromiseManagement>
-
-    public init(store: StoreOf<PromiseManagement>) {
-        self.store = store
-    }
-
-    public var body: some View {
-        WithViewStore(self.store) { viewStore in
-            NavigationView {
-                GeometryReader { geo in
-                    VStack {
-                        HeaderTabView(
-                            activeTab:
-                            viewStore.binding(\.$visibleTab),
-                            tabs: Tab.allCases,
-                            fullWidth: geo.size.width - 40
-                        )
-
-                        TabView(selection:
-                            viewStore.binding(\.$visibleTab)
-                        ) {
-                            StandbyListView(store: self.store.scope(
-                                state: \.standbyTab,
-                                action: PromiseManagement.Action.standbyTab
-                            )
-                            )
-                            .tag(Tab.standby)
-
-                            ConfirmedListView(store: store.scope(
-                                state: \.confirmedTab,
-                                action: PromiseManagement.Action.confirmedTab
-                            ))
-                            .tag(Tab.confirmed)
-                        }
-                        .animation(.default, value: viewStore.visibleTab.rawValue)
-                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 200)
-                        .tabViewStyle(.page(indexDisplayMode: .never))
-                    }
-                    .navigationTitle("약속 관리")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button {
-                                viewStore.send(.makePromiseButtonTapped)
-                            } label: {
-                                PDS.Icon.plus.image
-                            }
-                        }
-                    }
-                    .onAppear { viewStore.send(.onAppear) }
-                }
-            }
-        }
-    }
-}
-
-struct ManagementView_Previews: PreviewProvider {
-    static var previews: some View {
-        ManagementView(store: StoreOf<PromiseManagement>(
-            initialState: PromiseManagement.State(
-                standbyRows: .mock,
-                confirmedRows: .mock
-            ),
-            reducer: PromiseManagement()._printChanges()
-        ))
     }
 }

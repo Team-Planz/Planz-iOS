@@ -8,7 +8,7 @@ import Foundation
 import HomeFeature
 import MakePromise
 import SharedModel
-import PromiseManagement
+import ManagePromiseFeature
 
 public enum Tab: CaseIterable, Equatable {
     case home
@@ -20,19 +20,19 @@ public struct HomeContainerCore: ReducerProtocol {
     public struct State: Equatable {
         var selectedTab: Tab
         var homeState: HomeCore.State
-        var managementPromiseState: PromiseManagement.State
+        var managePromiseState: ManagePromiseCore.State
 
         @PresentationState var destinationState: DestinationState?
 
         public init(
             selectedTab: Tab = .home,
             homeState: HomeCore.State = .init(),
-            managementPromiseState: PromiseManagement.State = .init(),
+            managePromiseState: ManagePromiseCore.State = .init(),
             destinationState: DestinationState? = nil
         ) {
             self.selectedTab = selectedTab
             self.homeState = homeState
-            self.managementPromiseState = managementPromiseState
+            self.managePromiseState = managePromiseState
             self.destinationState = destinationState
         }
     }
@@ -40,7 +40,7 @@ public struct HomeContainerCore: ReducerProtocol {
     public enum Action: Equatable {
         case selectedTabChanged(tab: Tab)
         case home(action: HomeCore.Action)
-        case management(action: PromiseManagement.Action)
+        case manage(action: ManagePromiseCore.Action)
         case destination(PresentationAction<DestinationAction>)
     }
 
@@ -64,9 +64,9 @@ public struct HomeContainerCore: ReducerProtocol {
         )
 
         Scope(
-            state: \.managementPromiseState,
-            action: /HomeContainerCore.Action.management,
-            child: PromiseManagement.init
+            state: \.managePromiseState,
+            action: /HomeContainerCore.Action.manage,
+            child: ManagePromiseCore.init
         )
 
         Reduce<State, Action> { state, action in
@@ -142,7 +142,7 @@ public struct HomeContainerCore: ReducerProtocol {
             case .destination, .home:
                 return .none
 
-            case let .management(.delegate(action)):
+            case let .manage(.delegate(action)):
                 switch action {
                 case .makePromise:
                     state.destinationState = .makePromise(.init())
@@ -157,7 +157,7 @@ public struct HomeContainerCore: ReducerProtocol {
                     return .none
                 }
 
-            case .management:
+            case .manage:
                 return .none
             }
         }
