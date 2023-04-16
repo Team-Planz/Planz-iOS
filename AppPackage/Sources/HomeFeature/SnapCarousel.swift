@@ -5,7 +5,7 @@ import SwiftUI
 public struct SnapCarousel<
     Content: View,
     Item: Identifiable
->: View where Item.ID == UUID {
+>: View {
     private var sliceItemList: [Box<Item>] {
         itemList.slice(2)
     }
@@ -74,7 +74,7 @@ public struct SnapCarousel<
     }
 }
 
-private extension Array where Element: Identifiable, Element.ID == UUID {
+private extension Array where Element: Identifiable {
     func slice(_ size: Int) -> [Box<Element>] {
         guard count > .zero else { return [] }
         var range = count / size
@@ -92,7 +92,7 @@ private extension Array where Element: Identifiable, Element.ID == UUID {
     }
 }
 
-private struct Box<Item>: Identifiable {
-    let id: UUID
+private struct Box<Item>: Identifiable where Item: Identifiable {
+    let id: Item.ID
     let value: [Item]
 }

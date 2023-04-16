@@ -3,22 +3,24 @@ import ComposableArchitecture
 import DesignSystem
 import Entity
 import Foundation
+import SharedModel
 import SwiftUI
 import SwiftUIHelper
 
 public struct PromiseListCore: ReducerProtocol {
     public struct State: Equatable {
         let date: Date
-        var promiseList: IdentifiedArrayOf<Promise>
-        var selectedPromise: Promise?
+        var promiseList: IdentifiedArrayOf<PromiseItemState>
+        var selectedPromise: PromiseDetailViewState?
     }
 
     public enum Action: Equatable {
         public enum Delegate: Equatable {
+            case selectPromise(Date)
             case dismiss
         }
 
-        case rowTapped(Promise.ID)
+        case rowTapped(Date)
         case closeButtonTapped
         case deSelectPromise
         case delegate(Delegate)
@@ -27,8 +29,7 @@ public struct PromiseListCore: ReducerProtocol {
     public var body: some ReducerProtocolOf<Self> {
         Reduce { state, action in
             switch action {
-            case let .rowTapped(id):
-                state.selectedPromise = state.promiseList[id: id]
+            case let .rowTapped(date):
                 return .none
 
             case .closeButtonTapped:
@@ -72,9 +73,9 @@ struct PromiseListView: View {
             }
 
             ScrollView(showsIndicators: false) {
-                ForEach(viewStore.promiseList) { promise in
-                    PromiseItem(state: .init(promise: promise))
-                        .onTapGesture { viewStore.send(.rowTapped(promise.id)) }
+                ForEach(viewStore.promiseList) { itemState in
+                    PromiseItem(state: itemState)
+                        .onTapGesture { viewStore.send(.rowTapped(itemState.date)) }
                 }
             }
             .hidden(viewStore.promiseList.isEmpty)
@@ -120,9 +121,9 @@ private extension Date {
                             initialState: .init(
                                 date: .now,
                                 promiseList: [
-                                    .init(type: .etc, date: .now, name: "돼지파티 약속", place: "", participants: []),
-                                    .init(type: .etc, date: .now, name: "ABC1", place: "", participants: []),
-                                    .init(type: .etc, date: .now, name: "ABC2", place: "", participants: [])
+                                    .init(id: .zero, promiseType: .etc, name: "돼지파티 약속", date: .now),
+                                    .init(id: 1, promiseType: .etc, name: "ABC1", date: .now),
+                                    .init(id: 2, promiseType: .etc, name: "ABC2", date: .now)
                                 ]
                             ),
                             reducer: PromiseListCore()

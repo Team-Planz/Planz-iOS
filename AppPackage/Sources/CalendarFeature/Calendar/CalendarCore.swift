@@ -37,7 +37,7 @@ public struct CalendarCore: ReducerProtocol {
         case createMonthStateList(type: CalendarType, range: CalendarClient.DateRange)
         case updateMonthStateList(CalendarClient.DateRange, TaskResult<[MonthState]>)
         case month(id: MonthCore.State.ID, action: MonthCore.Action)
-        case promiseTapped(Date, Promise.ID)
+        case promiseTapped(Date)
         case overSelection
         case binding(BindingAction<State>)
     }
@@ -277,22 +277,9 @@ private extension CalendarType {
                 .firstIndex(where: { $0.id.date == .currentMonth }) ?? .zero
             let todayIndex = unwrappedItem[currentMonthIndex].dayStateList
                 .firstIndex(where: { $0.id == .today }) ?? .zero
-            unwrappedItem[currentMonthIndex].dayStateList[0].day.promiseList = [
-                .init(type: .meeting, date: .today, name: "모각코 🙌", place: "", participants: []),
-                .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌", place: "", participants: []),
-                .init(type: .meal, date: .today, name: "돼지파티 약속 🐷", place: "", participants: [])
-            ]
+            unwrappedItem[currentMonthIndex].dayStateList[0].day.promiseList = .mock
 
-            unwrappedItem[currentMonthIndex].dayStateList[todayIndex].day.promiseList = [
-                .init(type: .meeting, date: .today, name: "모각코 🙌", place: "", participants: []),
-                .init(type: .etc, date: .today, name: "YAPP 런칭 약속 👌👌👌👌", place: "", participants: []),
-                .init(type: .meal, date: .today, name: "돼지파티 약속 🐷", place: "", participants: []),
-                .init(type: .meeting, date: .today, name: "애플 로그인 약속 🍎", place: "", participants: []),
-                .init(type: .etc, date: .today, name: "🫥 🤠 🫥", place: "", participants: []),
-                .init(type: .etc, date: .today, name: "🫥 🤠 🫥", place: "", participants: []),
-                .init(type: .etc, date: .today, name: "🫥 🤠 🫥", place: "", participants: []),
-                .init(type: .etc, date: .today, name: "🫥 🤠 🫥", place: "", participants: [])
-            ]
+            unwrappedItem[currentMonthIndex].dayStateList[todayIndex].day.promiseList = .mock
             result
                 .append(
                     contentsOf: unwrappedItem

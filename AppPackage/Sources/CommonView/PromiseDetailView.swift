@@ -6,7 +6,7 @@
 //
 
 import DesignSystem
-import Entity
+import SharedModel
 import SwiftUI
 import SwiftUIHelper
 
@@ -15,9 +15,9 @@ import SwiftUIHelper
 public struct PromiseDetailView: View {
     @Environment(\.screenSize) var screenSize
 
-    let state: State
+    let state: PromiseDetailViewState
 
-    public init(state: State) {
+    public init(state: PromiseDetailViewState) {
         self.state = state
     }
 
@@ -83,42 +83,6 @@ public struct PromiseDetailView: View {
 
             Text(content)
                 .foregroundColor(PColor.gray8.scale)
-        }
-    }
-}
-
-public extension PromiseDetailView {
-    struct State: Equatable, Identifiable {
-        public let id: UUID
-        let title: String
-        let theme: String
-        let date: Date
-        let place: String
-        let participants: [String]
-
-        public init(
-            id: UUID,
-            title: String,
-            theme: String,
-            date: Date,
-            place: String,
-            participants: [String]
-        ) {
-            self.id = id
-            self.title = title
-            self.theme = theme
-            self.date = date
-            self.place = place
-            self.participants = participants
-        }
-
-        public init(promise: Promise) {
-            id = promise.id
-            title = promise.name
-            theme = promise.type.description
-            date = promise.date
-            place = promise.place
-            participants = promise.participants
         }
     }
 }
