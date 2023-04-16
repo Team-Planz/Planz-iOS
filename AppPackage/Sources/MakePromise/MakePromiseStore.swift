@@ -135,7 +135,7 @@ public struct MakePromise: ReducerProtocol {
                 .setNameAndPlace(.init()),
                 .calendar(.init()),
                 .timeSelection(.init(timeRange: .init(start: 9, end: 23))),
-                .timeTable(.mock)
+                .timeTable(.init())
             ]
         ) {
             self.alert = alert
@@ -209,9 +209,8 @@ public struct MakePromise: ReducerProtocol {
         case dismiss
         case nextButtonTapped
         case backButtonTapped
-
         case temporaryPromisingResponse(TaskResult<SharedModels.CreatePromisingResponse>)
-
+        case updatePromiseTimeRespose(TaskResult<SharedModels.UpdatePromiseTimeResponse>)
         case selectTheme(SelectTheme.Action)
         case setNameAndPlace(SetNameAndPlace.Action)
         case calendar(CalendarCore.Action)
@@ -237,23 +236,6 @@ public struct MakePromise: ReducerProtocol {
                         .filter { $0.isSelected }
                         .first?.id ?? 0
                 }
-
-                if case let .timeSelection(timeSelection) = state.currentStep,
-                   let startTime = timeSelection.startTime,
-                   let endTime = timeSelection.endTime
-                {
-                    state.timeTable?.startTime = TimeInterval(startTime * 3600)
-                    state.timeTable?.endTime = TimeInterval(endTime * 3600)
-                    state.timeTable?.reload()
-                }
-
-                if case let .calendar(calendarState) = state.currentStep {
-                    let days: [TimeTable.State.Day] = calendarState.selectedDates.map {
-                        .init(date: $0)
-                    }
-                    state.timeTable?.days = days
-                }
-
                 if case .timeSelection = state.currentStep {
                     state.alert = .init(
                         title: .init(Resource.string.alert),
@@ -262,6 +244,35 @@ public struct MakePromise: ReducerProtocol {
                         secondaryButton: .default(.init(Resource.string.confirm), action: .send(.confirmButtonTapped))
                     )
                     return .none
+                }
+
+                if case let .timeTable(timeTable) = state.currentStep {
+                    guard let sessionID = timeTable.sessionID else {
+                        return .none
+                    }
+                    return .task { [state = state] in
+                        await .updatePromiseTimeRespose(
+                            TaskResult {
+                                try await apiClient.request(
+                                    route: .promising(
+                                        .respondTimeByHost(
+                                            sessionID,
+                                            .init(
+                                                unit: 0.5,
+                                                timeTable: state.timeTable?.days.enumerated().map { index, day in
+                                                    .init(
+                                                        date: dateFormatter.string(from: day.date),
+                                                        times: state.timeTable?.timeCells[index].map { $0 == .selected } ?? []
+                                                    )
+                                                } ?? []
+                                            )
+                                        )
+                                    ),
+                                    as: SharedModels.UpdatePromiseTimeResponse.self
+                                )
+                            }
+                        )
+                    }
                 }
 
                 if state.isNextButtonEnable {
@@ -312,7 +323,8 @@ public struct MakePromise: ReducerProtocol {
                                             minTime: dateFormatter.string(from: startTime),
                                             maxTime: dateFormatter.string(from: endTime),
                                             categoryID: categoryID,
-                                            availableDates: state.calendar?.selectedDates.map { dateFormatter.string(from: $0) } ?? [],
+                                            availableDates: state.calendar?.selectedDates
+                                                .map { dateFormatter.string(from: $0) } ?? [],
                                             place: state.setNameAndPlace?.promisePlace ?? ""
                                         )
                                     )
@@ -323,10 +335,13 @@ public struct MakePromise: ReducerProtocol {
                     )
                 }
             case let .temporaryPromisingResponse(.success(response)):
+                state.timeTable?.sessionID = response.id
                 state.moveNextStep()
                 state.updateBackButtonVisibleState()
                 return .none
             case .temporaryPromisingResponse(.failure):
+                return .none
+            case .updatePromiseTimeRespose:
                 return .none
             case .alert:
                 return .none
@@ -364,6 +379,25 @@ private enum Resource {
 extension SharedModels.CreatePromisingResponse: Equatable {
     public static func == (lhs: SharedModels.CreatePromisingResponse, rhs: SharedModels.CreatePromisingResponse) -> Bool {
         lhs.id == rhs.id
+    }
+}
+
+extension SharedModels.PromisingTime: Equatable {
+    public static func == (
+        lhs: SharedModels.PromisingTime,
+        rhs: SharedModels.PromisingTime
+    ) -> Bool {
+        lhs.unit == rhs.unit
+            && lhs.timeTable.count == rhs.timeTable.count
+    }
+}
+
+extension SharedModels.UpdatePromiseTimeResponse: Equatable {
+    public static func == (
+        lhs: SharedModels.UpdatePromiseTimeResponse,
+        rhs: SharedModels.UpdatePromiseTimeResponse
+    ) -> Bool {
+        lhs.promiseID == rhs.promiseID
     }
 }
 

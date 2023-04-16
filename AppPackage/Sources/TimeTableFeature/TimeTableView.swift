@@ -6,11 +6,14 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import APIClient
+import APIClientLive
 import ComposableArchitecture
 import SwiftUI
 
 public struct TimeTable: ReducerProtocol {
     public struct State: Equatable {
+        public var sessionID: String?
         public var days: [Day]
         public var startTime: TimeInterval
         public var endTime: TimeInterval
@@ -21,7 +24,7 @@ public struct TimeTable: ReducerProtocol {
 
         public struct Day: Hashable, Equatable, Identifiable {
             public let id: Int
-            let date: Date
+            public let date: Date
 
             public init(date: Date) {
                 id = date.hashValue
@@ -61,7 +64,6 @@ public struct TimeTable: ReducerProtocol {
             self.endTime = endTime
             self.timeInterval = timeInterval
             self.timeMarkerInterval = timeMarkerInterval
-            reload()
         }
 
         public var isTimeSelected: Bool {
@@ -95,12 +97,48 @@ public struct TimeTable: ReducerProtocol {
     }
 
     public enum Action: Equatable {
+        case task
+        case fetchSessionResponse(TaskResult<SharedModels.PromisingSessionResponse>)
         case timeCellTapped(row: Int, column: Int)
     }
+
+    @Dependency(\.apiClient) var apiClient
 
     public var body: some ReducerProtocolOf<Self> {
         Reduce { state, action in
             switch action {
+            case .task:
+                guard let id = state.sessionID else {
+                    return .none
+                }
+                return .task {
+                    await .fetchSessionResponse(
+                        TaskResult {
+                            try await apiClient.request(
+                                route: .promising(.fetchSession(id)),
+                                as: SharedModels.PromisingSessionResponse.self
+                            )
+                        }
+                    )
+                }
+            case let .fetchSessionResponse(.success(response)):
+                guard let startTime: Date = dateFormatter.date(from: response.minTime),
+                      let endTime: Date = dateFormatter.date(from: response.maxTime)
+                else {
+                    return .none
+                }
+                state.startTime = TimeInterval(Calendar.current.component(.hour, from: startTime) * 3600)
+                state.endTime = TimeInterval(Calendar.current.component(.hour, from: endTime) * 3600)
+                state.days = response.availableDates
+                    .compactMap {
+                        dateFormatter.date(from: $0)
+                    }
+                    .map { .init(date: $0) }
+                state.timeInterval = response.unit * .hour
+                state.reload()
+                return .none
+            case .fetchSessionResponse(.failure):
+                return .none
             case let .timeCellTapped(row, column):
                 guard row >= 0, row < state.timeRanges.count else { return .none }
                 guard column >= 0, column < state.days.count else { return .none }
@@ -157,6 +195,9 @@ public struct TimeTableView: View {
                 .overlay(
                     gradient, alignment: .topLeading
                 )
+            }
+            .task {
+                viewStore.send(.task)
             }
         }
     }
@@ -333,5 +374,24 @@ struct TimeTableView_Previews: PreviewProvider {
                 reducer: TimeTable()
             )
         )
+    }
+}
+
+private var dateFormatter: DateFormatter = {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+    return dateFormatter
+}()
+
+extension SharedModels.PromisingSessionResponse: Equatable {
+    public static func == (
+        lhs: SharedModels.PromisingSessionResponse,
+        rhs: SharedModels.PromisingSessionResponse
+    ) -> Bool {
+        lhs.minTime == rhs.minTime
+            && lhs.maxTime == rhs.maxTime
+            && lhs.totalCount == rhs.totalCount
+            && lhs.unit == rhs.unit
+            && lhs.availableDates == rhs.availableDates
     }
 }
