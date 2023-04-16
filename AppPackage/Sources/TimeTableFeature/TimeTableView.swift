@@ -11,6 +11,7 @@ import APIClientLive
 import ComposableArchitecture
 import Entity
 import SwiftUI
+import DesignSystem
 
 public struct TimeTable: ReducerProtocol {
     public struct State: Equatable {
@@ -176,11 +177,11 @@ public struct TimeTableView: View {
                                 width: dayCellWidth * CGFloat(viewStore.days.count),
                                 height: LayoutConstant.headerHeight
                             )
-                            .background(Resource.PlanzColor.white200)
+                            .background(PDS.COLOR.white2.scale)
 
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
-                            .overlay(Resource.PlanzColor.gray200)
+                            .overlay(PDS.COLOR.gray4.scale)
                         if viewStore.isGridLoadable {
                             grid
                                 .frame(
@@ -190,7 +191,7 @@ public struct TimeTableView: View {
                         }
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
-                            .overlay(Resource.PlanzColor.gray200)
+                            .overlay(PDS.COLOR.gray4.scale)
                     }
                 }
                 .overlay(
@@ -210,11 +211,11 @@ public struct TimeTableView: View {
                     VStack(alignment: .center) {
                         Text(day.formatted(with: .dayOnly))
                             .font(.system(size: 12))
-                            .foregroundColor(Resource.PlanzColor.gray800)
+                            .foregroundColor(PDS.COLOR.gray8.scale)
 
                         Text(day.formatted(with: .monthAndDay))
                             .font(.system(size: 14))
-                            .foregroundColor(Resource.PlanzColor.purple900)
+                            .foregroundColor(PDS.COLOR.purple9.scale)
                     }
                     .frame(
                         width: proxy.size.width / CGFloat(viewStore.days.count),
@@ -225,7 +226,7 @@ public struct TimeTableView: View {
                             .stroke(Resource.PlanzColor.dayCellBorder)
                             .background(
                                 RoundedRectangle(cornerRadius: LayoutConstant.dayCellCornerRadius)
-                                    .fill(Resource.PlanzColor.dayCellBackground)
+                                    .fill(PDS.COLOR.purple1.scale)
                             )
                             .frame(
                                 width: LayoutConstant.dayCellSize.width,
@@ -245,7 +246,7 @@ public struct TimeTableView: View {
                     if timeRange.isStartTimeVisible {
                         Text(timeRange.startTime.formatted(with: .hhmm))
                             .font(.system(size: 12))
-                            .foregroundColor(Resource.PlanzColor.gray900)
+                            .foregroundColor(PDS.COLOR.cGray2.scale)
                             .minimumScaleFactor(0.5)
                     } else {
                         Spacer()
@@ -255,12 +256,12 @@ public struct TimeTableView: View {
             }
         }
         .frame(width: LayoutConstant.timelineWidth)
-        .background(Resource.PlanzColor.white200)
+        .background(PDS.COLOR.white2.scale)
         .overlay(
             HStack {
                 Divider()
                     .frame(width: LayoutConstant.lineWidth)
-                    .overlay(Resource.PlanzColor.gray200)
+                    .overlay(PDS.COLOR.gray4.scale)
             },
             alignment: .trailing
         )
@@ -287,17 +288,17 @@ public struct TimeTableView: View {
                             Rectangle()
                                 .frame(width: (proxy.size.width - LayoutConstant.timelineWidth) / CGFloat(columns))
                                 .foregroundColor(viewStore.timeCells[column][row] == .selected
-                                    ? Resource.PlanzColor.purple900 : Resource.PlanzColor.white200)
+                                                 ? PDS.COLOR.purple9.scale : PDS.COLOR.white2.scale)
                                 .clipShape(Rectangle())
                                 .overlay(
                                     VerticalLine()
-                                        .stroke(Resource.PlanzColor.timeCellBorder)
+                                        .stroke(PDS.COLOR.gray3.scale)
                                         .frame(width: LayoutConstant.lineWidth),
                                     alignment: .trailing
                                 )
                                 .overlay(
                                     HorizontalLine()
-                                        .stroke(Resource.PlanzColor.timeCellBorder,
+                                        .stroke(PDS.COLOR.gray3.scale,
                                                 style: row % 2 == 0 ? .init(dash: [2]) : .init())
                                         .frame(height: LayoutConstant.lineWidth),
                                     alignment: .bottom
@@ -315,7 +316,7 @@ public struct TimeTableView: View {
 
     var gradient: some View {
         LinearGradient(
-            colors: [Resource.PlanzColor.white200.opacity(0.1), Resource.PlanzColor.white200],
+            colors: [PDS.COLOR.white2.scale.opacity(0.1), PDS.COLOR.white2.scale],
             startPoint: .trailing,
             endPoint: .leading
         )
@@ -339,16 +340,7 @@ private enum LayoutConstant {
 
 private enum Resource {
     enum PlanzColor {
-        static let gray200: Color = .init(red: 205 / 255, green: 210 / 255, blue: 217 / 255)
-        static let gray500: Color = .init(red: 156 / 255, green: 163 / 255, blue: 173 / 255)
-        static let gray800: Color = .init(red: 2 / 255, green: 2 / 255, blue: 2 / 255)
-        static let gray900: Color = .init(red: 91 / 255, green: 104 / 255, blue: 122 / 255)
-        static let white200: Color = .init(red: 251 / 255, green: 251 / 255, blue: 251 / 255)
-        static let purple100: Color = .init(red: 251 / 255, green: 251 / 255, blue: 251 / 255)
-        static let purple900: Color = .init(red: 102 / 255, green: 113 / 255, blue: 246 / 255)
-        static let dayCellBackground: Color = .init(red: 232 / 255, green: 234 / 255, blue: 254 / 255)
         static let dayCellBorder: Color = .init(red: 206 / 255, green: 210 / 255, blue: 252 / 255)
-        static let timeCellBorder: Color = .init(red: 232 / 255, green: 234 / 255, blue: 237 / 255)
     }
 }
 
