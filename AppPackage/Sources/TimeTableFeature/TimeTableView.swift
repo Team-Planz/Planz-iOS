@@ -6,116 +6,158 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import APIClient
+import APIClientLive
 import ComposableArchitecture
+import Entity
 import SwiftUI
+import DesignSystem
 
-public struct TimeTableState: Equatable {
-    public struct Day: Hashable, Equatable, Identifiable {
-        public let id: Int
-        let date: Date
+public struct TimeTable: ReducerProtocol {
+    public struct State: Equatable {
+        public var sessionID: String?
+        public var days: [Day]
+        public var startTime: TimeInterval
+        public var endTime: TimeInterval
+        public var timeInterval: TimeInterval
+        public var timeMarkerInterval: TimeInterval
+        public var timeRanges: [TimeRange] = []
+        public var timeCells: [[TimeCell]] = []
 
-        public init(date: Date) {
-            id = date.hashValue
-            self.date = date
+        public struct Day: Hashable, Equatable, Identifiable {
+            public let id: Int
+            public let date: Date
+
+            public init(date: Date) {
+                id = date.hashValue
+                self.date = date
+            }
+        }
+
+        public enum TimeCell {
+            case selected
+            case deselected
+
+            mutating func toggle() {
+                switch self {
+                case .deselected:
+                    self = .selected
+                case .selected:
+                    self = .deselected
+                }
+            }
+        }
+
+        public struct TimeRange: Equatable, Hashable {
+            let startTime: TimeInterval
+            let endTime: TimeInterval
+            let isStartTimeVisible: Bool
+        }
+
+        public init(
+            days: [Day] = [],
+            startTime: TimeInterval = .init(),
+            endTime: TimeInterval = .init(),
+            timeInterval: TimeInterval = .init(),
+            timeMarkerInterval: TimeInterval = .init()
+        ) {
+            self.days = days
+            self.startTime = startTime
+            self.endTime = endTime
+            self.timeInterval = timeInterval
+            self.timeMarkerInterval = timeMarkerInterval
+        }
+
+        public var isTimeSelected: Bool {
+            timeCells
+                .flatMap { $0 }
+                .contains { $0 == .selected }
+        }
+
+        public var isGridLoadable: Bool {
+            timeRanges.count > 0 && days.count > 0 && timeCells.count > 0
+        }
+
+        public mutating func reload() {
+            timeRanges = stride(
+                from: startTime,
+                to: endTime,
+                by: timeInterval
+            )
+            .map {
+                .init(
+                    startTime: $0,
+                    endTime: $0 + timeInterval,
+                    isStartTimeVisible: $0.truncatingRemainder(dividingBy: timeMarkerInterval) == 0
+                )
+            }
+            timeCells = .init(
+                repeating: .init(repeating: .deselected, count: timeRanges.count),
+                count: days.count
+            )
         }
     }
 
-    public enum TimeCell {
-        case selected
-        case deselected
+    public enum Action: Equatable {
+        case task
+        case fetchSessionResponse(TaskResult<PromisingSessionResponse>)
+        case timeCellTapped(row: Int, column: Int)
+    }
 
-        mutating func toggle() {
-            switch self {
-            case .deselected:
-                self = .selected
-            case .selected:
-                self = .deselected
+    @Dependency(\.apiClient) var apiClient
+
+    public var body: some ReducerProtocolOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case .task:
+                guard let id = state.sessionID else {
+                    return .none
+                }
+                return .task {
+                    await .fetchSessionResponse(
+                        TaskResult {
+                            try await apiClient.request(
+                                route: .promising(.fetchSession(id)),
+                                as: PromisingSessionResponse.self
+                            )
+                        }
+                    )
+                }
+            case let .fetchSessionResponse(.success(response)):
+                guard let startTime: Date = dateFormatter.date(from: response.minTime),
+                      let endTime: Date = dateFormatter.date(from: response.maxTime)
+                else {
+                    return .none
+                }
+                state.startTime = TimeInterval(Calendar.current.component(.hour, from: startTime) * 3600)
+                state.endTime = TimeInterval(Calendar.current.component(.hour, from: endTime) * 3600)
+                state.days = response.availableDates
+                    .compactMap {
+                        dateFormatter.date(from: $0)
+                    }
+                    .map { .init(date: $0) }
+                state.timeInterval = response.unit * .hour
+                state.reload()
+                return .none
+            case .fetchSessionResponse(.failure):
+                return .none
+            case let .timeCellTapped(row, column):
+                guard row >= 0, row < state.timeRanges.count else { return .none }
+                guard column >= 0, column < state.days.count else { return .none }
+                state.timeCells[column][row].toggle()
+                return .none
             }
         }
     }
 
-    public struct TimeRange: Equatable, Hashable {
-        let startTime: TimeInterval
-        let endTime: TimeInterval
-        let isStartTimeVisible: Bool
-    }
-
-    public var days: [Day]
-    public var startTime: TimeInterval
-    public var endTime: TimeInterval
-    public var timeInterval: TimeInterval
-    public var timeMarkerInterval: TimeInterval
-    public var timeRanges: [TimeRange] = []
-    public var timeCells: [[TimeCell]] = []
-
-    public init(
-        days: [Day] = [],
-        startTime: TimeInterval = .init(),
-        endTime: TimeInterval = .init(),
-        timeInterval: TimeInterval = .init(),
-        timeMarkerInterval: TimeInterval = .init()
-    ) {
-        self.days = days
-        self.startTime = startTime
-        self.endTime = endTime
-        self.timeInterval = timeInterval
-        self.timeMarkerInterval = timeMarkerInterval
-        reload()
-    }
-
-    public var isTimeSelected: Bool {
-        timeCells
-            .flatMap { $0 }
-            .contains { $0 == .selected }
-    }
-
-    public var isGridLoadable: Bool {
-        timeRanges.count > 0 && days.count > 0 && timeCells.count > 0
-    }
-
-    public mutating func reload() {
-        timeRanges = stride(
-            from: startTime,
-            to: endTime,
-            by: timeInterval
-        )
-        .map {
-            .init(
-                startTime: $0,
-                endTime: $0 + timeInterval,
-                isStartTimeVisible: $0.truncatingRemainder(dividingBy: timeMarkerInterval) == 0
-            )
-        }
-        timeCells = .init(
-            repeating: .init(repeating: .deselected, count: timeRanges.count),
-            count: days.count
-        )
-    }
-}
-
-public enum TimeTableAction: Equatable {
-    case timeCellTapped(row: Int, column: Int)
-}
-
-public let timeTableReducer = Reducer<
-    TimeTableState,
-    TimeTableAction,
-    Void
-> { state, action, _ in
-    switch action {
-    case let .timeCellTapped(row, column):
-        guard row >= 0, row < state.timeRanges.count else { return .none }
-        guard column >= 0, column < state.days.count else { return .none }
-        state.timeCells[column][row].toggle()
-        return .none
-    }
+    public init() {}
 }
 
 public struct TimeTableView: View {
-    let store: Store<TimeTableState, TimeTableAction>
-    @ObservedObject var viewStore: ViewStore<TimeTableState, TimeTableAction>
+    let store: StoreOf<TimeTable>
+    @ObservedObject var viewStore: ViewStoreOf<TimeTable>
 
-    public init(store: Store<TimeTableState, TimeTableAction>) {
+    public init(store: StoreOf<TimeTable>) {
         self.store = store
         viewStore = ViewStore(store)
     }
@@ -135,11 +177,11 @@ public struct TimeTableView: View {
                                 width: dayCellWidth * CGFloat(viewStore.days.count),
                                 height: LayoutConstant.headerHeight
                             )
-                            .background(Resource.PlanzColor.white200)
+                            .background(PDS.COLOR.white2.scale)
 
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
-                            .overlay(Resource.PlanzColor.gray200)
+                            .overlay(PDS.COLOR.gray4.scale)
                         if viewStore.isGridLoadable {
                             grid
                                 .frame(
@@ -149,12 +191,15 @@ public struct TimeTableView: View {
                         }
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
-                            .overlay(Resource.PlanzColor.gray200)
+                            .overlay(PDS.COLOR.gray4.scale)
                     }
                 }
                 .overlay(
                     gradient, alignment: .topLeading
                 )
+            }
+            .task {
+                viewStore.send(.task)
             }
         }
     }
@@ -166,11 +211,11 @@ public struct TimeTableView: View {
                     VStack(alignment: .center) {
                         Text(day.formatted(with: .dayOnly))
                             .font(.system(size: 12))
-                            .foregroundColor(Resource.PlanzColor.gray800)
+                            .foregroundColor(PDS.COLOR.gray8.scale)
 
                         Text(day.formatted(with: .monthAndDay))
                             .font(.system(size: 14))
-                            .foregroundColor(Resource.PlanzColor.purple900)
+                            .foregroundColor(PDS.COLOR.purple9.scale)
                     }
                     .frame(
                         width: proxy.size.width / CGFloat(viewStore.days.count),
@@ -181,7 +226,7 @@ public struct TimeTableView: View {
                             .stroke(Resource.PlanzColor.dayCellBorder)
                             .background(
                                 RoundedRectangle(cornerRadius: LayoutConstant.dayCellCornerRadius)
-                                    .fill(Resource.PlanzColor.dayCellBackground)
+                                    .fill(PDS.COLOR.purple1.scale)
                             )
                             .frame(
                                 width: LayoutConstant.dayCellSize.width,
@@ -201,7 +246,7 @@ public struct TimeTableView: View {
                     if timeRange.isStartTimeVisible {
                         Text(timeRange.startTime.formatted(with: .hhmm))
                             .font(.system(size: 12))
-                            .foregroundColor(Resource.PlanzColor.gray900)
+                            .foregroundColor(PDS.COLOR.cGray2.scale)
                             .minimumScaleFactor(0.5)
                     } else {
                         Spacer()
@@ -211,12 +256,12 @@ public struct TimeTableView: View {
             }
         }
         .frame(width: LayoutConstant.timelineWidth)
-        .background(Resource.PlanzColor.white200)
+        .background(PDS.COLOR.white2.scale)
         .overlay(
             HStack {
                 Divider()
                     .frame(width: LayoutConstant.lineWidth)
-                    .overlay(Resource.PlanzColor.gray200)
+                    .overlay(PDS.COLOR.gray4.scale)
             },
             alignment: .trailing
         )
@@ -243,17 +288,17 @@ public struct TimeTableView: View {
                             Rectangle()
                                 .frame(width: (proxy.size.width - LayoutConstant.timelineWidth) / CGFloat(columns))
                                 .foregroundColor(viewStore.timeCells[column][row] == .selected
-                                    ? Resource.PlanzColor.purple900 : Resource.PlanzColor.white200)
+                                                 ? PDS.COLOR.purple9.scale : PDS.COLOR.white2.scale)
                                 .clipShape(Rectangle())
                                 .overlay(
                                     VerticalLine()
-                                        .stroke(Resource.PlanzColor.timeCellBorder)
+                                        .stroke(PDS.COLOR.gray3.scale)
                                         .frame(width: LayoutConstant.lineWidth),
                                     alignment: .trailing
                                 )
                                 .overlay(
                                     HorizontalLine()
-                                        .stroke(Resource.PlanzColor.timeCellBorder,
+                                        .stroke(PDS.COLOR.gray3.scale,
                                                 style: row % 2 == 0 ? .init(dash: [2]) : .init())
                                         .frame(height: LayoutConstant.lineWidth),
                                     alignment: .bottom
@@ -271,7 +316,7 @@ public struct TimeTableView: View {
 
     var gradient: some View {
         LinearGradient(
-            colors: [Resource.PlanzColor.white200.opacity(0.1), Resource.PlanzColor.white200],
+            colors: [PDS.COLOR.white2.scale.opacity(0.1), PDS.COLOR.white2.scale],
             startPoint: .trailing,
             endPoint: .leading
         )
@@ -295,20 +340,11 @@ private enum LayoutConstant {
 
 private enum Resource {
     enum PlanzColor {
-        static let gray200: Color = .init(red: 205 / 255, green: 210 / 255, blue: 217 / 255)
-        static let gray500: Color = .init(red: 156 / 255, green: 163 / 255, blue: 173 / 255)
-        static let gray800: Color = .init(red: 2 / 255, green: 2 / 255, blue: 2 / 255)
-        static let gray900: Color = .init(red: 91 / 255, green: 104 / 255, blue: 122 / 255)
-        static let white200: Color = .init(red: 251 / 255, green: 251 / 255, blue: 251 / 255)
-        static let purple100: Color = .init(red: 251 / 255, green: 251 / 255, blue: 251 / 255)
-        static let purple900: Color = .init(red: 102 / 255, green: 113 / 255, blue: 246 / 255)
-        static let dayCellBackground: Color = .init(red: 232 / 255, green: 234 / 255, blue: 254 / 255)
         static let dayCellBorder: Color = .init(red: 206 / 255, green: 210 / 255, blue: 252 / 255)
-        static let timeCellBorder: Color = .init(red: 232 / 255, green: 234 / 255, blue: 237 / 255)
     }
 }
 
-public extension TimeTableState {
+public extension TimeTable.State {
     static var mock: Self {
         let startTime: TimeInterval = 9 * .hour
         let endTime: TimeInterval = 24 * .hour
@@ -328,9 +364,14 @@ struct TimeTableView_Previews: PreviewProvider {
         TimeTableView(
             store: .init(
                 initialState: .mock,
-                reducer: timeTableReducer,
-                environment: ()
+                reducer: TimeTable()
             )
         )
     }
 }
+
+private var dateFormatter: DateFormatter = {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+    return dateFormatter
+}()

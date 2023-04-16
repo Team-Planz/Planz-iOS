@@ -30,31 +30,31 @@ public struct UpdateUsernameRequest: Encodable, Equatable {
 public struct CreatePromisingRequest: Encodable, Equatable {
     private enum CodingKeys: String, CodingKey {
         case name = "promisingName"
-        case startDate = "minTime"
-        case endDate = "maxTime"
+        case minTime
+        case maxTime
         case categoryID = "categoryId"
         case availableDates
         case place = "placeName"
     }
 
     public let name: String
-    public let startDate: Date
-    public let endDate: Date
+    public let minTime: String
+    public let maxTime: String
     public let categoryID: Int
-    public let availableDates: [Date]
+    public let availableDates: [String]
     public let place: String
 
     public init(
         name: String,
-        startDate: Date,
-        endDate: Date,
+        minTime: String,
+        maxTime: String,
         categoryID: Int,
-        availableDates: [Date],
+        availableDates: [String],
         place: String
     ) {
         self.name = name
-        self.startDate = startDate
-        self.endDate = endDate
+        self.minTime = minTime
+        self.maxTime = maxTime
         self.categoryID = categoryID
         self.availableDates = availableDates
         self.place = place
@@ -74,29 +74,21 @@ public struct CreatePromisingResponse: Decodable, Equatable {
 }
 
 public struct PromisingSessionResponse: Decodable, Equatable {
-    private enum CodingKeys: String, CodingKey {
-        case startDate = "minTime"
-        case endDate = "maxTime"
-        case totalCount
-        case unit
-        case availableDates
-    }
-
-    public let startDate: Date
-    public let endDate: Date
+    public let minTime: String
+    public let maxTime: String
     public let totalCount: Int
-    public let unit: Int
-    public let availableDates: [Date]
+    public let unit: Double
+    public let availableDates: [String]
 
     public init(
-        startDate: Date,
-        endDate: Date,
+        minTime: String,
+        maxTime: String,
         totalCount: Int,
-        unit: Int,
-        availableDates: [Date]
+        unit: Double,
+        availableDates: [String]
     ) {
-        self.startDate = startDate
-        self.endDate = endDate
+        self.minTime = minTime
+        self.maxTime = maxTime
         self.totalCount = totalCount
         self.unit = unit
         self.availableDates = availableDates
@@ -172,12 +164,28 @@ public struct PromisingSession: Codable, Equatable {
 }
 
 public struct PromisingTime: Codable, Equatable {
-    public let unit: Int
-    public let timeTable: TimeTable
+    public let unit: Double
+    public let timeTable: [TimeTable]
 
     public struct TimeTable: Codable, Equatable {
-        public let date: Date
+        public let date: String
         public let times: [Bool]
+
+        public init(
+            date: String,
+            times: [Bool]
+        ) {
+            self.date = date
+            self.times = times
+        }
+    }
+
+    public init(
+        unit: Double,
+        timeTable: [TimeTable]
+    ) {
+        self.unit = unit
+        self.timeTable = timeTable
     }
 }
 

@@ -13,7 +13,7 @@ import SwiftUI
 import TimeTableFeature
 
 public struct MakePromiseView: View {
-    let store: Store<MakePromiseState, MakePromiseAction>
+    let store: StoreOf<MakePromise>
 
     public var body: some View {
         VStack {
@@ -25,34 +25,34 @@ public struct MakePromiseView: View {
         }
     }
 
-    public init(store: Store<MakePromiseState, MakePromiseAction>) {
+    public init(store: StoreOf<MakePromise>) {
         self.store = store
     }
 }
 
 struct PromiseContentView: View {
-    var store: Store<MakePromiseState, MakePromiseAction>
+    var store: StoreOf<MakePromise>
     public var body: some View {
         IfLetStore(store.scope(state: \.currentStep)) { store in
             SwitchStore(store) {
                 CaseLet(
-                    state: /MakePromiseState.Step.selectTheme,
-                    action: MakePromiseAction.selectTheme,
+                    state: /MakePromise.State.Step.selectTheme,
+                    action: MakePromise.Action.selectTheme,
                     then: SelectThemeView.init
                 )
                 CaseLet(
-                    state: /MakePromiseState.Step.setNameAndPlace,
-                    action: MakePromiseAction.setNameAndPlace,
+                    state: /MakePromise.State.Step.setNameAndPlace,
+                    action: MakePromise.Action.setNameAndPlace,
                     then: NameAndPlaceView.init
                 )
                 CaseLet(
-                    state: /MakePromiseState.Step.timeSelection,
-                    action: MakePromiseAction.timeSelection,
+                    state: /MakePromise.State.Step.timeSelection,
+                    action: MakePromise.Action.timeSelection,
                     then: TimeSelectionView.init
                 )
                 CaseLet(
-                    state: /MakePromiseState.Step.calendar,
-                    action: MakePromiseAction.calendar,
+                    state: /MakePromise.State.Step.calendar,
+                    action: MakePromise.Action.calendar,
                     then: {
                         CalendarView(
                             type: .promise,
@@ -61,13 +61,19 @@ struct PromiseContentView: View {
                     }
                 )
                 CaseLet(
-                    state: /MakePromiseState.Step.timeTable,
-                    action: MakePromiseAction.timeTable,
+                    state: /MakePromise.State.Step.timeTable,
+                    action: MakePromise.Action.timeTable,
                     then: TimeTableView.init
                 )
             }
         }
         .frame(alignment: .top)
         .navigationBarBackButtonHidden()
+        .alert(
+            store: self.store.scope(
+                state: \.$alert,
+                action: MakePromise.Action.alert
+            )
+        )
     }
 }

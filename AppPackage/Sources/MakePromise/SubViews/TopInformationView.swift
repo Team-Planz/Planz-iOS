@@ -11,7 +11,7 @@ import DesignSystem
 import SwiftUI
 
 public struct TopInformationView: View {
-    var store: Store<MakePromiseState, MakePromiseAction>
+    var store: StoreOf<MakePromise>
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             VStack(spacing: 4) {
@@ -52,7 +52,7 @@ public struct TopInformationView: View {
     }
 }
 
-private extension MakePromiseState.Step {
+private extension MakePromise.State.Step {
     var title: String {
         switch self {
         case .selectTheme:

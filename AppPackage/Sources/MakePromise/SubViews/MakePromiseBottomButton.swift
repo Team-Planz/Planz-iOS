@@ -11,7 +11,7 @@ import DesignSystem
 import SwiftUI
 
 public struct MakePromiseBottomButton: View {
-    var store: Store<MakePromiseState, MakePromiseAction>
+    var store: StoreOf<MakePromise>
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             HStack {
@@ -34,7 +34,7 @@ public struct MakePromiseBottomButton: View {
 }
 
 public struct PromiseNextButton: View {
-    var store: Store<MakePromiseState, MakePromiseAction>
+    var store: StoreOf<MakePromise>
 
     public var body: some View {
         WithViewStore(self.store) { viewStore in
@@ -56,7 +56,7 @@ public struct PromiseNextButton: View {
 }
 
 public struct PromiseBackButton: View {
-    var store: Store<MakePromiseState, MakePromiseAction>
+    var store: StoreOf<MakePromise>
     public var body: some View {
         WithViewStore(self.store) { viewStore in
             Button {

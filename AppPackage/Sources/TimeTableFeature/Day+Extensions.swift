@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension TimeTableState.Day {
+extension TimeTable.State.Day {
     func formatted(with formatter: DateFormatter) -> String {
         formatter.string(from: date)
     }
@@ -30,7 +30,7 @@ extension DateFormatter {
     }()
 }
 
-extension Array where Element == TimeTableState.Day {
+extension Array where Element == TimeTable.State.Day {
     static var weekend: Self {
         return (0 ..< 7).map { index -> Element in
             .init(date: .init(timeIntervalSinceNow: .day * TimeInterval(index)))

@@ -39,12 +39,12 @@ public struct HomeContainerCore: ReducerProtocol {
     }
 
     public enum DestinationState: Equatable {
-        case makePromise(MakePromiseState)
+        case makePromise(MakePromise.State)
         case promiseList(PromiseListCore.State)
     }
 
     public enum DestinationAction: Equatable {
-        case makePromise(MakePromiseAction)
+        case makePromise(MakePromise.Action)
         case promiseList(PromiseListCore.Action)
     }
 
@@ -135,14 +135,8 @@ public struct HomeContainerCore: ReducerProtocol {
             Scope(
                 state: /DestinationState.makePromise,
                 action: /DestinationAction.makePromise,
-                child: {
-                    Reduce(
-                        makePromiseReducer,
-                        environment: .init()
-                    )
-                }
+                child: MakePromise.init
             )
-
             Scope(
                 state: /DestinationState.promiseList,
                 action: /DestinationAction.promiseList,

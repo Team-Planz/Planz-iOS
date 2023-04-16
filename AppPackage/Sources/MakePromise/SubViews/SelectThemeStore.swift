@@ -6,43 +6,67 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import APIClient
+import APIClientLive
 import ComposableArchitecture
+import Entity
 import Foundation
 import SwiftUI
 
-public enum PromiseType: String, CaseIterable, Equatable {
-    case meal = "식사 약속"
-    case meeting = "미팅 약속"
-    case travel = "여행 약속"
-    case etc = "기타 약속"
+public struct SelectTheme: ReducerProtocol {
+    public struct State: Equatable {
+        var selectThemeItems: IdentifiedArrayOf<SelectThemeItem.State>
 
-    var withEmoji: String {
-        switch self {
-        case .meal: return rawValue + " 🍚"
-        case .meeting: return rawValue + " ☕️"
-        case .travel: return rawValue + " ✈️"
-        case .etc: return rawValue + " ☺️"
+        public init(
+            selectThemeItems: IdentifiedArrayOf<SelectThemeItem.State> = []
+        ) {
+            self.selectThemeItems = selectThemeItems
         }
     }
-}
 
-public struct SelectThemeState: Equatable {
-    var selectedType: PromiseType?
-    public init(selectedType: PromiseType? = nil) {
-        self.selectedType = selectedType
+    public enum Action: Equatable {
+        case task
+        case categoriesResponse(TaskResult<[Entity.Category]>)
+        case selectThemeItem(id: Int, action: SelectThemeItem.Action)
     }
-}
 
-public enum SelectThemeAction: Equatable {
-    case promiseTypeListItemTapped(PromiseType)
-}
+    @Dependency(\.apiClient) var apiClient
 
-public struct SelectThemeEnvironment {}
-
-public let makePromiseSelectThemeReducer = AnyReducer<SelectThemeState, SelectThemeAction, SelectThemeEnvironment> { state, action, _ in
-    switch action {
-    case let .promiseTypeListItemTapped(type):
-        state.selectedType = (state.selectedType == type) ? nil : type
-        return .none
+    public var body: some ReducerProtocolOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case .task:
+                return .task {
+                    await .categoriesResponse(
+                        TaskResult {
+                            try await apiClient.request(
+                                route: .promising(.fetchCategories),
+                                as: [Entity.Category].self
+                            )
+                        }
+                    )
+                }
+            case let .categoriesResponse(.success(categories)):
+                state.selectThemeItems = .init(
+                    uniqueElements: categories.map {
+                        SelectThemeItem.State(
+                            id: $0.id,
+                            title: $0.keyword
+                        )
+                    }
+                )
+                return .none
+            case .categoriesResponse(.failure):
+                return .none
+            case let .selectThemeItem(id: id, action: .tapped):
+                state.selectThemeItems.map(\.id).forEach {
+                    state.selectThemeItems[id: $0]?.isSelected = ($0 == id)
+                }
+                return .none
+            }
+        }
+        .forEach(\.selectThemeItems, action: /Action.selectThemeItem(id:action:)) {
+            SelectThemeItem()
+        }
     }
 }
