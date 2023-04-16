@@ -9,6 +9,7 @@
 import APIClient
 import APIClientLive
 import ComposableArchitecture
+import Entity
 import SwiftUI
 
 public struct TimeTable: ReducerProtocol {
@@ -98,7 +99,7 @@ public struct TimeTable: ReducerProtocol {
 
     public enum Action: Equatable {
         case task
-        case fetchSessionResponse(TaskResult<SharedModels.PromisingSessionResponse>)
+        case fetchSessionResponse(TaskResult<PromisingSessionResponse>)
         case timeCellTapped(row: Int, column: Int)
     }
 
@@ -116,7 +117,7 @@ public struct TimeTable: ReducerProtocol {
                         TaskResult {
                             try await apiClient.request(
                                 route: .promising(.fetchSession(id)),
-                                as: SharedModels.PromisingSessionResponse.self
+                                as: PromisingSessionResponse.self
                             )
                         }
                     )
@@ -382,16 +383,3 @@ private var dateFormatter: DateFormatter = {
     dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
     return dateFormatter
 }()
-
-extension SharedModels.PromisingSessionResponse: Equatable {
-    public static func == (
-        lhs: SharedModels.PromisingSessionResponse,
-        rhs: SharedModels.PromisingSessionResponse
-    ) -> Bool {
-        lhs.minTime == rhs.minTime
-            && lhs.maxTime == rhs.maxTime
-            && lhs.totalCount == rhs.totalCount
-            && lhs.unit == rhs.unit
-            && lhs.availableDates == rhs.availableDates
-    }
-}

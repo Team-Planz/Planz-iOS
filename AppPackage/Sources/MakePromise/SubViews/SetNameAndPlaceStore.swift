@@ -9,6 +9,7 @@
 import APIClient
 import APIClientLive
 import ComposableArchitecture
+import Entity
 import Foundation
 
 public struct SetNameAndPlace: ReducerProtocol {
@@ -64,7 +65,7 @@ public struct SetNameAndPlace: ReducerProtocol {
 
     public enum Action: Equatable {
         case task
-        case placeHintResponse(TaskResult<SharedModels.CategoryName>)
+        case placeHintResponse(TaskResult<CategoryName>)
         case filledPromiseName(String)
         case filledPromisePlace(String)
     }
@@ -80,7 +81,7 @@ public struct SetNameAndPlace: ReducerProtocol {
                         TaskResult {
                             try await apiClient.request(
                                 route: .promising(.randomName(id)),
-                                as: SharedModels.CategoryName.self
+                                as: CategoryName.self
                             )
                         }
                     )
@@ -98,11 +99,5 @@ public struct SetNameAndPlace: ReducerProtocol {
                 return .none
             }
         }
-    }
-}
-
-extension SharedModels.CategoryName: Equatable {
-    public static func == (lhs: SharedModels.CategoryName, rhs: SharedModels.CategoryName) -> Bool {
-        lhs.name == rhs.name
     }
 }

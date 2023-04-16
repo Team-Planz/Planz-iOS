@@ -9,6 +9,7 @@
 import APIClient
 import APIClientLive
 import ComposableArchitecture
+import Entity
 import Foundation
 import SwiftUI
 
@@ -25,7 +26,7 @@ public struct SelectTheme: ReducerProtocol {
 
     public enum Action: Equatable {
         case task
-        case categoriesResponse(TaskResult<[SharedModels.Category]>)
+        case categoriesResponse(TaskResult<[Entity.Category]>)
         case selectThemeItem(id: Int, action: SelectThemeItem.Action)
     }
 
@@ -40,7 +41,7 @@ public struct SelectTheme: ReducerProtocol {
                         TaskResult {
                             try await apiClient.request(
                                 route: .promising(.fetchCategories),
-                                as: [SharedModels.Category].self
+                                as: [Entity.Category].self
                             )
                         }
                     )
@@ -67,13 +68,5 @@ public struct SelectTheme: ReducerProtocol {
         .forEach(\.selectThemeItems, action: /Action.selectThemeItem(id:action:)) {
             SelectThemeItem()
         }
-    }
-}
-
-extension SharedModels.Category: Equatable {
-    public static func == (lhs: SharedModels.Category, rhs: SharedModels.Category) -> Bool {
-        lhs.id == rhs.id
-            && lhs.keyword == rhs.keyword
-            && lhs.type == rhs.type
     }
 }

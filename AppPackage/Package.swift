@@ -79,7 +79,8 @@ let package = Package(
             name: "TimeTableFeature",
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "APIClient", package: "Planz-iOS-APIClient")
+                "APIClient",
+                "APIClientLive"
             ]
         ),
         .target(

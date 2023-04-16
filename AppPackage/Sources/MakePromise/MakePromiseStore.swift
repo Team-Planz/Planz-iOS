@@ -9,6 +9,7 @@
 import APIClient
 import CalendarFeature
 import ComposableArchitecture
+import Entity
 import Foundation
 import TimeTableFeature
 
@@ -104,7 +105,7 @@ public struct MakePromise: ReducerProtocol {
             }
         }
 
-        var timeTable: TimeTable.State? {
+        var timeTable: TimeTableFeature.TimeTable.State? {
             get {
                 steps.compactMap { step in
                     guard case let .timeTable(state) = step else {
@@ -148,7 +149,7 @@ public struct MakePromise: ReducerProtocol {
             case setNameAndPlace(SetNameAndPlace.State)
             case calendar(CalendarCore.State)
             case timeSelection(TimeSelection.State)
-            case timeTable(TimeTable.State)
+            case timeTable(TimeTableFeature.TimeTable.State)
         }
 
         var isNextButtonEnable: Bool {
@@ -209,13 +210,13 @@ public struct MakePromise: ReducerProtocol {
         case dismiss
         case nextButtonTapped
         case backButtonTapped
-        case temporaryPromisingResponse(TaskResult<SharedModels.CreatePromisingResponse>)
-        case updatePromiseTimeRespose(TaskResult<SharedModels.UpdatePromiseTimeResponse>)
+        case temporaryPromisingResponse(TaskResult<CreatePromisingResponse>)
+        case updatePromiseTimeRespose(TaskResult<UpdatePromiseTimeResponse>)
         case selectTheme(SelectTheme.Action)
         case setNameAndPlace(SetNameAndPlace.Action)
         case calendar(CalendarCore.Action)
         case timeSelection(TimeSelection.Action)
-        case timeTable(TimeTable.Action)
+        case timeTable(TimeTableFeature.TimeTable.Action)
         case alert(PresentationAction<AlertAction>)
     }
 
@@ -268,7 +269,7 @@ public struct MakePromise: ReducerProtocol {
                                             )
                                         )
                                     ),
-                                    as: SharedModels.UpdatePromiseTimeResponse.self
+                                    as: UpdatePromiseTimeResponse.self
                                 )
                             }
                         )
@@ -329,7 +330,7 @@ public struct MakePromise: ReducerProtocol {
                                         )
                                     )
                                 ),
-                                as: SharedModels.CreatePromisingResponse.self
+                                as: CreatePromisingResponse.self
                             )
                         }
                     )
@@ -373,31 +374,6 @@ private enum Resource {
         static let warning = "다음을 누르시면 이전 단계로 돌아갈 수 없습니다. 진행하시겠습니까?"
         static let cancel = "취소"
         static let confirm = "확인"
-    }
-}
-
-extension SharedModels.CreatePromisingResponse: Equatable {
-    public static func == (lhs: SharedModels.CreatePromisingResponse, rhs: SharedModels.CreatePromisingResponse) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
-extension SharedModels.PromisingTime: Equatable {
-    public static func == (
-        lhs: SharedModels.PromisingTime,
-        rhs: SharedModels.PromisingTime
-    ) -> Bool {
-        lhs.unit == rhs.unit
-            && lhs.timeTable.count == rhs.timeTable.count
-    }
-}
-
-extension SharedModels.UpdatePromiseTimeResponse: Equatable {
-    public static func == (
-        lhs: SharedModels.UpdatePromiseTimeResponse,
-        rhs: SharedModels.UpdatePromiseTimeResponse
-    ) -> Bool {
-        lhs.promiseID == rhs.promiseID
     }
 }
 
