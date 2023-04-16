@@ -269,7 +269,7 @@ public struct CalendarView: View {
                                             .font(.system(size: 13))
                                             .foregroundColor(PDS.COLOR.gray5.scale)
                                     }
-                                    .onTapGesture { viewStore.send(.promiseTapped(promise.date, promise.id)) }
+                                    .onTapGesture { viewStore.send(.promiseTapped(promise.date)) }
                                 }
                             }
                         }
@@ -320,8 +320,8 @@ extension CalendarView {
             case let .scrollViewOffsetChanged(type: type, index: index):
                 return .scrollViewOffsetChanged(type: type, index: index)
 
-            case let .promiseTapped(date, id):
-                return .promiseTapped(date, id)
+            case let .promiseTapped(date):
+                return .promiseTapped(date)
 
             case let .binding(item):
                 return .binding(item.pullback(\.viewState))
@@ -334,7 +334,7 @@ extension CalendarView {
         case rightSideButtonTapped
         case formChangeButtonTapped
         case scrollViewOffsetChanged(type: CalendarType, index: Int)
-        case promiseTapped(Date, Promise.ID)
+        case promiseTapped(Date)
         case binding(BindingAction<ViewState>)
     }
 }

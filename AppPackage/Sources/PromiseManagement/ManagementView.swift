@@ -11,6 +11,8 @@ import APIClientLive
 import CommonView
 import ComposableArchitecture
 import DesignSystem
+import Entity
+import SharedModel
 import SwiftUI
 
 public struct PromiseManagement: ReducerProtocol {
@@ -22,12 +24,12 @@ public struct PromiseManagement: ReducerProtocol {
         @BindingState var visibleTab: Tab = .standby
         var confirmedTab = ConfirmedListFeature.State()
         var standbyTab = StandbyListFeature.State()
-        @BindingState var detailItem: PromiseDetailView.State?
+        @BindingState var detailItem: PromiseDetailViewState?
 
         public init(
             standbyRows: IdentifiedArrayOf<StandbyCell.State> = [],
             confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = [],
-            detailItem: PromiseDetailView.State? = nil
+            detailItem: PromiseDetailViewState? = nil
         ) {
             standbyTab = StandbyListFeature.State(rows: standbyRows)
             confirmedTab = ConfirmedListFeature.State(rows: confirmedRows)
@@ -68,7 +70,7 @@ public struct PromiseManagement: ReducerProtocol {
             case let .confirmedTab(.delegate(action)):
                 switch action {
                 case let .showDetailView(item):
-                    state.detailItem = PromiseDetailView.State(
+                    state.detailItem = PromiseDetailViewState(
                         id: UUID(uuidString: String(item.id)) ?? UUID(),
                         title: item.title,
                         theme: item.theme,
@@ -88,7 +90,7 @@ public struct PromiseManagement: ReducerProtocol {
             case let .standbyTab(.delegate(action)):
                 switch action {
                 case let .showDetailView(item):
-                    state.detailItem = PromiseDetailView.State(
+                    state.detailItem = PromiseDetailViewState(
                         id: UUID(uuidString: String(item.id)) ?? UUID(),
                         title: item.title,
                         theme: "테마",
@@ -116,7 +118,7 @@ public struct PromiseManagement: ReducerProtocol {
             async let confirmedFetchResponse: Void = send(.confirmedFetchAllResponse(
                 await APIClient.mock.request(
                     route: .promise(.fetchAll(.user)),
-                    as: [SharedModels.Promise].self
+                    as: [Promise].self
                 )
                 .map {
                     ConfirmedCell.State(
@@ -136,7 +138,7 @@ public struct PromiseManagement: ReducerProtocol {
             ))
 
             async let standbyFetchResponse: Void = try send(.standbyFetchAllResponse(
-                await APIClient.mock.request(route: .promising(.fetchAll), as: SharedModels.PromisingTimeStamps.self)
+                await APIClient.mock.request(route: .promising(.fetchAll), as: PromisingTimeStamps.self)
                     .promisingTimeStamps
                     .map { StandbyCell.State(
                         id: $0.id,
@@ -245,7 +247,7 @@ struct ManagementView_Previews: PreviewProvider {
                 standbyRows: .mock,
                 confirmedRows: .mock,
                 detailItem:
-                PromiseDetailView.State(
+                PromiseDetailViewState(
                     id: UUID(),
                     title: "약속명",
                     theme: "여행",

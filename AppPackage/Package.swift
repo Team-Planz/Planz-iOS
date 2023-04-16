@@ -53,6 +53,7 @@ let package = Package(
         .target(
             name: "APIClient",
             dependencies: [
+                "Entity",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
@@ -91,6 +92,7 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "SwiftUIHelper",
+                "SharedModel",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
@@ -125,7 +127,9 @@ let package = Package(
                 "DesignSystem",
                 "CommonView",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                "APIClient"
+                "APIClient",
+                "APIClientLive",
+                "SharedModel"
             ]
         ),
         .target(

@@ -7,6 +7,7 @@
 
 import APIClient
 import ComposableArchitecture
+import Entity
 import Foundation
 
 public extension APIClient {
@@ -34,7 +35,7 @@ public extension APIClient {
                 case .updateName:
                     fallthrough
                 case .fetchInfo:
-                    let info = SharedModels.User(
+                    let info = Entity.User(
                         id: 0,
                         name: "name"
                     )
@@ -54,7 +55,7 @@ public extension APIClient {
                 case .confirm:
                     fallthrough
                 case .fetchSession:
-                    let session = SharedModels.PromisingSession(
+                    let session = PromisingSession(
                         startDate: dateFormatter.date(from: "2023-02-10 09:00:00")!,
                         endDate: dateFormatter.date(from: "2023-02-20 22:00:00")!,
                         count: 0,
@@ -66,7 +67,7 @@ public extension APIClient {
                     let data = try encode(from: session)
                     return (data, URLResponse())
                 case .fetch:
-                    let timeStamp = SharedModels.PromisingTimeStamp(
+                    let timeStamp = PromisingTimeStamp(
                         updatedAt: dateFormatter.date(from: "2023-02-10 09:00:00")!,
                         isOwner: true,
                         isResponded: true,
@@ -91,11 +92,11 @@ public extension APIClient {
                     let data = try encode(from: timeStamp)
                     return (data, URLResponse())
                 case .fetchStatus:
-                    let status = SharedModels.PromisingStatusResponse(status: .owner)
+                    let status = PromisingStatusResponse(status: .owner)
                     let data = try encode(from: status)
                     return (data, URLResponse())
                 case .fetchTimeTable:
-                    let timeTable = SharedModels.PromisingTimeTable(
+                    let timeTable = PromisingTimeTable(
                         members: [.init(id: 0, name: "name")],
                         colors: [0],
                         totalCount: 0,
@@ -129,9 +130,9 @@ public extension APIClient {
                     let data = try encode(from: timeTable)
                     return (data, URLResponse())
                 case .fetchAll:
-                    let timeStamps = SharedModels.PromisingTimeStamps(
+                    let timeStamps = PromisingTimeStamps(
                         [
-                            SharedModels.PromisingTimeStamp(
+                            PromisingTimeStamp(
                                 updatedAt: dateFormatter.date(from: "2023-02-10 09:00:00")!,
                                 isOwner: true,
                                 isResponded: true,
@@ -158,15 +159,15 @@ public extension APIClient {
                     let data = try encode(from: timeStamps)
                     return (data, URLResponse())
                 case .fetchCategories:
-                    let categories = SharedModels.Categories(
+                    let categories = Categories(
                         [
-                            SharedModels.Category(id: 0, keyword: "keyword", type: "type")
+                            Category(id: 0, keyword: "keyword", type: "type")
                         ]
                     )
                     let data = try encode(from: categories)
                     return (data, URLResponse())
                 case .randomName:
-                    let name = SharedModels.CategoryName(name: "category name")
+                    let name = CategoryName(name: "category name")
                     let data = try encode(from: name)
                     return (data, URLResponse())
                 }
@@ -176,12 +177,12 @@ public extension APIClient {
                 case let .fetchAll(query):
                     switch query {
                     case .user:
-                        let confirmedPromiseList: [SharedModels.Promise] = [
+                        let confirmedPromiseList: [Promise] = [
                             .init(
                                 id: 0,
                                 name: "promise name",
                                 date: dateFormatter.date(from: "2023-02-15 14:00:00")!,
-                                owner: SharedModels.User(
+                                owner: Entity.User(
                                     id: 0,
                                     name: "name"
                                 ),
@@ -205,12 +206,12 @@ public extension APIClient {
                         fatalError()
                     }
                 case let .fetch(id: id):
-                    let detailPromise: SharedModels.Promise =
+                    let detailPromise: Promise =
                         .init(
                             id: id,
                             name: "promise name",
                             date: dateFormatter.date(from: "2023-02-15 14:00:00")!,
-                            owner: SharedModels.User(
+                            owner: Entity.User(
                                 id: 0,
                                 name: "name"
                             ),

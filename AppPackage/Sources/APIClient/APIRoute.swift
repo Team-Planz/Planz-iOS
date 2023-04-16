@@ -5,6 +5,7 @@
 //  Created by junyng on 2023/02/13.
 //
 
+import Entity
 import Foundation
 
 /// A structure for representing API routes
@@ -16,17 +17,17 @@ public enum APIRoute {
     public enum User {
         case signup
         case resign
-        case updateName(SharedModels.UpdateUsernameRequest)
+        case updateName(UpdateUsernameRequest)
         case fetchInfo
     }
 
     public enum Promising {
-        case create(SharedModels.CreatePromisingRequest)
+        case create(CreatePromisingRequest)
         case fetchSession(String)
-        case respondTimeByHost(String, SharedModels.PromisingTime)
-        case respondTimeByGuest(String, SharedModels.PromisingTime)
+        case respondTimeByHost(String, PromisingTime)
+        case respondTimeByGuest(String, PromisingTime)
         case reject(String)
-        case confirm(String, SharedModels.ConfirmPromisingRequest)
+        case confirm(String, ConfirmPromisingRequest)
         case fetch(Int)
         case fetchStatus(Int)
         case fetchAll

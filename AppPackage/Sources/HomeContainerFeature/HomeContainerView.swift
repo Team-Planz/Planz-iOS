@@ -4,7 +4,9 @@ import DesignSystem
 import Entity
 import HomeFeature
 import MakePromise
+import SharedModel
 import SwiftUI
+import SwiftUIHelper
 import SwiftUINavigation
 
 public struct HomeContainerView: View {
@@ -61,23 +63,24 @@ public struct HomeContainerView: View {
             ) { store in
                 ZStack {
                     PromiseListView(store: store)
-                        .presentationDetents(
-                            viewStore.detents,
-                            selection: viewStore
-                                .binding(
-                                    get: \.selectedDetent,
-                                    send: { _ in
-                                        .destination(.presented(.promiseList(.deSelectPromise)))
-                                    }
-                                )
-                        )
-                        .opacity(viewStore.selectedDetent == .large ? .zero : 1)
+                        .hidden(viewStore.selectedDetent == .large)
 
                     if let selectedPromise = viewStore.selectedPromise {
-                        PromiseDetailView(state: .init(promise: selectedPromise))
-                            .opacity(viewStore.selectedDetent == .large ? 1 : .zero)
+                        PromiseDetailView(state: selectedPromise)
+                            .hidden(viewStore.selectedDetent != .large)
                     }
                 }
+                .presentationDetents(
+                    viewStore.detents,
+                    selection: viewStore
+                        .binding(
+                            get: \.selectedDetent,
+                            send: {
+                                print($0)
+                                return .destination(.presented(.promiseList(.deSelectPromise)))
+                            }
+                        )
+                )
             }
         }
     }
@@ -104,14 +107,13 @@ public struct HomeContainerView: View {
 }
 
 private extension HomeContainerCore.State {
-    var selectedPromise: Promise? {
+    var selectedPromise: PromiseDetailViewState? {
         guard
             let destinationState,
-            let state = (/HomeContainerCore.DestinationState.promiseList).extract(from: destinationState),
-            let promise = state.selectedPromise
+            let state = (/HomeContainerCore.DestinationState.promiseList).extract(from: destinationState)
         else { return nil }
 
-        return promise
+        return state.selectedPromise
     }
 
     var detents: Set<PresentationDetent> {

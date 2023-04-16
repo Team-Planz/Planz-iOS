@@ -1,3 +1,5 @@
+import APIClient
+import APIClientLive
 import CalendarFeature
 import CasePaths
 import CommonView
@@ -5,6 +7,7 @@ import ComposableArchitecture
 import Foundation
 import HomeFeature
 import MakePromise
+import SharedModel
 
 public enum Tab: CaseIterable, Equatable {
     case home
@@ -65,31 +68,18 @@ public struct HomeContainerCore: ReducerProtocol {
 
                 return .none
 
-            case let .home(action: .rowTapped(date)):
+            case
+                let .home(action: .todayPromiseRowTapped(date)),
+                let .home(action: .calendar(action: .promiseTapped(date))):
                 guard
-                    let day = state.homeState.calendar[date],
-                    let firstIndex = day.promiseList.firstIndex(where: { $0.date == date })
+                    let list = state.homeState.selectedMonthSchedule?.list.map(\.itemState),
+                    let promise = state.homeState[date]
                 else { return .none }
                 state.destinationState = .promiseList(
                     .init(
-                        date: day.id,
-                        promiseList: .init(uniqueElements: day.promiseList),
-                        selectedPromise: day.promiseList[firstIndex]
-                    )
-                )
-
-                return .none
-
-            case let .home(action: .calendar(action: .promiseTapped(date, id))):
-                guard
-                    let day = state.homeState.calendar[date],
-                    let firstIndex = day.promiseList.firstIndex(where: { $0.id == id })
-                else { return .none }
-                state.destinationState = .promiseList(
-                    .init(
-                        date: day.id,
-                        promiseList: .init(uniqueElements: day.promiseList),
-                        selectedPromise: day.promiseList[firstIndex]
+                        date: promise.date,
+                        promiseList: .init(uniqueElements: list),
+                        selectedPromise: promise.detailViewState
                     )
                 )
                 return .none
@@ -107,14 +97,30 @@ public struct HomeContainerCore: ReducerProtocol {
                     )
                 )
             ):
-                let itemList = state.homeState.calendar[dayID]?.promiseList ?? []
+                guard
+                    let schedule = state.homeState.selectedMonthSchedule
+                else { return .none }
+
                 state.destinationState = .promiseList(
                     .init(
                         date: dayID,
-                        promiseList: .init(uniqueElements: itemList)
+                        promiseList: .init(
+                            uniqueElements: schedule.list
+                                .filter { calendar.isDate($0.date, equalTo: .today, toGranularity: .day) }
+                                .map(\.itemState)
+                        )
                     )
                 )
 
+                return .none
+            case let .destination(.presented(.promiseList(.rowTapped(date)))):
+//            case let .destination(.presented(.promiseList(.delegate(.selectPromise(date))))):
+                guard
+                    let detailViewState = state.homeState[date]?.detailViewState
+                else { return .none }
+                try? (/DestinationState.promiseList).modify(&state.destinationState) {
+                    $0.selectedPromise = detailViewState
+                }
                 return .none
 
             case .destination(.presented(.makePromise(.dismiss))),

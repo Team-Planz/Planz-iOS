@@ -34,13 +34,13 @@ public struct AppCore: ReducerProtocol {
             child: HomeContainerCore.init
         )
 
-        Reduce { state, action in
+        Reduce<State, Action> { state, action in
             switch action {
             case .onAppear:
                 return .task {
                     do {
                         _ = try await apiClient.user()
-                        return .switchScene(.homeContainer(.init()))
+                        return .switchScene(.homeContainer(.preview))
                     } catch {
                         return .switchScene(.login(.init()))
                     }
