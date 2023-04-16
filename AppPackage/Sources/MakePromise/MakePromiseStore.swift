@@ -63,8 +63,7 @@ public let makePromiseReducer = AnyReducer<MakePromiseState, MakePromiseAction, 
         case .nextButtonTapped:
             if case let .timeSelection(timeSelection) = state.currentStep,
                let startTime = timeSelection.startTime,
-               let endTime = timeSelection.endTime
-            {
+               let endTime = timeSelection.endTime {
                 state.timeTable?.startTime = TimeInterval(startTime * 3600)
                 state.timeTable?.endTime = TimeInterval(endTime * 3600)
                 state.timeTable?.reload()
