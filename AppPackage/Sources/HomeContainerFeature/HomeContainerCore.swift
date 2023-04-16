@@ -7,8 +7,8 @@ import ComposableArchitecture
 import Foundation
 import HomeFeature
 import MakePromise
-import SharedModel
 import ManagePromiseFeature
+import SharedModel
 
 public enum Tab: CaseIterable, Equatable {
     case home

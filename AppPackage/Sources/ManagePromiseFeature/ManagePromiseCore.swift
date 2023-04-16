@@ -9,8 +9,8 @@ import APIClient
 import APIClientLive
 import ComposableArchitecture
 import Entity
-import SharedModel
 import Foundation
+import SharedModel
 
 public struct ManagePromiseCore: ReducerProtocol {
     public init() {}
@@ -43,8 +43,8 @@ public struct ManagePromiseCore: ReducerProtocol {
 
         public enum Delegate: Equatable {
             case makePromise
-            case confirmedDetail(PromiseDetailView.State)
-            case standbyDetail(PromiseDetailView.State)
+            case confirmedDetail(PromiseDetailViewState)
+            case standbyDetail(PromiseDetailViewState)
         }
     }
 

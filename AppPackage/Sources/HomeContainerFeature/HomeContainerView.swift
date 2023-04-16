@@ -4,8 +4,8 @@ import DesignSystem
 import Entity
 import HomeFeature
 import MakePromise
-import SharedModel
 import ManagePromiseFeature
+import SharedModel
 import SwiftUI
 import SwiftUIHelper
 import SwiftUINavigation
