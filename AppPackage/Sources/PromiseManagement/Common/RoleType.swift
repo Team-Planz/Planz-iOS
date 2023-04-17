@@ -9,7 +9,7 @@
 import DesignSystem
 import SwiftUI
 
-enum RoleType: String {
+public enum RoleType: String {
     case leader
     case general
 

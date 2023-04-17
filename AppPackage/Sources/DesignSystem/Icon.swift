@@ -42,6 +42,12 @@ public extension PDS {
         case illustError
         case plus
 
+        case face
+        case iosShare
+        case location
+        case share
+        case user
+
         public var image: Image {
             return Image(rawValue, bundle: Bundle.module)
         }

@@ -20,7 +20,7 @@ public struct Login: ReducerProtocol {
     public enum Action: Equatable {
         case kakaoButtonTapped
         case browsingTapped
-        case authorizeResponse(TaskResult<String>)
+        case authorizeResponse(TaskResult<APIClient.TokenEnvelope>)
     }
 
     public init() {}
@@ -36,7 +36,7 @@ public struct Login: ReducerProtocol {
                         try await apiClient.authenticate()
                     }
                     if case .success = result {
-                        try? await apiClient.request(route: .user(.signup))
+                        try await apiClient.request(route: .user(.signup))
                     }
                     return .authorizeResponse(result)
                 }

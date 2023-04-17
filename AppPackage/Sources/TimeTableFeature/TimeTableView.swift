@@ -14,7 +14,7 @@ public struct TimeTableState: Equatable {
         public let id: Int
         let date: Date
 
-        init(date: Date) {
+        public init(date: Date) {
             id = date.hashValue
             self.date = date
         }
@@ -40,26 +40,40 @@ public struct TimeTableState: Equatable {
         let isStartTimeVisible: Bool
     }
 
-    let days: [Day]
-    let startTime: TimeInterval
-    let endTime: TimeInterval
-    let timeInterval: TimeInterval
-    let timeMarkerInterval: TimeInterval
-    let timeRanges: [TimeRange]
-    var timeCells: [[TimeCell]]
+    public var days: [Day]
+    public var startTime: TimeInterval
+    public var endTime: TimeInterval
+    public var timeInterval: TimeInterval
+    public var timeMarkerInterval: TimeInterval
+    public var timeRanges: [TimeRange] = []
+    public var timeCells: [[TimeCell]] = []
 
-    init(
-        days: [Day],
-        startTime: TimeInterval,
-        endTime: TimeInterval,
-        timeInterval: TimeInterval,
-        timeMarkerInterval: TimeInterval
+    public init(
+        days: [Day] = [],
+        startTime: TimeInterval = .init(),
+        endTime: TimeInterval = .init(),
+        timeInterval: TimeInterval = .init(),
+        timeMarkerInterval: TimeInterval = .init()
     ) {
         self.days = days
         self.startTime = startTime
         self.endTime = endTime
         self.timeInterval = timeInterval
         self.timeMarkerInterval = timeMarkerInterval
+        reload()
+    }
+
+    public var isTimeSelected: Bool {
+        timeCells
+            .flatMap { $0 }
+            .contains { $0 == .selected }
+    }
+
+    public var isGridLoadable: Bool {
+        timeRanges.count > 0 && days.count > 0 && timeCells.count > 0
+    }
+
+    public mutating func reload() {
         timeRanges = stride(
             from: startTime,
             to: endTime,
@@ -83,7 +97,7 @@ public enum TimeTableAction: Equatable {
     case timeCellTapped(row: Int, column: Int)
 }
 
-public let timeTableReducer = Reducer<
+public let timeTableReducer = AnyReducer<
     TimeTableState,
     TimeTableAction,
     Void
@@ -126,13 +140,13 @@ public struct TimeTableView: View {
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
                             .overlay(Resource.PlanzColor.gray200)
-
-                        grid
-                            .frame(
-                                width: dayCellWidth * CGFloat(viewStore.days.count),
-                                height: LayoutConstant.timeCellHeight * CGFloat(viewStore.timeRanges.count)
-                            )
-
+                        if viewStore.isGridLoadable {
+                            grid
+                                .frame(
+                                    width: dayCellWidth * CGFloat(viewStore.days.count),
+                                    height: LayoutConstant.timeCellHeight * CGFloat(viewStore.timeRanges.count)
+                                )
+                        }
                         Divider()
                             .frame(height: LayoutConstant.lineWidth)
                             .overlay(Resource.PlanzColor.gray200)
