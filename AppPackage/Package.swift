@@ -14,7 +14,8 @@ let package = Package(
                 "PromiseManagement",
                 "LoginFeature",
                 "SwiftUIHelper",
-                "Entity"
+                "Entity",
+                "PromiseTimeDetailFeature"
             ]
         ),
         .library(
@@ -168,6 +169,15 @@ let package = Package(
         ),
         .target(name: "SwiftUIHelper"),
         .target(name: "Entity"),
+        .target(
+            name: "PromiseTimeDetailFeature",
+            dependencies: [
+                "DesignSystem",
+                "TimeTableFeature",
+                "SwiftUIHelper",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
         .target(
             name: "SharedModel",
             dependencies: [
