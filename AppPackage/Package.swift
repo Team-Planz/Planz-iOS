@@ -47,18 +47,33 @@ let package = Package(
         ),
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
-        .package(url: "https://github.com/Team-Planz/Planz-iOS-APIClient.git", branch: "main"),
-        .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "0.6.1")
+        .package(url: "https://github.com/kakao/kakao-ios-sdk.git", from: "2.14.0"),
+        .package(url: "https://github.com/Team-Planz/Planz-iOS-Secrets.git", branch: "main")
     ],
     targets: [
+        .target(
+            name: "APIClient",
+            dependencies: [
+                "Entity",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .target(
+            name: "APIClientLive",
+            dependencies: [
+                "APIClient",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "KakaoSDK", package: "kakao-ios-sdk"),
+                .product(name: "Planz-iOS-Secrets", package: "Planz-iOS-Secrets")
+            ]
+        ),
         .target(
             name: "AppFeature",
             dependencies: [
                 "DesignSystem",
                 "HomeContainerFeature",
                 "LoginFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "SwiftUINavigation", package: "swiftui-navigation")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
         .target(
@@ -78,6 +93,7 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "SwiftUIHelper",
+                "SharedModel",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
@@ -101,7 +117,9 @@ let package = Package(
             name: "MakePromise",
             dependencies: [
                 "DesignSystem",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                "CalendarFeature",
+                "TimeTableFeature"
             ]
         ),
         .target(
@@ -109,8 +127,10 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 "CommonView",
-                .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                "APIClient",
+                "APIClientLive",
+                "SharedModel"
             ]
         ),
         .target(
@@ -118,7 +138,8 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "APIClient", package: "Planz-iOS-APIClient")
+                "APIClient",
+                "APIClientLive"
             ]
         ),
         .target(
@@ -128,9 +149,9 @@ let package = Package(
                 "MakePromise",
                 "HomeFeature",
                 "CalendarFeature",
+                "TimeTableFeature",
                 "SwiftUIHelper",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "SwiftUINavigation", package: "swiftui-navigation")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
         .target(
@@ -139,8 +160,10 @@ let package = Package(
                 "DesignSystem",
                 "CalendarFeature",
                 "CommonView",
+                "SharedModel",
+                "APIClient",
+                "APIClientLive",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
                 .product(name: "Introspect", package: "SwiftUI-Introspect")
             ]
         ),
@@ -153,6 +176,12 @@ let package = Package(
                 "TimeTableFeature",
                 "SwiftUIHelper",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .target(
+            name: "SharedModel",
+            dependencies: [
+                "Entity"
             ]
         )
     ]

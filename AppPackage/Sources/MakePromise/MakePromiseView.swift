@@ -6,9 +6,11 @@
 //  Copyright © 2022 Team-Planz. All rights reserved.
 //
 
+import CalendarFeature
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import TimeTableFeature
 
 public struct MakePromiseView: View {
     let store: Store<MakePromiseState, MakePromiseAction>
@@ -31,29 +33,41 @@ public struct MakePromiseView: View {
 struct PromiseContentView: View {
     var store: Store<MakePromiseState, MakePromiseAction>
     public var body: some View {
-        WithViewStore(self.store) { viewStore in
-            VStack {
-                switch viewStore.currentStep {
-                case .selectTheme:
-                    SelectThemeView(
-                        store: self.store.scope(
-                            state: \.selectTheme!,
-                            action: { .selectTheme($0) }
+        IfLetStore(store.scope(state: \.currentStep)) { store in
+            SwitchStore(store) {
+                CaseLet(
+                    state: /MakePromiseState.Step.selectTheme,
+                    action: MakePromiseAction.selectTheme,
+                    then: SelectThemeView.init
+                )
+                CaseLet(
+                    state: /MakePromiseState.Step.setNameAndPlace,
+                    action: MakePromiseAction.setNameAndPlace,
+                    then: NameAndPlaceView.init
+                )
+                CaseLet(
+                    state: /MakePromiseState.Step.timeSelection,
+                    action: MakePromiseAction.timeSelection,
+                    then: TimeSelectionView.init
+                )
+                CaseLet(
+                    state: /MakePromiseState.Step.calendar,
+                    action: MakePromiseAction.calendar,
+                    then: {
+                        CalendarView(
+                            type: .promise,
+                            store: $0
                         )
-                    )
-                case .setNameAndPlace:
-                    NameAndPlaceView(
-                        store: self.store.scope(
-                            state: \.setNameAndPlace,
-                            action: { .setNameAndPlace($0) }
-                        )
-                    )
-                case .none:
-                    MakePromiseErrorView()
-                }
+                    }
+                )
+                CaseLet(
+                    state: /MakePromiseState.Step.timeTable,
+                    action: MakePromiseAction.timeTable,
+                    then: TimeTableView.init
+                )
             }
-            .frame(alignment: .top)
         }
+        .frame(alignment: .top)
         .navigationBarBackButtonHidden()
     }
 }

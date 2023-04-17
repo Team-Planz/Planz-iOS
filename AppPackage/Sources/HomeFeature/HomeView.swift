@@ -5,6 +5,7 @@ import DesignSystem
 import Entity
 import Foundation
 import Introspect
+import SharedModel
 import SwiftUI
 
 public struct HomeView: View {
@@ -41,7 +42,7 @@ public struct HomeView: View {
                 type: .home,
                 store: store
                     .scope(
-                        state: \.calendar,
+                        state: \.calendarState,
                         action: HomeCore.Action.calendar
                     )
             )
@@ -51,6 +52,7 @@ public struct HomeView: View {
             PDS.COLOR.white1.scale
                 .ignoresSafeArea()
         }
+        .onAppear { viewStore.send(.onAppear) }
     }
 
     var todayPromiseListView: some View {
@@ -74,8 +76,8 @@ public struct HomeView: View {
                 spacing: 10,
                 trailingSpace: 80
             ) { promise in
-                PromiseItem(state: promise.item)
-                    .onTapGesture { viewStore.send(.rowTapped(promise.date)) }
+                PromiseItem(state: promise)
+                    .onTapGesture { viewStore.send(.todayPromiseRowTapped(promise.date)) }
             }
             .frame(height: viewStore.todayPromiseListHeight)
             .padding(
@@ -108,7 +110,7 @@ extension HomeView {
                 : 38
         }
 
-        let todayPromiseList: [Promise]
+        let todayPromiseList: [PromiseItemState]
     }
 
     enum Resource {
@@ -122,16 +124,6 @@ extension HomeView {
 extension HomeCore.State {
     var viewState: HomeView.ViewState {
         .init(todayPromiseList: todayPromiseList)
-    }
-}
-
-private extension Promise {
-    var item: PromiseItem.State {
-        .init(
-            promiseType: type,
-            name: name,
-            date: date
-        )
     }
 }
 
