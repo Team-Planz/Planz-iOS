@@ -1,21 +1,18 @@
 //
-//  ManagementView.swift
-//  Planz
+//  ManagePromiseCore.swift
 //
-//  Created by Sujin Jin on 2023/02/25.
-//  Copyright © 2023 Team-Planz. All rights reserved.
+//
+//  Created by Sujin Jin on 2023/04/16.
 //
 
 import APIClient
 import APIClientLive
-import CommonView
 import ComposableArchitecture
-import DesignSystem
 import Entity
+import Foundation
 import SharedModel
-import SwiftUI
 
-public struct PromiseManagement: ReducerProtocol {
+public struct ManagePromiseCore: ReducerProtocol {
     public init() {}
 
     @Dependency(\.apiClient) var apiClient
@@ -24,16 +21,13 @@ public struct PromiseManagement: ReducerProtocol {
         @BindingState var visibleTab: Tab = .standby
         var confirmedTab = ConfirmedListFeature.State()
         var standbyTab = StandbyListFeature.State()
-        @BindingState var detailItem: PromiseDetailViewState?
 
         public init(
             standbyRows: IdentifiedArrayOf<StandbyCell.State> = [],
-            confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = [],
-            detailItem: PromiseDetailViewState? = nil
+            confirmedRows: IdentifiedArrayOf<ConfirmedCell.State> = []
         ) {
             standbyTab = StandbyListFeature.State(rows: standbyRows)
             confirmedTab = ConfirmedListFeature.State(rows: confirmedRows)
-            self.detailItem = detailItem
         }
     }
 
@@ -42,9 +36,16 @@ public struct PromiseManagement: ReducerProtocol {
         case onAppear
         case standbyTab(StandbyListFeature.Action)
         case confirmedTab(ConfirmedListFeature.Action)
-        case closeDetailButtonTapped
         case standbyFetchAllResponse([StandbyCell.State])
         case confirmedFetchAllResponse([ConfirmedCell.State])
+        case makePromiseButtonTapped
+        case delegate(Delegate)
+
+        public enum Delegate: Equatable {
+            case makePromise
+            case confirmedDetail(PromiseDetailViewState)
+            case standbyDetail(PromiseDetailViewState)
+        }
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -52,6 +53,12 @@ public struct PromiseManagement: ReducerProtocol {
 
         Reduce { state, action in
             switch action {
+            case .delegate:
+                return .none
+
+            case .makePromiseButtonTapped:
+                return .send(.delegate(.makePromise))
+
             case let .standbyFetchAllResponse(result):
                 let rows = IdentifiedArrayOf(uniqueElements: result)
                 state.standbyTab = StandbyListFeature.State(rows: rows)
@@ -70,27 +77,25 @@ public struct PromiseManagement: ReducerProtocol {
             case let .confirmedTab(.delegate(action)):
                 switch action {
                 case let .showDetailView(item):
-                    state.detailItem = PromiseDetailViewState(
+
+                    let detailState = PromiseDetailViewState(
                         id: UUID(uuidString: String(item.id)) ?? UUID(),
                         title: item.title,
                         theme: item.theme,
-
-                        // MARK: - TODO must fix it
-
                         date: .now,
                         place: item.place,
                         participants: item.participants
                     )
-                    return .none
+                    return .send(.delegate(.confirmedDetail(detailState)))
+
+                case .showMakePromise:
+                    return .send(.delegate(.makePromise))
                 }
-            case .closeDetailButtonTapped:
-                state.detailItem = nil
-                return .none
 
             case let .standbyTab(.delegate(action)):
                 switch action {
                 case let .showDetailView(item):
-                    state.detailItem = PromiseDetailViewState(
+                    let detailState = PromiseDetailViewState(
                         id: UUID(uuidString: String(item.id)) ?? UUID(),
                         title: item.title,
                         theme: "테마",
@@ -98,7 +103,10 @@ public struct PromiseManagement: ReducerProtocol {
                         place: "강남역",
                         participants: item.members
                     )
-                    return .none
+                    return .send(.delegate(.standbyDetail(detailState)))
+
+                case .showMakePromise:
+                    return .send(.delegate(.makePromise))
                 }
 
             default:
@@ -162,101 +170,5 @@ public struct PromiseManagement: ReducerProtocol {
 
             let responses = try await (standbyFetchResponse, confirmedFetchResponse)
         } catch {}
-    }
-}
-
-public struct ManagementView: View {
-    private let store: StoreOf<PromiseManagement>
-
-    public init(store: StoreOf<PromiseManagement>) {
-        self.store = store
-    }
-
-    public var body: some View {
-        WithViewStore(self.store) { viewStore in
-            NavigationView {
-                GeometryReader { geo in
-                    VStack {
-                        HeaderTabView(
-                            activeTab:
-                            viewStore.binding(\.$visibleTab),
-                            tabs: Tab.allCases,
-                            fullWidth: geo.size.width - 40
-                        )
-
-                        TabView(selection:
-                            viewStore.binding(\.$visibleTab)
-                        ) {
-                            StandbyListView(store: self.store.scope(
-                                state: \.standbyTab,
-                                action: PromiseManagement.Action.standbyTab
-                            )
-                            )
-                            .tag(Tab.standby)
-
-                            ConfirmedListView(store: store.scope(
-                                state: \.confirmedTab,
-                                action: PromiseManagement.Action.confirmedTab
-                            ))
-                            .tag(Tab.confirmed)
-                        }
-                        .animation(.default, value: viewStore.visibleTab.rawValue)
-                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 200)
-                        .tabViewStyle(.page(indexDisplayMode: .never))
-                    }
-                    .navigationTitle("약속 관리")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button {
-                                print("Add Item")
-                            } label: {
-                                PDS.Icon.plus.image
-                            }
-                        }
-                    }
-                    .onAppear { viewStore.send(.onAppear) }
-                    .fullScreenCover(
-                        unwrapping: viewStore.binding(\.$detailItem)
-                    ) { state in
-                        NavigationStack {
-                            PromiseDetailView(state: state.wrappedValue)
-                                .toolbar {
-                                    ToolbarItem {
-                                        Button {
-                                            viewStore.send(.closeDetailButtonTapped)
-                                        } label: {
-                                            PDS.Icon.close.image
-                                        }
-                                    }
-                                }
-                                .navigationTitle("약속 상세보기")
-                                .navigationBarTitleDisplayMode(.inline)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-struct ManagementView_Previews: PreviewProvider {
-    static var previews: some View {
-        ManagementView(store: StoreOf<PromiseManagement>(
-            initialState: PromiseManagement.State(
-                standbyRows: .mock,
-                confirmedRows: .mock,
-                detailItem:
-                PromiseDetailViewState(
-                    id: UUID(),
-                    title: "약속명",
-                    theme: "여행",
-                    date: .now,
-                    place: "강남",
-                    participants: ["정인혜", "이은영"]
-                )
-            ),
-            reducer: PromiseManagement()._printChanges()
-        ))
     }
 }

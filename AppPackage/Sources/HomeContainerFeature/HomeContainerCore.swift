@@ -7,6 +7,7 @@ import ComposableArchitecture
 import Foundation
 import HomeFeature
 import MakePromise
+import ManagePromiseFeature
 import SharedModel
 
 public enum Tab: CaseIterable, Equatable {
@@ -19,15 +20,19 @@ public struct HomeContainerCore: ReducerProtocol {
     public struct State: Equatable {
         var selectedTab: Tab
         var homeState: HomeCore.State
+        var managePromiseState: ManagePromiseCore.State
+
         @PresentationState var destinationState: DestinationState?
 
         public init(
             selectedTab: Tab = .home,
             homeState: HomeCore.State = .init(),
+            managePromiseState: ManagePromiseCore.State = .init(),
             destinationState: DestinationState? = nil
         ) {
             self.selectedTab = selectedTab
             self.homeState = homeState
+            self.managePromiseState = managePromiseState
             self.destinationState = destinationState
         }
     }
@@ -35,6 +40,7 @@ public struct HomeContainerCore: ReducerProtocol {
     public enum Action: Equatable {
         case selectedTabChanged(tab: Tab)
         case home(action: HomeCore.Action)
+        case manage(action: ManagePromiseCore.Action)
         case destination(PresentationAction<DestinationAction>)
     }
 
@@ -55,6 +61,12 @@ public struct HomeContainerCore: ReducerProtocol {
             state: \.homeState,
             action: /HomeContainerCore.Action.home,
             child: HomeCore.init
+        )
+
+        Scope(
+            state: \.managePromiseState,
+            action: /HomeContainerCore.Action.manage,
+            child: ManagePromiseCore.init
         )
 
         Reduce<State, Action> { state, action in
@@ -128,6 +140,24 @@ public struct HomeContainerCore: ReducerProtocol {
                 return .send(.destination(.dismiss))
 
             case .destination, .home:
+                return .none
+
+            case let .manage(.delegate(action)):
+                switch action {
+                case .makePromise:
+                    state.destinationState = .makePromise(.init())
+                    return .none
+
+                case let .standbyDetail(state):
+                    // TODO: 상세화면 띄우기
+                    return .none
+
+                case let .confirmedDetail(state):
+                    // TODO: 상세화면 띄우기
+                    return .none
+                }
+
+            case .manage:
                 return .none
             }
         }

@@ -4,6 +4,7 @@ import DesignSystem
 import Entity
 import HomeFeature
 import MakePromise
+import ManagePromiseFeature
 import SharedModel
 import SwiftUI
 import SwiftUIHelper
@@ -101,7 +102,12 @@ public struct HomeContainerView: View {
             Color.clear
 
         case .promiseManagement:
-            Text("Promise")
+            ManagePromiseView(
+                store: store.scope(
+                    state: \.managePromiseState,
+                    action: HomeContainerCore.Action.manage
+                )
+            )
         }
     }
 }
