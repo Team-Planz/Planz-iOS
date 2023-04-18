@@ -59,7 +59,7 @@ public struct DayView: View {
 
     public var body: some View {
         VStack(spacing: 1) {
-            Text(viewStore.day.date.dayString)
+            Text(formatter.string(from: viewStore.day.date))
                 .bold(viewStore.day.isToday)
                 .foregroundColor(
                     .dayColor(
@@ -123,14 +123,11 @@ public struct DayView: View {
     }
 }
 
-private extension Date {
-    var dayString: String {
-        formatted(
-            .dateTime
-                .day()
-        )
-    }
-}
+private let formatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "d"
+    return formatter
+}()
 
 private extension Color {
     static func dayColor(date: Date, isFaded: Bool) -> Self {
