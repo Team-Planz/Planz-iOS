@@ -48,7 +48,7 @@ let package = Package(
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
         .package(url: "https://github.com/kakao/kakao-ios-sdk.git", from: "2.14.0"),
-        .package(url: "https://github.com/Team-Planz/Planz-iOS-Secrets.git", branch: "main")
+        .package(url: "https://github.com/Team-Planz/Planz-iOS-Secrets.git", branch: "main"),
         .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "8.10.0")
     ],
     targets: [
