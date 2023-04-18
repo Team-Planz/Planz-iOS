@@ -101,7 +101,7 @@ public extension APIClient {
                         colors: [0],
                         totalCount: 0,
                         unit: 0,
-                        timeTable: .init(
+                        timeTable: [.init(
                             date: dateFormatter.date(from: "2023-02-15 00:00:00")!,
                             blocks: [
                                 .init(
@@ -111,12 +111,12 @@ public extension APIClient {
                                     users: [.init(id: 0, name: "name")]
                                 )
                             ]
-                        ),
+                        )],
                         id: 0,
                         promisingName: "promising name",
                         owner: [.init(id: 0, name: "name")],
-                        startDate: dateFormatter.date(from: "2023-02-15 09:00:00")!,
-                        endDate: dateFormatter.date(from: "2023-02-15 14:00:00")!,
+                        minTime: dateFormatter.date(from: "2023-02-15 09:00:00")!,
+                        maxTime: dateFormatter.date(from: "2023-02-15 14:00:00")!,
                         category: .init(
                             id: 0,
                             keyword: "keyword",

@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Entity
 import SwiftUI
 
 public struct TimeTableState: Equatable {
@@ -40,14 +41,18 @@ public struct TimeTableState: Equatable {
         let isStartTimeVisible: Bool
     }
 
-    public var days: [Day]
-    public var startTime: TimeInterval
-    public var endTime: TimeInterval
-    public var timeInterval: TimeInterval
-    public var timeMarkerInterval: TimeInterval
-    public var timeRanges: [TimeRange] = []
-    public var timeCells: [[TimeCell]] = []
+    public var days: [Day] // 이것를 Codable 데이터에 맞춰서 수정
+    public var startTime: TimeInterval // 이것를 Codable 데이터에 맞춰서 수정
+    public var endTime: TimeInterval // 이것를 Codable 데이터에 맞춰서 수정
+    public var timeInterval: TimeInterval // 이것를 Codable 데이터에 맞춰서 수정
+    public var timeMarkerInterval: TimeInterval // 이것를 Codable 데이터에 맞춰서 수정
+    public var timeRanges: [TimeRange] = [] // 이것를 Codable 데이터에 맞춰서 수정
+    public var timeCells: [[TimeCell]] = [] // 이것를 Codable 데이터에 맞춰서 수정
 
+    public init() {
+        var ptt = PromisingTimeTable()
+    }
+    
     public init(
         days: [Day] = [],
         startTime: TimeInterval = .init(),
