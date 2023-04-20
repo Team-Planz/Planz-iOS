@@ -113,7 +113,7 @@ let package = Package(
                 "DesignSystem",
                 "Repository",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "APIClient", package: "Planz-iOS-APIClient"),
+                "APIClient",
                 .product(name: "Planz-iOS-Secrets", package: "Planz-iOS-Secrets")
             ]
         ),
@@ -187,8 +187,7 @@ let package = Package(
             dependencies: [
                 "Entity"
             ]
-        )
-        .target(name: "Entity"),
+        ),
         .target(
             name: "Repository",
             dependencies: [

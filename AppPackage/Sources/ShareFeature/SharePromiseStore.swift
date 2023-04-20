@@ -15,9 +15,9 @@ import UIKit
 public struct SharePromiseFeature: ReducerProtocol {
     let firebaseRepository: FirebaseRepository
     let kakaoRepository: KakaoRepository
-
     public init(
-        firebaseRepository: FirebaseRepository = FirebaseRepositoryImpl(), kakaoRepository: KakaoRepository = KakaoRepositoryImpl()
+        firebaseRepository: FirebaseRepository = FirebaseRepositoryImpl(),
+        kakaoRepository: KakaoRepository = KakaoRepositoryImpl()
     ) {
         self.firebaseRepository = firebaseRepository
         self.kakaoRepository = kakaoRepository
@@ -25,8 +25,10 @@ public struct SharePromiseFeature: ReducerProtocol {
 
     public struct State: Equatable {
         var linkForShare = ""
-        var id: Int?
-        public init() {}
+        var id: Int
+        public init(id: Int) {
+            self.id = id
+        }
     }
 
     public enum Action: Equatable {
@@ -52,7 +54,7 @@ public struct SharePromiseFeature: ReducerProtocol {
         Reduce { state, action in
             switch action {
             case .viewDidAppear:
-                if let link = self.firebaseRepository.getDynamicLink(id: nil) {
+                if let link = self.firebaseRepository.getDynamicLink(id: state.id) {
                     state.linkForShare = link.absoluteString
                 }
                 return .none

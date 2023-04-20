@@ -12,13 +12,13 @@ import FirebaseFirestore
 import Foundation
 import Planz_iOS_Secrets
 public protocol FirebaseRepository {
-    func getDynamicLink(id: String?) -> URL?
+    func getDynamicLink(id: Int?) -> URL?
 }
 
 public class FirebaseRepositoryImpl: FirebaseRepository {
     public init() {}
 
-    private func getDeepLink(id: String?) -> URL? {
+    private func getDeepLink(id: Int?) -> URL? {
         if let id {
             return URL(string: "\(Secrets.Firebase.domain.value)/?plandId=\(id)")
         } else {
@@ -26,7 +26,7 @@ public class FirebaseRepositoryImpl: FirebaseRepository {
         }
     }
 
-    public func getDynamicLink(id: String? = nil) -> URL? {
+    public func getDynamicLink(id: Int? = nil) -> URL? {
         guard let link = getDeepLink(id: id) else { return nil }
         let dynamicLinksDomainURIPrefix = Secrets.Firebase.prefix.value
         let linkBuilder = DynamicLinkComponents(link: link, domainURIPrefix: dynamicLinksDomainURIPrefix)
