@@ -148,8 +148,8 @@ public struct PromiseManagement: ReducerProtocol {
                             ? RoleType.leader
                             : RoleType.general,
                         members: $0.members.map(\.name),
-                        startDate: $0.startDate,
-                        endDate: $0.endDate,
+                        startDate: $0.minTime,
+                        endDate: $0.maxTime,
                         category: StandbyCell.State.Category(
                             id: $0.category.id,
                             keyword: $0.category.keyword,

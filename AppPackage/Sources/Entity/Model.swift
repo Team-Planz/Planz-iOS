@@ -30,31 +30,31 @@ public struct UpdateUsernameRequest: Encodable, Equatable {
 public struct CreatePromisingRequest: Encodable, Equatable {
     private enum CodingKeys: String, CodingKey {
         case name = "promisingName"
-        case startDate = "minTime"
-        case endDate = "maxTime"
+        case minTime
+        case maxTime
         case categoryID = "categoryId"
         case availableDates
         case place = "placeName"
     }
 
     public let name: String
-    public let startDate: Date
-    public let endDate: Date
+    public let minTime: Date
+    public let maxTime: Date
     public let categoryID: Int
     public let availableDates: [Date]
     public let place: String
 
     public init(
         name: String,
-        startDate: Date,
-        endDate: Date,
+        minTime: Date,
+        maxTime: Date,
         categoryID: Int,
         availableDates: [Date],
         place: String
     ) {
         self.name = name
-        self.startDate = startDate
-        self.endDate = endDate
+        self.minTime = minTime
+        self.maxTime = maxTime
         self.categoryID = categoryID
         self.availableDates = availableDates
         self.place = place
@@ -75,28 +75,28 @@ public struct CreatePromisingResponse: Decodable, Equatable {
 
 public struct PromisingSessionResponse: Decodable, Equatable {
     private enum CodingKeys: String, CodingKey {
-        case startDate = "minTime"
-        case endDate = "maxTime"
+        case minTime
+        case maxTime
         case totalCount
         case unit
         case availableDates
     }
 
-    public let startDate: Date
-    public let endDate: Date
+    public let minTime: Date
+    public let maxTime: Date
     public let totalCount: Int
     public let unit: Int
     public let availableDates: [Date]
 
     public init(
-        startDate: Date,
-        endDate: Date,
+        minTime: Date,
+        maxTime: Date,
         totalCount: Int,
         unit: Int,
         availableDates: [Date]
     ) {
-        self.startDate = startDate
-        self.endDate = endDate
+        self.minTime = minTime
+        self.maxTime = maxTime
         self.totalCount = totalCount
         self.unit = unit
         self.availableDates = availableDates
@@ -112,16 +112,6 @@ public struct UpdatePromiseTimeResponse: Decodable, Equatable {
 
     public init(promiseID: Int) {
         self.promiseID = promiseID
-    }
-}
-
-public struct TimeTable: Codable, Equatable {
-    let date: Date
-    let times: [Bool]
-
-    public init(date: Date, times: [Bool]) {
-        self.date = date
-        self.times = times
     }
 }
 
@@ -205,144 +195,6 @@ public struct PromisingStatusResponse: Codable, Equatable {
     }
 }
 
-public struct PromisingTimeTable: Codable, Equatable {
-    private enum CodingKeys: String, CodingKey {
-        case members
-        case colors
-        case totalCount
-        case unit
-        case timeTable
-        case id
-        case promisingName
-        case owner
-        case minTime
-        case maxTime
-        case category
-        case availableDates
-        case placeName
-    }
-
-    public let members: [User]
-    public let colors: [Int]
-    public let totalCount: Int
-    public let unit: Double
-    public let timeTable: [TimeTable]
-    public let id: Int
-    public let promisingName: String
-    public let owner: [User]
-    public let minTime: Date
-    public let maxTime: Date
-    public let category: Category
-    public let availableDates: [Date]
-    public let placeName: String
-
-    public init() {
-        let users = [
-            User(id: 0, name: "andrew"),
-            User(id: 1, name: "jay")
-        ]
-        members = users
-        colors = [1, 2, 3]
-        totalCount = 0
-        unit = 0.5
-
-        id = 0
-        promisingName = "Mock"
-        owner = users
-
-        var calendar = Calendar.current
-        calendar.timeZone = .current
-        let dateAtMidnight = calendar.startOfDay(for: .now)
-
-        var components = DateComponents()
-        components.day = 1
-        components.second = -1
-        let dateAtEnd = calendar.date(byAdding: components, to: .now)
-
-        minTime = dateAtMidnight
-        maxTime = dateAtEnd!
-
-        category = Category(id: 0, keyword: "ABC", type: "DEF")
-
-        placeName = "Test place"
-        let a = (0 ..< 7).map { index -> Date in
-            .init(timeIntervalSinceNow: 86400 * TimeInterval(index))
-        }
-        timeTable = a.map {
-            TimeTable(
-                date: $0,
-                blocks: [
-                    TimeTable.Block(index: 0, count: 0, color: 0, users: []),
-                    TimeTable.Block(index: 0, count: 0, color: 0, users: []),
-                    TimeTable.Block(index: 0, count: 0, color: 0, users: []),
-                    TimeTable.Block(index: 0, count: 0, color: 0, users: []),
-                    TimeTable.Block(index: 0, count: 0, color: 0, users: [])
-                ]
-            )
-        }
-        availableDates = a
-    }
-
-    public struct TimeTable: Codable, Equatable {
-        public let date: Date
-        public let blocks: [Block]
-
-        public struct Block: Codable, Equatable {
-            public let index: Int
-            public let count: Int
-            public let color: Int
-            public let users: [User]
-
-            public init(
-                index: Int,
-                count: Int,
-                color: Int,
-                users: [User]
-            ) {
-                self.index = index
-                self.count = count
-                self.color = color
-                self.users = users
-            }
-        }
-
-        public init(date: Date, blocks: [Block]) {
-            self.date = date
-            self.blocks = blocks
-        }
-    }
-
-    public init(
-        members: [User],
-        colors: [Int],
-        totalCount: Int,
-        unit: Double,
-        timeTable: [TimeTable],
-        id: Int,
-        promisingName: String,
-        owner: [User],
-        minTime: Date,
-        maxTime: Date,
-        category: Category,
-        availableDates: [Date],
-        placeName: String
-    ) {
-        self.members = members
-        self.colors = colors
-        self.totalCount = totalCount
-        self.unit = unit
-        self.timeTable = timeTable
-        self.id = id
-        self.promisingName = promisingName
-        self.owner = owner
-        self.minTime = minTime
-        self.maxTime = maxTime
-        self.category = category
-        self.availableDates = availableDates
-        self.placeName = placeName
-    }
-}
-
 public struct PromisingTimeStamps: Codable, Equatable {
     public let promisingTimeStamps: [PromisingTimeStamp]
 
@@ -359,8 +211,8 @@ public struct PromisingTimeStamp: Codable, Equatable {
         case id
         case promisingName
         case owner
-        case startDate = "minTime"
-        case endDate = "maxTime"
+        case minTime
+        case maxTime
         case category
         case availableDates
         case members
@@ -373,8 +225,8 @@ public struct PromisingTimeStamp: Codable, Equatable {
     public let id: Int
     public let promisingName: String
     public let owner: User
-    public let startDate: Date
-    public let endDate: Date
+    public let minTime: Date
+    public let maxTime: Date
     public let category: Category
     public let availableDates: [Date]
     public let members: [User]
@@ -387,8 +239,8 @@ public struct PromisingTimeStamp: Codable, Equatable {
         id: Int,
         promisingName: String,
         owner: User,
-        startDate: Date,
-        endDate: Date,
+        minTime: Date,
+        maxTime: Date,
         category: Category,
         availableDates: [Date],
         members: [User],
@@ -400,8 +252,8 @@ public struct PromisingTimeStamp: Codable, Equatable {
         self.id = id
         self.promisingName = promisingName
         self.owner = owner
-        self.startDate = startDate
-        self.endDate = endDate
+        self.minTime = minTime
+        self.maxTime = maxTime
         self.category = category
         self.availableDates = availableDates
         self.members = members

@@ -74,8 +74,8 @@ public extension APIClient {
                         id: 0,
                         promisingName: "promising name",
                         owner: .init(id: 0, name: "name"),
-                        startDate: dateFormatter.date(from: "2023-02-15 09:00:00")!,
-                        endDate: dateFormatter.date(from: "2023-02-15 14:00:00")!,
+                        minTime: dateFormatter.date(from: "2023-02-15 09:00:00")!,
+                        maxTime: dateFormatter.date(from: "2023-02-15 14:00:00")!,
                         category: .init(
                             id: 0,
                             keyword: "keyword",
@@ -139,8 +139,8 @@ public extension APIClient {
                                 id: 0,
                                 promisingName: "promising name",
                                 owner: .init(id: 0, name: "name"),
-                                startDate: dateFormatter.date(from: "2023-02-15 09:00:00")!,
-                                endDate: dateFormatter.date(from: "2023-02-15 14:00:00")!,
+                                minTime: dateFormatter.date(from: "2023-02-15 09:00:00")!,
+                                maxTime: dateFormatter.date(from: "2023-02-15 14:00:00")!,
                                 category: .init(
                                     id: 0,
                                     keyword: "keyword",
