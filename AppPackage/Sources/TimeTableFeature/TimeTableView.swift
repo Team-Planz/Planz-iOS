@@ -49,10 +49,6 @@ public struct TimeTableState: Equatable {
     public var timeRanges: [TimeRange] = [] // 이것를 Codable 데이터에 맞춰서 수정
     public var timeCells: [[TimeCell]] = [] // 이것를 Codable 데이터에 맞춰서 수정
 
-    public init() {
-        var ptt = PromisingTimeTable()
-    }
-    
     public init(
         days: [Day] = [],
         startTime: TimeInterval = .init(),
