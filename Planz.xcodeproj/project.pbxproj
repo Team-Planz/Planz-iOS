@@ -89,6 +89,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		496EFF7A29E06A5000351034 /* Secrets */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Secrets;
+			sourceTree = "<group>";
+		};
 		6F47598D28D9D0CE005CC91B = {
 			isa = PBXGroup;
 			children = (
@@ -117,6 +124,7 @@
 		6F47599828D9D0CE005CC91B /* Planz */ = {
 			isa = PBXGroup;
 			children = (
+				496EFF7A29E06A5000351034 /* Secrets */,
 				AE79C84329863F400098BA28 /* Info.plist */,
 				6F47599928D9D0CE005CC91B /* PlanzApp.swift */,
 				6F47599D28D9D0CF005CC91B /* Assets.xcassets */,

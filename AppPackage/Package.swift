@@ -9,7 +9,7 @@ let package = Package(
             name: "AppPackage",
             targets: [
                 "TimeTableFeature",
-                "Share",
+                "ShareFeature",
                 "MakePromise",
                 "PromiseManagement",
                 "LoginFeature",
@@ -48,7 +48,8 @@ let package = Package(
         .package(url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
         .package(url: "https://github.com/devxoul/Then.git", from: "3.0.0"),
         .package(url: "https://github.com/kakao/kakao-ios-sdk.git", from: "2.14.0"),
-        .package(url: "https://github.com/Team-Planz/Planz-iOS-Secrets.git", branch: "main")
+        .package(url: "https://github.com/Team-Planz/Planz-iOS-Secrets.git", branch: "main"),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "8.10.0")
     ],
     targets: [
         .target(
@@ -107,10 +108,13 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Share",
+            name: "ShareFeature",
             dependencies: [
                 "DesignSystem",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                "Repository",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                "APIClient",
+                .product(name: "Planz-iOS-Secrets", package: "Planz-iOS-Secrets")
             ]
         ),
         .target(
@@ -182,6 +186,16 @@ let package = Package(
             name: "SharedModel",
             dependencies: [
                 "Entity"
+            ]
+        ),
+        .target(
+            name: "Repository",
+            dependencies: [
+                .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
+                .product(name: "FirebaseFirestore", package: "firebase-ios-sdk"),
+                .product(name: "FirebaseDynamicLinks", package: "firebase-ios-sdk"),
+                .product(name: "KakaoSDK", package: "kakao-ios-sdk"),
+                .product(name: "Planz-iOS-Secrets", package: "Planz-iOS-Secrets")
             ]
         )
     ]
